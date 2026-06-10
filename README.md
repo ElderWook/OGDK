@@ -52,3 +52,81 @@ docs/00-START-HERE.md → AGENTS.md → docs/STATUS.md → active plan → role 
 
 - [app/STACK.md](./app/STACK.md) — the web/local/mobile stack, proven in OpenBook
 - [game/STACK.md](./game/STACK.md) — Unreal architecture: thin game, plugin modules, perf budgets
+
+## Framework maps
+
+### App track — shared-core architecture
+
+```mermaid
+flowchart TD
+    subgraph shared["src/shared — ALL logic lives here"]
+        LOGIC["domain logic<br/>(exact money math, validation)"]
+        DATA["data layer<br/>SQLite · atomic writes · migrations"]
+        SYNC["sync engine<br/>master/client · parity-tested"]
+        PDF["pdf engine<br/>theme + generators"]
+    end
+
+    subgraph desktop["Desktop app (Tauri)"]
+        DBRIDGE["$platform bridge<br/>desktop.js"]
+        DUI["Svelte UI"]
+    end
+
+    subgraph mobile["Mobile app (PWA)"]
+        MBRIDGE["$platform bridge<br/>mobile.js"]
+        MUI["Svelte UI"]
+    end
+
+    RELAY["relay server (Node)<br/>device pairing · encrypted exchange"]
+    DB[("SQLite file<br/>local-first, user-owned")]
+
+    DUI --> DBRIDGE --> shared
+    MUI --> MBRIDGE --> shared
+    DATA --> DB
+    SYNC <--> RELAY
+    RELAY <--> MBRIDGE
+
+    classDef core fill:#1f6feb,color:#fff,stroke:none
+    class LOGIC,DATA,SYNC,PDF core
+```
+
+**The one rule:** platform apps never duplicate shared code — differences are injected
+through the `$platform` bridge, never `if (isMobile)` checks inside shared modules.
+Desktop is authoritative for contested data (e.g. document numbers).
+
+### Game track — modular Unreal architecture
+
+```mermaid
+flowchart TD
+    GAME["Source/&lt;Game&gt;<br/>THIN: target rules + module wiring only"]
+
+    subgraph features["Plugins/GameFeatures — one per system"]
+        GF1["GF_Combat"]
+        GF2["GF_Inventory"]
+        GF3["GF_&lt;System&gt;<br/>each independently loadable<br/>+ ships a smoke test"]
+    end
+
+    GCORE["Plugins/&lt;Game&gt;Core<br/>game-specific, non-feature code"]
+
+    subgraph oasis["Plugins/OasisCore — shared across ALL Oasis games (rule of two)"]
+        OC["OasisCore module<br/>types · save · settings · utils"]
+        OUI["OasisUI module<br/>CommonUI widgets · menus · HUD"]
+    end
+
+    ENGINE["Unreal Engine<br/>(per-project fork pinned in AGENTS.md)"]
+
+    GAME --> features
+    GAME --> GCORE
+    GF1 -. "GameplayTags / interfaces<br/>NEVER direct references" .- GF2
+    features --> oasis
+    GCORE --> oasis
+    oasis --> ENGINE
+
+    classDef thin fill:#238636,color:#fff,stroke:none
+    classDef shared fill:#1f6feb,color:#fff,stroke:none
+    class GAME thin
+    class OC,OUI shared
+```
+
+**The one rule:** dependencies point one way — Game → GameFeatures → OasisCore → Engine.
+Features talk via GameplayTags/interfaces, never to each other directly. C++ for systems,
+Blueprint at the edges; tick off by default; soft references for heavy content.
