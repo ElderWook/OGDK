@@ -5,7 +5,15 @@ description: Run the OGDK session-end protocol — verification gate, docs-with-
 
 # Session end
 
-1. **Verification gate:** run the exact commands in `AGENTS.md §Verification gate`.
+> **Emergency handoff (low usage / time pressure):** if there isn't capacity for the
+> full protocol, do ONLY this, immediately: add `## In-flight` to docs/STATUS.md
+> (what's half-done, which files, exact next step), `git add -A`,
+> `git commit -m "wip: <plan> — <state>"`, push. Everything else can wait; stranded
+> context cannot be recovered.
+
+1. **Integrity gate:** run `.\tools\verify-file-integrity.ps1` (Linux: `.sh`). Any FAIL
+   means possible file corruption (NUL-fill, truncation) — fix before committing anything.
+2. **Verification gate:** run the exact commands in `AGENTS.md §Verification gate`.
    All must pass. If anything fails, fix or record it as an open hazard — never hand
    off silently broken state.
 2. **Docs-with-code check:** for every code change this session, confirm the relevant

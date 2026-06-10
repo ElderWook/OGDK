@@ -25,7 +25,7 @@ Copy-Item (Join-Path $kit 'CLAUDE.template.md') (Join-Path $proj 'CLAUDE.md')
 
 # 3. Tools (PATH health is mandatory on Windows)
 New-Item -ItemType Directory -Path (Join-Path $proj 'tools') | Out-Null
-Copy-Item (Join-Path $kit 'tools\verify-path-health.ps1'),(Join-Path $kit 'tools\launch-claude-clean.ps1'),(Join-Path $kit 'tools\verify-path-health.sh'),(Join-Path $kit 'tools\launch-claude-clean.sh') (Join-Path $proj 'tools')
+Copy-Item (Join-Path $kit 'tools\verify-path-health.ps1'),(Join-Path $kit 'tools\launch-claude-clean.ps1'),(Join-Path $kit 'tools\verify-file-integrity.ps1'),(Join-Path $kit 'tools\verify-path-health.sh'),(Join-Path $kit 'tools\launch-claude-clean.sh'),(Join-Path $kit 'tools\verify-file-integrity.sh') (Join-Path $proj 'tools')
 
 # 4. Skills for Claude Code
 New-Item -ItemType Directory -Path (Join-Path $proj '.claude') | Out-Null

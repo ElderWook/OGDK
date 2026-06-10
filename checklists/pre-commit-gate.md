@@ -1,5 +1,6 @@
 # Pre-commit gate (generic — project AGENTS.md is authoritative)
 
+- [ ] `tools/verify-file-integrity.{ps1,sh}` passes (no NUL-fill / truncation corruption)
 - [ ] Verification gate commands from AGENTS.md all pass
 - [ ] Docs updated in the SAME commit as the code they describe
 - [ ] No secrets, no scratch/binary artifacts staged

@@ -34,8 +34,8 @@ cp "$KIT/CLAUDE.template.md" "$PROJ/CLAUDE.md"
 
 # 3. Tools (both platforms' twins travel together)
 mkdir -p "$PROJ/tools"
-cp "$KIT/tools/verify-path-health.ps1" "$KIT/tools/launch-claude-clean.ps1" \
-   "$KIT/tools/verify-path-health.sh"  "$KIT/tools/launch-claude-clean.sh" "$PROJ/tools/"
+cp "$KIT/tools/verify-path-health.ps1" "$KIT/tools/launch-claude-clean.ps1" "$KIT/tools/verify-file-integrity.ps1" \
+   "$KIT/tools/verify-path-health.sh"  "$KIT/tools/launch-claude-clean.sh"  "$KIT/tools/verify-file-integrity.sh" "$PROJ/tools/"
 chmod +x "$PROJ/tools/"*.sh
 
 # 4. Skills for Claude Code
