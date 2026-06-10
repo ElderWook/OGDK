@@ -1,0 +1,54 @@
+# AI model parity — working across models, accounts, and tools
+
+This project is built by rotating sessions: different AI models (Claude, GPT, Gemini,
+…), different accounts, different humans. Parity means **any session can pick up where
+any other left off with zero verbal handoff.** These are the mechanics.
+
+## 1. One source of truth, per-tool pointers
+
+`AGENTS.md` at the repo root is the only rules file. Tool-specific files are
+**pointers only** — never put rules in them:
+
+| Tool | Entry file | Notes |
+|------|-----------|-------|
+| Claude Code / Cowork | `CLAUDE.md` | scaffolded by OGDK; points to AGENTS.md |
+| OpenAI Codex CLI | `AGENTS.md` | reads it natively — nothing to add |
+| Cursor | `.cursor/rules/` or AGENTS.md support | if used, add one rule file: "Read AGENTS.md in full; follow docs/00-START-HERE.md" |
+| Gemini CLI | `GEMINI.md` | if used, copy CLAUDE.md's content, same pointer |
+| Any other agent | paste at session start | "Read AGENTS.md, then docs/00-START-HERE.md, follow the chain" |
+
+If a rule needs to exist, it goes in AGENTS.md. If a pointer file grows past ~10 lines,
+something is in the wrong place.
+
+## 2. The contract every session signs
+
+**On start** — follow `docs/00-START-HERE.md`: PATH health (Windows) → AGENTS.md →
+STATUS.md → active plan. No edits before the chain is read.
+
+**On end** — verification gate → docs updated with code → **STATUS.md updated**.
+STATUS.md is the entire inter-model memory. A session that ends without updating it
+has stranded its context in a transcript no other model can see.
+
+**The golden rule:** *if it isn't in the repo, the next session doesn't know it.*
+Decisions made in chat must land in a plan, a core doc, or STATUS.md before the
+session ends.
+
+## 3. Why this matters (failure modes this prevents)
+
+- **Invariant drift** — model B "improves" something model A built within constraints
+  it can't see → constraints live in AGENTS.md, read every session.
+- **Collision** — two sessions touch the same in-flight work → STATUS.md names active
+  plans and their state.
+- **Re-litigation** — model C re-debates a settled design → plans record options
+  *rejected and why*; the decision stays settled.
+- **Context hoarding** — one account's chat history becomes load-bearing → forbidden
+  by the golden rule; the repo is the only memory.
+
+## 4. Trust calibration
+
+- Treat any claim in STATUS.md as true-as-of-its-date; verify before relying on
+  anything older than the last few commits (`git log --oneline -10` is cheap).
+- A model that finds the docs wrong **fixes the docs in the same commit** as the code
+  — parity decays one stale doc at a time.
+- Plans are immutable once active; disagreement = a new plan that supersedes, not an
+  in-place edit (see DOCUMENTATION-VERSIONING-GUIDE.md).

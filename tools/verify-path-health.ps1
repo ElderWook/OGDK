@@ -1,0 +1,108 @@
+<#
+.SYNOPSIS
+    Verifies that the current shell PATH is safe (no MSYS2/WSL/Linux-emulation tools).
+    Run this at the START of every Claude Code / agy session to confirm you are clean.
+
+.USAGE
+    From any PowerShell:  .\tools\verify-path-health.ps1
+    Or add to your profile: . C:\the origin app_Release\tools\verify-path-health.ps1
+#>
+
+Write-Host "======================================" -ForegroundColor Cyan
+Write-Host "  PATH Health Check for the origin app Dev  " -ForegroundColor Cyan
+Write-Host "======================================" -ForegroundColor Cyan
+Write-Host ""
+
+$issues = @()
+
+# Check 1: MSYS2/WSL/Cygwin in PATH
+$badPaths = ($env:PATH -split ';') | Where-Object {
+    $_ -match 'msys|ucrt64|mingw|cygwin|/usr/|/opt/|\\wsl\\|wslpath' -and $_ -ne ''
+}
+if ($badPaths) {
+    Write-Host "[FAIL] Linux-emulation paths found in PATH:" -ForegroundColor Red
+    $badPaths | ForEach-Object { Write-Host "       $_" -ForegroundColor Yellow }
+    $issues += "MSYS2/WSL in PATH"
+} else {
+    Write-Host "[PASS] No MSYS2/WSL/Cygwin in PATH" -ForegroundColor Green
+}
+
+# Check 2: git resolves to Windows Git
+$gitPath = (Get-Command git -ErrorAction SilentlyContinue).Source
+if (-not $gitPath) {
+    Write-Host "[WARN] git not found in PATH" -ForegroundColor Yellow
+} elseif ($gitPath -match 'msys|ucrt|mingw|cygwin') {
+    Write-Host "[FAIL] git resolves to MSYS2: $gitPath" -ForegroundColor Red
+    $issues += "git -> MSYS2"
+} else {
+    Write-Host "[PASS] git -> $gitPath" -ForegroundColor Green
+}
+
+# Check 3: sed -- warn if it is MSYS2 sed
+$sedPath = (Get-Command sed -ErrorAction SilentlyContinue).Source
+if ($sedPath -and $sedPath -match 'msys|ucrt|mingw') {
+    Write-Host "[FAIL] sed resolves to MSYS2: $sedPath" -ForegroundColor Red
+    $issues += "sed -> MSYS2"
+} elseif ($sedPath) {
+    Write-Host "[WARN] sed found (non-MSYS2): $sedPath" -ForegroundColor Yellow
+} else {
+    Write-Host "[PASS] sed not in PATH (MSYS2 absent)" -ForegroundColor Green
+}
+
+# Check 4: node resolves to Windows nodejs
+$nodePath = (Get-Command node -ErrorAction SilentlyContinue).Source
+if ($nodePath -match 'msys|ucrt|mingw|nvm\\versions') {
+    Write-Host "[WARN] node via NVM/MSYS: $nodePath" -ForegroundColor Yellow
+} elseif ($nodePath) {
+    Write-Host "[PASS] node -> $nodePath" -ForegroundColor Green
+} else {
+    Write-Host "[WARN] node not found in PATH" -ForegroundColor Yellow
+}
+
+# Check 5: No .exe entries in PATH (malformed entries)
+$exeInPath = ($env:PATH -split ';') | Where-Object { $_ -match '\.exe$' }
+if ($exeInPath) {
+    Write-Host "[FAIL] Malformed PATH entries (file paths, not directories):" -ForegroundColor Red
+    $exeInPath | ForEach-Object { Write-Host "       $_" -ForegroundColor Yellow }
+    $issues += "Malformed .exe PATH entries"
+} else {
+    Write-Host "[PASS] No malformed .exe entries in PATH" -ForegroundColor Green
+}
+
+# Check 6: the origin app_Release not cloud-synced
+$attr = (attrib 'C:\the origin app_Release' 2>&1)
+if ($attr -match '\bP\b|\bO\b') {
+    Write-Host "[WARN] C:\the origin app_Release may have cloud-sync attributes: $attr" -ForegroundColor Yellow
+    $issues += "Cloud sync on project dir"
+} else {
+    Write-Host "[PASS] C:\the origin app_Release has no cloud-sync overlay attributes" -ForegroundColor Green
+}
+
+# Check 7: JAVA_HOME is set and valid
+$javaHome = [System.Environment]::GetEnvironmentVariable("JAVA_HOME", "User")
+if (-not $javaHome) {
+    $javaHome = [System.Environment]::GetEnvironmentVariable("JAVA_HOME", "Machine")
+}
+if (-not $javaHome) {
+    Write-Host "[FAIL] JAVA_HOME is not set -- Android/Capacitor builds will fail" -ForegroundColor Red
+    $issues += "JAVA_HOME not set"
+} elseif (-not (Test-Path (Join-Path $javaHome "bin\java.exe"))) {
+    Write-Host "[FAIL] JAVA_HOME points to missing JDK: $javaHome" -ForegroundColor Red
+    $issues += "JAVA_HOME invalid path"
+} else {
+    Write-Host "[PASS] JAVA_HOME -> $javaHome" -ForegroundColor Green
+}
+
+# Summary
+Write-Host ""
+Write-Host "--------------------------------------" -ForegroundColor Cyan
+if ($issues.Count -eq 0) {
+    Write-Host "  ALL CHECKS PASSED -- safe to run AI agents" -ForegroundColor Green
+} else {
+    Write-Host "  $($issues.Count) ISSUE(S) FOUND:" -ForegroundColor Red
+    $issues | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+    Write-Host ""
+    Write-Host "  DO NOT run Claude Code or agy until resolved." -ForegroundColor Red
+    Write-Host "  Use: .\tools\launch-claude-clean.ps1 instead" -ForegroundColor Cyan
+}
+Write-Host "--------------------------------------" -ForegroundColor Cyan
