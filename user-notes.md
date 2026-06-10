@@ -46,6 +46,12 @@ git diff --staged             # what's about to be committed
 Reading status: "working tree clean" = nothing to do · "not staged" = edits exist,
 not queued · "to be committed" = queued · "untracked" = new files git never saw.
 
+**If a model dies mid-task (usage limit):** its job was to leave a `wip:` commit +
+`## In-flight` note in STATUS.md. Next session: the session-start skill detects this
+and recovers. My only move: don't panic, don't clean anything — start a fresh session
+and point it at docs/00-START-HERE.md. A dirty tree + dead chat is recoverable;
+deleted files are not.
+
 ## 4. Git — fixing poopsies (in increasing severity)
 
 ```powershell
@@ -92,6 +98,7 @@ they sync **only** through GitHub (push on one, pull on the other). Never cross-
 | Script | What |
 |--------|------|
 | `verify-path-health.ps1/.sh` | session-start env gate (MSYS2 poison / NTFS mount / identity / LFS) |
+| `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, git fsck) — run after heavy AI writes |
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |
 | `new-project.ps1/.sh` | (OGDK only) scaffold App/Game project |
 

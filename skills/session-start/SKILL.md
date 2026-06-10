@@ -12,7 +12,12 @@ Follow in order. Do not edit any file until step 5.
 2. **Rules:** read `AGENTS.md` (repo root) in full. These are non-negotiable.
 3. **State:** read `docs/STATUS.md` — note active plans, hazards, and "next up".
 4. **Plan:** read the active plan(s) named in STATUS.md before touching code they cover.
-5. **Summarize** to the user in a few sentences: current branch/version, what's in
+5. **Interrupted-session check:** if the working tree is dirty, the last commit message
+   starts with `wip:`, or STATUS.md contains an `## In-flight` section, the previous
+   session died mid-task (usage limit, crash). Do NOT start new work. Reconstruct the
+   in-flight state from `git status`/`git diff` + the wip commit + the active plan,
+   record what you found in STATUS.md, and ask the user whether to finish or revert it.
+6. **Summarize** to the user in a few sentences: current branch/version, what's in
    flight, open hazards, and what you understand the session goal to be. Ask if the
    goal differs from STATUS.md's "next up".
 

@@ -6,6 +6,7 @@ Every script ships as a **twin pair**: `.ps1` (Windows PowerShell 5.1+) and `.sh
 | Pair | Purpose |
 |------|---------|
 | `verify-path-health.{ps1,sh}` | session-start environment gate. Windows: MSYS2/WSL PATH poisoning, malformed PATH, cloud-sync overlays. Linux: NTFS-mount hazard, git identity, LFS, autocrlf. |
+| `verify-file-integrity.{ps1,sh}` | pre-commit corruption gate: NUL bytes in tracked text files (zero-fill signature), .py compile check (truncation), trailing-newline smell test, `git fsck`. Run after heavy agent writes, before committing. |
 | `launch-claude-clean.{ps1,sh}` | run the health gate, then launch Claude Code |
 | `new-project.{ps1,sh}` | scaffold a new App/Game project from the kit |
 
