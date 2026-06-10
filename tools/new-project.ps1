@@ -1,0 +1,89 @@
+# OGDK — scaffold a new project from the kit
+# Usage: .\tools\new-project.ps1 -Name "MyProject" -Type App [-Dest C:\Dev]
+param(
+    [Parameter(Mandatory)][string]$Name,
+    [Parameter(Mandatory)][ValidateSet('App','Game')][string]$Type,
+    [string]$Dest = (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)),
+    [switch]$NoGit
+)
+$ErrorActionPreference = 'Stop'
+$kit  = Split-Path -Parent $PSScriptRoot
+$proj = Join-Path $Dest $Name
+if (Test-Path $proj) { throw "Target already exists: $proj" }
+
+Write-Host "Scaffolding $Type project '$Name' -> $proj"
+New-Item -ItemType Directory -Path $proj | Out-Null
+
+# 1. Docs chain
+Copy-Item -Recurse (Join-Path $kit 'docs-template') (Join-Path $proj 'docs')
+Rename-Item (Join-Path $proj 'docs\STATUS.template.md') 'STATUS.md'
+Rename-Item (Join-Path $proj 'docs\README.template.md') 'README.md'
+
+# 2. Agent rules + Claude pointer
+Copy-Item (Join-Path $kit 'AGENTS.template.md') (Join-Path $proj 'AGENTS.md')
+Copy-Item (Join-Path $kit 'CLAUDE.template.md') (Join-Path $proj 'CLAUDE.md')
+
+# 3. Tools (PATH health is mandatory on Windows)
+New-Item -ItemType Directory -Path (Join-Path $proj 'tools') | Out-Null
+Copy-Item (Join-Path $kit 'tools\verify-path-health.ps1'),(Join-Path $kit 'tools\launch-claude-clean.ps1') (Join-Path $proj 'tools')
+
+# 4. Skills for Claude Code
+New-Item -ItemType Directory -Path (Join-Path $proj '.claude') | Out-Null
+Copy-Item -Recurse (Join-Path $kit 'skills') (Join-Path $proj '.claude\skills')
+
+# 5. Track-specific
+if ($Type -eq 'Game') {
+    Copy-Item (Join-Path $kit 'game\gitignore.game.template')     (Join-Path $proj '.gitignore')
+    Copy-Item (Join-Path $kit 'game\gitattributes.game.template') (Join-Path $proj '.gitattributes')
+    Copy-Item (Join-Path $kit 'game\STACK.md') (Join-Path $proj 'docs\core\game-architecture.md')
+    Copy-Item -Recurse (Join-Path $kit 'game\conventions') (Join-Path $proj 'docs\core\conventions')
+} else {
+    @"
+node_modules/
+dist/
+*.sqlite
+.env
+"@ | Set-Content (Join-Path $proj '.gitignore')
+    Copy-Item (Join-Path $kit 'app\STACK.md') (Join-Path $proj 'docs\core\app-architecture.md')
+}
+
+# 5b. Project root README (pointer into the chain)
+@"
+# $Name
+
+An Oasis Games LLC project, scaffolded from [OGDK]($($kit -replace '\\','/')).
+
+**Start here:** [docs/00-START-HERE.md](./docs/00-START-HERE.md) — the session chain
+(AGENTS.md -> docs/STATUS.md -> active plan) for humans and AI alike.
+"@ | Set-Content (Join-Path $proj 'README.md')
+
+# 6. Token replacement
+$date = Get-Date -Format 'yyyy-MM-dd'
+Get-ChildItem $proj -Recurse -Include *.md | ForEach-Object {
+    (Get-Content $_.FullName -Raw) -replace '\{\{PROJECT_NAME\}\}', $Name -replace '\{\{DATE\}\}', $date |
+        Set-Content $_.FullName -NoNewline
+}
+
+# 7. Git
+if (-not $NoGit) {
+    if (-not (git config user.email)) {
+        Write-Warning "git identity not set (git config --global user.name/user.email) — skipping git init. Re-run init manually."
+    } else {
+        Push-Location $proj
+        git init -b main | Out-Null
+        if ($Type -eq 'Game') {
+            if (Get-Command git-lfs -ErrorAction SilentlyContinue) { git lfs install | Out-Null }
+            else { Write-Warning "git-lfs not installed — install it BEFORE committing any .uasset (binary committed without LFS is permanent repo weight)." }
+        }
+        git add -A
+        git commit -m "chore: scaffold $Name from OGDK ($Type track)" | Out-Null
+        Pop-Location
+    }
+}
+
+Write-Host ""
+Write-Host "Done. Next steps:" -ForegroundColor Green
+Write-Host "  1. Fill in AGENTS.md (architecture, invariants, verification gate)"
+Write-Host "  2. $(if ($Type -eq 'Game') {'Create the .uproject + Source/ + Plugins/ per docs/core/game-architecture.md'} else {'Scaffold the app per docs/core/app-architecture.md'})"
+Write-Host "  3. Write your first plan in docs/plans/, update docs/STATUS.md"
+Write-Host "  4. See OGDK checklists/new-project.md for the full list"
