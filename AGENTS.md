@@ -22,7 +22,11 @@ Run `.\tools\verify-path-health.ps1` before any file writes.
 5. **Two tracks, one process.** Track-specific content goes in `app/` or `game/`;
    anything both tracks need goes in `docs-template/`, `tools/`, `skills/`,
    or `checklists/`. Never duplicate across tracks.
-6. **Improvements flow back.** When a project improves a script or skill, the fix is
+6. **Twin rule (cross-platform).** Every `tools/` script ships as a `.ps1`/`.sh` pair
+   with identical behavior; changing one updates the other in the SAME commit.
+   `.ps1` files: Windows PowerShell 5.1-safe — ASCII only, NO here-strings (they break
+   with LF endings). See `tools/README.md`.
+7. **Improvements flow back.** When a project improves a script or skill, the fix is
    copied back here in its own commit. Templates, by contrast, are starting points —
    projects may diverge from them freely and those divergences do NOT flow back.
 

@@ -11,6 +11,9 @@
 - **Always launch from plain PowerShell or cmd.**
   Use: `.\tools\launch-claude-clean.ps1` · Verify: `.\tools\verify-path-health.ps1`
 - If `verify-path-health.ps1` reports any FAIL, **stop and fix the PATH before proceeding.**
+- **Linux (dual-boot):** the mirror hazard — never run agent writes against a shared
+  NTFS partition; work on a native-filesystem clone and sync via git. Gate:
+  `./tools/verify-path-health.sh` must pass.
 
 ## Architecture
 <!-- FILL IN: the 3–6 structural rules that must never be violated.

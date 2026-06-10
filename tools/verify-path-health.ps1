@@ -1,15 +1,17 @@
 <#
 .SYNOPSIS
     Verifies that the current shell PATH is safe (no MSYS2/WSL/Linux-emulation tools).
-    Run this at the START of every Claude Code / agy session to confirm you are clean.
+    Run this at the START of every AI agent session to confirm you are clean.
+    Linux twin: tools/verify-path-health.sh (see tools/README.md for the parity policy).
 
 .USAGE
     From any PowerShell:  .\tools\verify-path-health.ps1
-    Or add to your profile: . C:\the origin app_Release\tools\verify-path-health.ps1
 #>
 
+$repoRoot = Split-Path -Parent $PSScriptRoot
+
 Write-Host "======================================" -ForegroundColor Cyan
-Write-Host "  PATH Health Check for the origin app Dev  " -ForegroundColor Cyan
+Write-Host "  PATH Health Check (OGDK)            " -ForegroundColor Cyan
 Write-Host "======================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -69,26 +71,24 @@ if ($exeInPath) {
     Write-Host "[PASS] No malformed .exe entries in PATH" -ForegroundColor Green
 }
 
-# Check 6: the origin app_Release not cloud-synced
-$attr = (attrib 'C:\the origin app_Release' 2>&1)
+# Check 6: repo dir not cloud-synced (OneDrive/Dropbox overlays corrupt rapid writes)
+$attr = (attrib $repoRoot 2>&1)
 if ($attr -match '\bP\b|\bO\b') {
-    Write-Host "[WARN] C:\the origin app_Release may have cloud-sync attributes: $attr" -ForegroundColor Yellow
+    Write-Host "[WARN] $repoRoot may have cloud-sync attributes: $attr" -ForegroundColor Yellow
     $issues += "Cloud sync on project dir"
 } else {
-    Write-Host "[PASS] C:\the origin app_Release has no cloud-sync overlay attributes" -ForegroundColor Green
+    Write-Host "[PASS] $repoRoot has no cloud-sync overlay attributes" -ForegroundColor Green
 }
 
-# Check 7: JAVA_HOME is set and valid
+# Check 7 (app track only): JAVA_HOME, needed for Android/Capacitor builds
 $javaHome = [System.Environment]::GetEnvironmentVariable("JAVA_HOME", "User")
 if (-not $javaHome) {
     $javaHome = [System.Environment]::GetEnvironmentVariable("JAVA_HOME", "Machine")
 }
 if (-not $javaHome) {
-    Write-Host "[FAIL] JAVA_HOME is not set -- Android/Capacitor builds will fail" -ForegroundColor Red
-    $issues += "JAVA_HOME not set"
+    Write-Host "[WARN] JAVA_HOME not set (only matters for app-track Android builds)" -ForegroundColor Yellow
 } elseif (-not (Test-Path (Join-Path $javaHome "bin\java.exe"))) {
-    Write-Host "[FAIL] JAVA_HOME points to missing JDK: $javaHome" -ForegroundColor Red
-    $issues += "JAVA_HOME invalid path"
+    Write-Host "[WARN] JAVA_HOME points to missing JDK: $javaHome" -ForegroundColor Yellow
 } else {
     Write-Host "[PASS] JAVA_HOME -> $javaHome" -ForegroundColor Green
 }

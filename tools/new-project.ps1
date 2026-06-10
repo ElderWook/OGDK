@@ -1,5 +1,5 @@
-# OGDK — scaffold a new project from the kit
-# Usage: .\tools\new-project.ps1 -Name "MyProject" -Type App [-Dest C:\Dev]
+# OGDK - scaffold a new project from the kit
+# Usage: .\tools\new-project.ps1 -Name "MyProject" -Type App [-Dest C:\Dev] [-NoGit]
 param(
     [Parameter(Mandatory)][string]$Name,
     [Parameter(Mandatory)][ValidateSet('App','Game')][string]$Type,
@@ -25,7 +25,7 @@ Copy-Item (Join-Path $kit 'CLAUDE.template.md') (Join-Path $proj 'CLAUDE.md')
 
 # 3. Tools (PATH health is mandatory on Windows)
 New-Item -ItemType Directory -Path (Join-Path $proj 'tools') | Out-Null
-Copy-Item (Join-Path $kit 'tools\verify-path-health.ps1'),(Join-Path $kit 'tools\launch-claude-clean.ps1') (Join-Path $proj 'tools')
+Copy-Item (Join-Path $kit 'tools\verify-path-health.ps1'),(Join-Path $kit 'tools\launch-claude-clean.ps1'),(Join-Path $kit 'tools\verify-path-health.sh'),(Join-Path $kit 'tools\launch-claude-clean.sh') (Join-Path $proj 'tools')
 
 # 4. Skills for Claude Code
 New-Item -ItemType Directory -Path (Join-Path $proj '.claude') | Out-Null
@@ -38,52 +38,62 @@ if ($Type -eq 'Game') {
     Copy-Item (Join-Path $kit 'game\STACK.md') (Join-Path $proj 'docs\core\game-architecture.md')
     Copy-Item -Recurse (Join-Path $kit 'game\conventions') (Join-Path $proj 'docs\core\conventions')
 } else {
-    @"
-node_modules/
-dist/
-*.sqlite
-.env
-"@ | Set-Content (Join-Path $proj '.gitignore')
+    Set-Content -Path (Join-Path $proj '.gitignore') -Value @('node_modules/','dist/','*.sqlite','.env')
     Copy-Item (Join-Path $kit 'app\STACK.md') (Join-Path $proj 'docs\core\app-architecture.md')
 }
 
 # 5b. Project root README (pointer into the chain)
-@"
-# $Name
-
-An Oasis Games LLC project, scaffolded from [OGDK]($($kit -replace '\\','/')).
-
-**Start here:** [docs/00-START-HERE.md](./docs/00-START-HERE.md) — the session chain
-(AGENTS.md -> docs/STATUS.md -> active plan) for humans and AI alike.
-"@ | Set-Content (Join-Path $proj 'README.md')
+$kitUrl = $kit -replace '\\','/'
+$readme = @(
+    "# $Name",
+    '',
+    "An Oasis Games LLC project, scaffolded from [OGDK]($kitUrl).",
+    '',
+    '**Start here:** [docs/00-START-HERE.md](./docs/00-START-HERE.md) - the session chain',
+    '(AGENTS.md -> docs/STATUS.md -> active plan) for humans and AI alike.'
+)
+Set-Content -Path (Join-Path $proj 'README.md') -Value $readme
 
 # 6. Token replacement
 $date = Get-Date -Format 'yyyy-MM-dd'
 Get-ChildItem $proj -Recurse -Include *.md | ForEach-Object {
-    (Get-Content $_.FullName -Raw) -replace '\{\{PROJECT_NAME\}\}', $Name -replace '\{\{DATE\}\}', $date |
-        Set-Content $_.FullName -NoNewline
+    $txt = Get-Content $_.FullName -Raw
+    $txt = $txt -replace '\{\{PROJECT_NAME\}\}', $Name
+    $txt = $txt -replace '\{\{DATE\}\}', $date
+    Set-Content -Path $_.FullName -Value $txt -NoNewline
 }
 
 # 7. Git
 if (-not $NoGit) {
-    if (-not (git config user.email)) {
-        Write-Warning "git identity not set (git config --global user.name/user.email) — skipping git init. Re-run init manually."
+    $gitEmail = git config user.email
+    if (-not $gitEmail) {
+        Write-Warning 'git identity not set (git config --global user.name / user.email) - skipping git init. Init manually after setting it.'
     } else {
         Push-Location $proj
-        git init -b main | Out-Null
-        if ($Type -eq 'Game') {
-            if (Get-Command git-lfs -ErrorAction SilentlyContinue) { git lfs install | Out-Null }
-            else { Write-Warning "git-lfs not installed — install it BEFORE committing any .uasset (binary committed without LFS is permanent repo weight)." }
+        try {
+            git init -b main | Out-Null
+            if ($Type -eq 'Game') {
+                if (Get-Command git-lfs -ErrorAction SilentlyContinue) {
+                    git lfs install | Out-Null
+                } else {
+                    Write-Warning 'git-lfs not installed - install it BEFORE committing any .uasset (a binary committed without LFS is permanent repo weight).'
+                }
+            }
+            git add -A
+            git commit -m "chore: scaffold $Name from OGDK ($Type track)" | Out-Null
+        } finally {
+            Pop-Location
         }
-        git add -A
-        git commit -m "chore: scaffold $Name from OGDK ($Type track)" | Out-Null
-        Pop-Location
     }
 }
 
-Write-Host ""
-Write-Host "Done. Next steps:" -ForegroundColor Green
-Write-Host "  1. Fill in AGENTS.md (architecture, invariants, verification gate)"
-Write-Host "  2. $(if ($Type -eq 'Game') {'Create the .uproject + Source/ + Plugins/ per docs/core/game-architecture.md'} else {'Scaffold the app per docs/core/app-architecture.md'})"
-Write-Host "  3. Write your first plan in docs/plans/, update docs/STATUS.md"
-Write-Host "  4. See OGDK checklists/new-project.md for the full list"
+Write-Host ''
+Write-Host 'Done. Next steps:' -ForegroundColor Green
+Write-Host '  1. Fill in AGENTS.md (architecture, invariants, verification gate)'
+if ($Type -eq 'Game') {
+    Write-Host '  2. Create the .uproject + Source/ + Plugins/ per docs/core/game-architecture.md'
+} else {
+    Write-Host '  2. Scaffold the app per docs/core/app-architecture.md'
+}
+Write-Host '  3. Write your first plan in docs/plans/, update docs/STATUS.md'
+Write-Host '  4. See OGDK checklists/new-project.md for the full list'

@@ -44,7 +44,22 @@ session ends.
 - **Context hoarding** — one account's chat history becomes load-bearing → forbidden
   by the golden rule; the repo is the only memory.
 
-## 4. Trust calibration
+## 4. Sandboxed / synced-mount agents (Cowork, remote agents, cloud-synced folders)
+
+Agents that see the repo through a sync layer (mounted folder, cloud drive) get
+**eventually-consistent** file views: reads can be stale or truncated, and git's
+index can be silently wrong from their side.
+
+- **Never run `git` against the repo through a sync layer** — not even `git status`
+  (it can rewrite `.git/index` based on stale stat data). Git truth comes from a
+  native local shell only; the agent asks the human (or a local agent) to run git
+  commands and report output.
+- File reads/writes through the session's direct file tools are fine; shell-side
+  views of the same files may lag — when they disagree, the direct file tools win.
+- Confirmed in practice 2026-06-10: stale mount produced truncated file reads and
+  `git status` reporting false-clean / phantom deletes.
+
+## 5. Trust calibration
 
 - Treat any claim in STATUS.md as true-as-of-its-date; verify before relying on
   anything older than the last few commits (`git log --oneline -10` is cheap).
