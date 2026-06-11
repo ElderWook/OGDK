@@ -48,6 +48,17 @@ prose to a runnable command per project.
       installs + tests + builds on push) — verified 2026-06-11
 - [x] Game track: gate stays local by design (UE build-freshness proxy in
       DevSandbox's gate; CI deferred until it hurts — rule of two for infra)
+- [ ] Propagate 2026-06-11 tool additions (`new-reference-page.{ps1,sh}`,
+      `release-notes.{ps1,sh}`) to existing projects — DevKitGhost + DevSandbox
+      (+ OpenBook if it adopts the reference tier). One implementation plan, both
+      repos knocked out together; scaffolder already covers all future projects.
+- [ ] **Final kit smoke test — hostile-environment pass:** validated cross-platform
+      locally (Arch gate green 2026-06-11), but "works on my machines" isn't the bar.
+      Test as if on someone ELSE's box: fresh Windows clone, stock PowerShell 5.1,
+      no personal git config/globals, spaces-in-path user dir, OneDrive-synced
+      folder hazard, missing optional deps (lfs, node) — every .ps1 twin actually
+      executed, not just its .sh sibling. Exit: a stranger scaffolds + gates green
+      with only README instructions.
 
 **Exit criteria:** "did I break it?" is one command, same on both OSes.
 

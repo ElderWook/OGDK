@@ -31,12 +31,10 @@ page is an UPDATE entry; ship a new component → new row + new page, same commi
 
 ## Writing a page
 
-Copy `COMPONENT-TEMPLATE.md` → `<component-name>.md` (kebab-case). Fill every
-section; delete none. Keep it self-contained: a reader should succeed without opening
-any other doc. Maintain the index below.
+Scaffold with `tools/new-reference-page.{ps1,sh}` (creates the page from
+`COMPONENT-TEMPLATE.md` AND its COVERAGE.md row in one command), or copy the template
+by hand — kebab-case name, fill every section, delete none. Keep it self-contained:
+a reader should succeed without opening any other doc.
 
-## Index
-
-| Page | Component | Since |
-|------|-----------|-------|
-| _none yet_ | | |
+**There is no separate index — `COVERAGE.md` IS the index.** One manifest, machine-
+checked; a second hand-maintained list would only drift.

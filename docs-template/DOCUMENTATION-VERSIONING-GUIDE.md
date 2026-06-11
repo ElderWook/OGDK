@@ -1,111 +1,118 @@
 # Documentation Versioning & Lifecycle Guide
 
-This guide establishes the versioning protocols, naming standards, and lifecycle transitions for software documentation across projects (such as **OpenBook** and **WyeR**). It ensures that design intentions, database changes, and APIs remain synchronized with the actual codebase status.
+How documentation is versioned, named, and moved through its lifecycle in this
+project. Project-agnostic: the same rules apply to every Oasis project, app or game
+track. The session chain (00-START-HERE.md) governs *when* docs are touched; this
+guide governs *how they evolve*.
 
 ---
 
-## 1. Core Principles
+## 1. Core principles
 
-1.  **Docs as Code:** Documentation must live in the project's git repository (under `docs/`). Changes to architectural specs or API contracts must be committed in the same pull request/commit as the code changes.
-2.  **Explicit Lifecycles:** Documentation is not static. It transitions from a proposal (Implementation Plan) to an active spec, and finally is synthesized into core architecture files once completed.
-3.  **Traceability:** Every major change to the database schema (`schema.sql`), APIs, or network telemetry must reference the design document where the decision was made.
+1. **Docs as code.** Documentation lives in this repo under `docs/`. A change to an
+   architectural spec, schema, or contract is committed in the SAME commit as the
+   code change it describes.
+2. **Explicit lifecycle.** A design starts as a plan, ships as code, and is then
+   synthesized into living specs. No doc is ambiguous about which stage it is in.
+3. **Traceability.** Every significant change to a schema, protocol, or API
+   references the plan where the decision was made (path or commit hash).
 
 ---
 
-## 2. Document Types & Folder Structure
-
-All documentation is stored in the project root under `/docs/`.
+## 2. Document types & folder structure
 
 ```
 docs/
-├── ROADMAP.md               # Future high-level vision and phases
-├── DOCUMENTATION-VERSIONING-GUIDE.md # This guide
-├── core/                    # Core architectural & system specs
-│   ├── architecture.md      # System architecture, capabilities & sandbox boundaries
-│   └── sync-engine.md       # Master-client sync pipeline & parity rules
-├── presentation/            # User Interface & Platform wrappers
-│   └── mobile-ui.md         # Mobile UI design, layouts, views & offline flows
-├── adapters/                # Network adapters & connection relays
-│   └── link-relay.md        # Relay endpoints, websocket connections & security pairing
-├── workflow/                # Operational and development guides
-│   ├── GIT.md               # Git commands, releases & version bump pipelines
-│   └── UPDATER.md           # Tauri auto-updater configuration
-└── plans/                   # Feature implementation plans
-    └── archive/             # Completed/historical plans
+├── 00-START-HERE.md                    # session chain entry point
+├── STATUS.md                           # living handoff (one screen max)
+├── DOCUMENTATION-VERSIONING-GUIDE.md   # this guide
+├── LESSONS.md                          # learning-loop capture buffer
+├── core/                               # living specs: architecture, schemas, domain rules
+├── presentation/                       # living specs: UI / UX / platform wrappers
+├── adapters/                           # living specs: integrations, protocols, relays
+├── workflow/                           # operational guides: releases, parity, ops
+├── reference/                          # SDK tier: one polished page per shipped component
+│   └── COVERAGE.md                     # the manifest — THE index of reference pages
+└── plans/                              # implementation plans (immutable once Active)
+    └── archive/                        # completed plans (history)
 ```
 
-### Document Categorization:
-*   **Core / System Specs (`/docs/core/`, `/docs/presentation/`, `/docs/adapters/`):** Living documents reflecting the *current state* of the production app's architecture, UI, and communications.
-*   **Operational Guides (`/docs/workflow/`):** Actionable workflows for releases, auto-upgrades, and testing.
-*   **Implementation Plans (`/docs/plans/`):** Immutable snapshots of a feature's design *prior* to implementation. They record historical choices, options rejected, and original testing protocols. Once merged, they are archived.
+- **Living specs** (`core/`, `presentation/`, `adapters/`): reflect the CURRENT state
+  of the system. Updated in the same commit as the code they describe.
+- **Operational guides** (`workflow/`): actionable how-tos for releasing, syncing,
+  and operating the project.
+- **Reference** (`reference/`): consumer-facing pages per shipped component — see
+  `reference/README.md` and the graduation rule.
+- **Plans** (`plans/`): immutable snapshots of a design BEFORE implementation,
+  including options rejected and why.
 
 ---
 
-## 3. The Implementation Plan Lifecycle
+## 3. The plan lifecycle (one vocabulary, kit-wide)
 
-Implementation plans must follow a structured lifecycle to prevent the documentation directory from becoming cluttered with stale or contradictory drafts:
+Matches the plan-writer skill exactly — these are the only states:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Draft : Authoring Plan
-    Draft --> Proposed : Peer Review / User Approval
-    Proposed --> Approved : Scope Signed-off
-    Approved --> Implementing : Active Coding (task.md)
-    Implementing --> Verifying : Manual/Automated Tests
-    Verifying --> Merged : Code is Live in main
-    Merged --> Archive : Plan moved to archive/
-    Merged --> LivingDocs : Synthesis (Update core/architecture.md, core/sync-engine.md, etc.)
-    Archive --> [*]
-    LivingDocs --> [*]
+    [*] --> Proposed : plan written (plan-writer skill)
+    Proposed --> Active : user approves scope
+    Active --> Completed : code merged + gate green
+    Completed --> Archived : synthesis done
+    Archived --> [*]
 ```
 
-### Lifecycle States:
-
-1.  **Draft (`[feature_name]_plan.md`):** Being actively written. Contains open questions and placeholder items.
-2.  **Proposed:** Shared with the user or team for feedback. Features the `User Review Required` alert callouts.
-3.  **Approved:** Sign-off complete. Ready for implementation.
-4.  **Archive / Synthesis:** Once the code is merged and verified:
-    *   The raw implementation plan is moved to `/docs/plans/archive/` to serve as a history log.
-    *   Any new schemas, APIs, or architectural decisions are **synthesized** and merged into the appropriate living documents (e.g., `/docs/core/architecture.md`, `/docs/core/sync-engine.md`, or `/docs/adapters/link-relay.md`) so they remain the single source of truth for the codebase.
+1. **Proposed** — written via the plan-writer skill, registered in STATUS.md
+   §Active plans. May still change freely.
+2. **Active** — approved; now an immutable snapshot. Disagreement with an Active
+   plan = a NEW plan that supersedes it, never an in-place edit.
+3. **Completed** — the code shipped and the gate is green. Not yet archived.
+4. **Archived** — synthesis is done: content merged into the living specs
+   (`core/` etc.), **reference pages created/updated for every shipped component**
+   (the graduation rule — `reference/README.md`), THEN the file moves to
+   `plans/archive/`. No reference page, no archive.
 
 ---
 
-## 4. Document Naming Conventions
+## 4. Naming conventions
 
-To ensure documents are easily sortable and readable, use the following naming standards:
-
-| Document Type | Standard Format | Example |
+| Document type | Format | Example |
 | :--- | :--- | :--- |
-| **Global Guide / Roadmap** | `UPPERCASE-WITH-HYPHENS.md` | `ROADMAP.md` |
-| **Staged Plan** | `YYYY-MM-DD-kebab-case-plan.md` | `2026-06-09-plaid-link-staging-plan.md` |
-| **Walkthrough** | `YYYY-MM-DD-kebab-case-walkthrough.md` | `2026-06-09-wyer-mobile-walkthrough.md` |
-| **System Spec / Guide**| `kebab-case.md` | `architecture.md`, `sync-engine.md`, `link-relay.md` |
+| Process docs / roadmap | `UPPERCASE-WITH-HYPHENS.md` | `ROADMAP.md`, `STATUS.md` |
+| Implementation plan | `<FEATURE>-PLAN.md` (or dated: `YYYY-MM-DD-kebab-plan.md`) | `PHASE1-SIM-PLAN.md` |
+| Living spec / reference page | `kebab-case.md` | `architecture.md`, `cdma-core.md` |
 
 ---
 
-## 5. Versioning Rules for Database & API Specs
+## 5. Versioning rules for schemas & protocols
 
-Because database schemas and network telemetry evolve, special protocols apply to keeping them documented:
+Where the project has a database schema, wire protocol, or public API:
 
-### A. Database Migrations
-*   Every change to `schema.sql` must be documented in a changelog inside `/docs/core/architecture.md` (or the respective module's schema design section).
-*   Specify:
-    1.  **Migration Version** (e.g., `user_version = 4`).
-    2.  **SQL Statement DDL** changes.
-    3.  **Data upgrade actions** (e.g., converting null columns, migrating payloads).
-    4.  **Linked Plan** matching the feature.
+### A. Schema migrations
+Every schema change is documented in a changelog inside the owning spec in
+`core/`, recording: the migration/version number, the DDL or structural change,
+any data-upgrade actions, and the plan that decided it.
 
-### B. Network Protocol Versioning
-For LAN communication (e.g., between **openbook-mobile** and desktop):
-*   Payloads must include a top-level version tag: `{ "v": 1, "data": { ... } }`.
-*   If a breaking field change occurs (e.g. changing `clientId` to `client_uuid`), increment the payload version and document the backward-compatibility handler inside `/docs/adapters/link-relay.md`.
+### B. Protocol / payload versioning
+Versioned payloads carry a top-level version tag (e.g. `{ "v": 1, ... }`). A
+breaking field change increments the version and documents the
+backward-compatibility handling in the owning `adapters/` spec. Units and
+precision rules (timestamps, currency, fixed-point) are stated explicitly in the
+spec and never silently changed — precision invariants belong in AGENTS.md.
 
 ---
 
-## 6. Document Formatting & Quality Checklist
+## 6. Formatting & quality checklist
 
-Every document added to `/docs/` must meet the following validation checks:
-*   [ ] **Zero Placeholders:** No `TODO`, `TBD`, or empty code snippets.
-*   [ ] **Relative Linkages:** Cross-referenced files must use relative file markdown links (e.g., `[schema.sql](../src/.../schema.sql)`) rather than hardcoded local workspace absolute paths.
-*   [ ] **Mermaid Visuals:** Use standard Mermaid diagrams for multi-client workflows or state changes.
-*   [ ] **GitHub Alerts:** Use proper markdown blockquotes (`> [!NOTE]`, `> [!IMPORTANT]`) for critical design assumpt
+Every doc added to `docs/` meets these checks before its commit:
+
+- [ ] **Zero placeholders** — no `TODO`, `TBD`, or empty code blocks in living
+      specs or reference pages (plans in Proposed state may carry open questions).
+- [ ] **Relative links only** — cross-references use relative markdown links;
+      never absolute local paths (they break on every other machine).
+- [ ] **Diagrams as Mermaid** — multi-step flows and state machines are Mermaid
+      blocks, not external images.
+- [ ] **Callouts for the load-bearing parts** — `> [!NOTE]` / `> [!IMPORTANT]`
+      blockquotes mark critical assumptions and irreversible decisions.
+- [ ] **Self-contained** — a reader with zero session context can act on the doc
+      without opening a chat transcript. If it isn't in the repo, the next session
+      doesn't know it.

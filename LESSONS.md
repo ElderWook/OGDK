@@ -49,4 +49,16 @@ Format: see docs-template/LESSONS.md.
 **What happened:** launch-claude-clean.ps1 carried C:\Users\operator\... paths from OpenBook into every scaffolded project; would break on any other machine.
 **Root cause:** day-1 copy was never re-audited against kit rule 3 (zero-context usability); no check covers hardcoded user paths.
 **Proposed fix (open part):** consider a check-kit-docs rule flagging `C:\\Users\\` in tools/.
-**Status:** CODIFIED 2026-06-11 (script genericized, all repos); checker idea OPEN.
+**Status:** CODIFIED 2026-06-11 (script genericized, all repos); checker shipped same day — check-kit-docs check 6 (C:\Users\, /home/, /Users/ scan over tools/).
+
+## 2026-06-11 Full kit review found latent drift hazards before they fired
+**What happened:** an intensive review (modularity/stability/automation) found: a duplicate hand-maintained reference Index next to the machine-checked COVERAGE.md; DOCUMENTATION-VERSIONING-GUIDE shipping OpenBook/WyeR specifics into every project (kit rule 3 violation) and a second, conflicting plan-lifecycle vocabulary — file was also truncated mid-sentence since import; tools/README claiming macOS support the GNU-only scripts don't have; new-reference-page mangling titles containing sed metacharacters (& #); verify-file-integrity.sh silently skipping the .py check when python3 is absent; tool propagation hardcoded in two scaffolders with no path to existing projects.
+**Root cause:** rules existed as prose faster than checks existed as scripts; day-1 imports never re-audited against kit rule 3.
+**Proposed fix:** single manifest (Index deleted); guide rewritten generic with ONE lifecycle (Proposed→Active→Completed→Archived); honest Linux-only claim; sed-escape hardening; explicit skip WARN; PROPAGATE.list + propagate-tools.{ps1,sh} consumed by both scaffolders.
+**Status:** CODIFIED 2026-06-11, this commit set.
+
+## 2026-06-11 Pre-commit hook for THE GATE considered, declined
+**What happened:** review flagged that the gate is honor-system — nothing mechanically stops an ungated commit.
+**Root cause:** by design; surfaced as a conscious decision rather than a defect.
+**Proposed fix:** evaluated a core.hooksPath pre-commit hook (full or cheap-checks-only).
+**Status:** CODIFIED 2026-06-11, declined — the checkpoint protocol depends on fast `wip:` emergency commits; a hook blocks them at the worst moment. Session-end skill + muscle memory carry it. Do not re-litigate unless an ungated commit actually ships breakage.
