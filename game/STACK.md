@@ -45,8 +45,13 @@ This is the Lyra-style modular pattern: ship-tested by Epic, designed exactly fo
    timers, delegates, and events. Per-frame work must justify itself in a comment.
 7. **Networking decided day one** — single-player, listen, or dedicated. Replication
    strategy is architecture, not a retrofit.
+8. **Engine boundary documented.** Tuning data is authored in engine-neutral sources
+   and imported (never authored only inside binary assets), and every game
+   component's reference page carries an **Engine surface** section listing exactly
+   which engine APIs it touches — those sections collectively ARE the future port
+   checklist. Full policy: [conventions/engine-portability.md](./conventions/engine-portability.md).
 
-See [conventions/modules.md](./conventions/modules.md), [conventions/performance.md](./conventions/performance.md), [conventions/naming.md](./conventions/naming.md).
+See [conventions/modules.md](./conventions/modules.md), [conventions/performance.md](./conventions/performance.md), [conventions/naming.md](./conventions/naming.md), [conventions/git-lfs.md](./conventions/git-lfs.md), [conventions/engine-portability.md](./conventions/engine-portability.md).
 
 ## Verification gate (game projects)
 
