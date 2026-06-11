@@ -98,6 +98,11 @@ git remote set-url origin <url>  # fix a wrong bookmark
 Dual-boot rule: Windows and Arch each keep their OWN clone on native filesystem;
 they sync **only** through GitHub (push on one, pull on the other). Never cross-mount.
 
+Arch auth (set up 2026-06-11): SSH keys + agent (`systemctl --user` ssh-agent,
+`AddKeysToAgent yes`), GPG commit signing on, and a global
+`url."git@github.com:".insteadOf "https://github.com/"` rewrite — so the HTTPS
+clone URLs below still work, they silently go over SSH. KWallet not involved.
+
 ### Arch first-boot checklist (the Linux test)
 
 ```bash
@@ -126,6 +131,8 @@ If gate.sh passes on Arch, cross-platform parity is proven end-to-end.
 | `check-kit-docs.ps1/.sh` | (OGDK only) keeps THIS file honest: twin rule + every script documented here and in tools/README; flags ghost refs |
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |
 | `new-project.ps1/.sh` | (OGDK only) scaffold App/Game project |
+| `new-reference-page.ps1/.sh` | scaffold a reference page + its COVERAGE.md row in one shot: `-n slug -c "Title" -s "source/path"` from project root. Fill the page, commit with the component |
+| `release-notes.ps1/.sh` | draft release notes from git log (latest tag → HEAD, or pass tags). Prints markdown — redirect to file, edit, ship |
 
 Linux: `chmod +x tools/*.sh` once after fresh clone if scripts won't run.
 
