@@ -23,9 +23,13 @@ Rename-Item (Join-Path $proj 'docs\README.template.md') 'README.md'
 Copy-Item (Join-Path $kit 'AGENTS.template.md') (Join-Path $proj 'AGENTS.md')
 Copy-Item (Join-Path $kit 'CLAUDE.template.md') (Join-Path $proj 'CLAUDE.md')
 
-# 3. Tools (PATH health is mandatory on Windows)
+# 3. Tools (PATH health is mandatory on Windows; list lives in PROPAGATE.list)
 New-Item -ItemType Directory -Path (Join-Path $proj 'tools') | Out-Null
-Copy-Item (Join-Path $kit 'tools\verify-path-health.ps1'),(Join-Path $kit 'tools\launch-claude-clean.ps1'),(Join-Path $kit 'tools\verify-file-integrity.ps1'),(Join-Path $kit 'tools\check-reference-coverage.ps1'),(Join-Path $kit 'tools\new-reference-page.ps1'),(Join-Path $kit 'tools\release-notes.ps1'),(Join-Path $kit 'tools\verify-path-health.sh'),(Join-Path $kit 'tools\launch-claude-clean.sh'),(Join-Path $kit 'tools\verify-file-integrity.sh'),(Join-Path $kit 'tools\check-reference-coverage.sh'),(Join-Path $kit 'tools\new-reference-page.sh'),(Join-Path $kit 'tools\release-notes.sh') (Join-Path $proj 'tools')
+foreach ($raw in (Get-Content (Join-Path $kit 'tools\PROPAGATE.list') -Encoding UTF8)) {
+    $tname = ($raw -split '#')[0].Trim()
+    if ($tname -eq '') { continue }
+    Copy-Item (Join-Path $kit ('tools\' + $tname + '.ps1')),(Join-Path $kit ('tools\' + $tname + '.sh')) (Join-Path $proj 'tools')
+}
 Copy-Item (Join-Path $kit 'tools\gate.template.ps1') (Join-Path $proj 'tools\gate.ps1')
 Copy-Item (Join-Path $kit 'tools\gate.template.sh')  (Join-Path $proj 'tools\gate.sh')
 

@@ -132,6 +132,7 @@ If gate.sh passes on Arch, cross-platform parity is proven end-to-end.
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |
 | `new-project.ps1/.sh` | (OGDK only) scaffold App/Game project |
 | `new-reference-page.ps1/.sh` | scaffold a reference page + its COVERAGE.md row in one shot: `-n slug -c "Title" -s "source/path"` from project root. Fill the page, commit with the component |
+| `propagate-tools.ps1/.sh` | (OGDK only) update an EXISTING project's tools from the kit: `.\tools\propagate-tools.ps1 -Target C:\DevKitGhost [-Skills]`. List of what travels: `tools/PROPAGATE.list` |
 | `release-notes.ps1/.sh` | draft release notes from git log (latest tag → HEAD, or pass tags). Prints markdown — redirect to file, edit, ship |
 
 Linux: `chmod +x tools/*.sh` once after fresh clone if scripts won't run.

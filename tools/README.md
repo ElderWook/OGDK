@@ -1,7 +1,9 @@
 # tools/ — cross-platform parity policy
 
 Every script ships as a **twin pair**: `.ps1` (Windows PowerShell 5.1+) and `.sh`
-(bash, Linux/macOS). Same name, same behavior, same exit semantics.
+(bash, Linux with GNU userland). Same name, same behavior, same exit semantics.
+macOS is NOT supported: the `.sh` scripts use GNU `sed -i` and `grep -P`, which break
+on BSD tools. If a Mac ever joins the fleet, that's a deliberate porting task.
 
 | Pair | Purpose |
 |------|---------|
@@ -11,7 +13,8 @@ Every script ships as a **twin pair**: `.ps1` (Windows PowerShell 5.1+) and `.sh
 | `check-kit-docs.{ps1,sh}` | (kit only, not propagated) self-check: twin rule, user-notes.md + this README mention every script, no ghost references to deleted scripts. Run before any kit commit. |
 | `gate.{ps1,sh}` | THE GATE — one command per repo: integrity → coverage → project tests/builds, exit 0 or no commit. Kit ships `gate.template.{ps1,sh}` via the scaffolder; each project fills its §project checks. The kit's own gate runs kit-docs + integrity. |
 | `launch-claude-clean.{ps1,sh}` | run the health gate, then launch Claude Code |
-| `new-project.{ps1,sh}` | scaffold a new App/Game project from the kit |
+| `new-project.{ps1,sh}` | scaffold a new App/Game project from the kit (tool copy-list lives in `PROPAGATE.list`) |
+| `propagate-tools.{ps1,sh}` | (kit only) push kit tools (and `-Skills`/`--skills`: skills) into an EXISTING project per `PROPAGATE.list`; verifies copies byte-identical (truncated-propagation lesson). Never runs git — gate + commit in the target repo yourself. |
 | `new-reference-page.{ps1,sh}` | scaffold `docs/reference/<slug>.md` from COMPONENT-TEMPLATE.md AND append its COVERAGE.md row in one command — the graduation rule, mechanical. Run from a project root; fill the page before committing (page + manifest + component in the same commit). |
 | `release-notes.{ps1,sh}` | draft tag-to-tag release notes from `git log` to stdout (redirect to a file, then edit). Groups `type:`-prefixed subjects, lumps the rest under "Other changes" — no commit-message discipline required. Drafts only; never writes files; history stays in git. |
 
