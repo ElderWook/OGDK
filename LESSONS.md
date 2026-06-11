@@ -39,6 +39,12 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** probe python/py/python3 with --version before use; distinct env-vs-file messaging.
 **Status:** CODIFIED 2026-06-11, verify-file-integrity.ps1 + DevKitGhost gate.ps1.
 
+## 2026-06-11 Global agent config silently overrode a read-only repo instruction
+**What happened:** during the first cross-vendor parity test (Gemini, explicitly read-only), the agent ran a global agy "unified session" script (`update_unified_history.ps1`) — an instruction layer neither the prompt nor the repo could see. The chain-following itself scored perfectly.
+**Root cause:** the parity contract governed repo-level config but never declared precedence over user-global agent config (agy, ~/.gemini, IDE rules); globals are invisible context.
+**Proposed fix:** precedence clause in AI-PARITY §1 (repo wins on process; globals = preferences only; conflicts must be disclosed + logged); user audits agy globals to strip process directives or add an "AGENTS.md repos: defer" guard.
+**Status:** CODIFIED 2026-06-11, AI-PARITY.md (kit + projects); agy global cleanup is the user's follow-up.
+
 ## 2026-06-11 Kit shipped user-hardcoded launcher for months-of-future use
 **What happened:** launch-claude-clean.ps1 carried C:\Users\operator\... paths from OpenBook into every scaffolded project; would break on any other machine.
 **Root cause:** day-1 copy was never re-audited against kit rule 3 (zero-context usability); no check covers hardcoded user paths.
