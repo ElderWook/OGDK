@@ -13,6 +13,9 @@ description: Run the OGDK session-end protocol — verification gate, docs-with-
 
 1. **Integrity gate:** run `.\tools\verify-file-integrity.ps1` (Linux: `.sh`). Any FAIL
    means possible file corruption (NUL-fill, truncation) — fix before committing anything.
+1b. **Coverage gate:** run `.\tools\check-reference-coverage.ps1` (Linux: `.sh`). FAILs
+   block archiving; STALE warnings mean a touched component's reference page wasn't
+   updated — fix it now or record why in STATUS.md.
 2. **Verification gate:** run the exact commands in `AGENTS.md §Verification gate`.
    All must pass. If anything fails, fix or record it as an open hazard — never hand
    off silently broken state.

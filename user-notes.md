@@ -99,6 +99,12 @@ they sync **only** through GitHub (push on one, pull on the other). Never cross-
 |--------|------|
 | `verify-path-health.ps1/.sh` | session-start env gate (MSYS2 poison / NTFS mount / identity / LFS) |
 | `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, git fsck) — run after heavy AI writes |
+| `check-reference-coverage.ps1/.sh` | docs gate: every component tracked to a reference page; flags STALE/MISSING |
+| `check-kit-docs.ps1/.sh` | (OGDK only) keeps THIS file honest: twin rule + every script documented here and in tools/README; flags ghost refs |
+
+> **Models:** if you add/change/remove a script or a build command anywhere in the
+> stack, update this file in the same session — `check-kit-docs` catches missing
+> script rows mechanically; build commands are on the honor system, so be the honor.
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |
 | `new-project.ps1/.sh` | (OGDK only) scaffold App/Game project |
 
