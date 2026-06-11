@@ -23,12 +23,12 @@ Everything currently lives on one machine. One disk failure erases the LLC.
 The app track is proven (origin app project). The game track is sound-on-paper only.
 Use validates; docs don't.
 
-- [x] OASISCORE-PLAN → OasisCore plugin compiled + load-verified on DevKitRTX — 2026-06-11
+- [x] OASISCORE-PLAN → OasisCore plugin compiled + load-verified on the engine fork — 2026-06-11
 - [x] GF_Sample GameFeature with subsystem smoke test (log-line gate passed) — 2026-06-11
       (formal automation spec arrives with the first real gameplay system)
 - [ ] Milestone scene + first perf baseline (blocked on first real content — unblocks
       when game design starts)
-- [ ] Pin the DevKitRTX branch/commit in AGENTS.md §Engine (user knows the answer; 2-min task)
+- [ ] Pin the engine-fork branch/commit in the game repo's AGENTS.md §Engine (user knows the answer; 2-min task)
 - [x] Friction flowed back: reference pages (oasiscore-plugin, gamefeature-pattern)
       capture the pattern learnings — 2026-06-11
 
@@ -97,18 +97,22 @@ project IP never in).
       generic operator crib; personal repo map/machine setup/project commands live
       in gitignored `user-notes.local.md`; GETTING-STARTED instructs every operator
       to create their own
-- [ ] **Mechanical guard — check-kit-docs check 8:** scan tracked kit files
-      against a `PRIVATE-MARKERS.list` (gitignored, per-owner: usernames, emails,
-      project codenames, home paths). FAIL on hit. Twin rule applies.
-- [ ] **Inbound protection — `BOUNDARY.md` policy:** what may enter the kit
-      (generic process, genericized lessons, anonymized findings) vs never
-      (project code, project names without consent, anything from a
-      collaborator's repos; kit-level LESSONS must be scrubbed of project
-      specifics — project LESSONS stay in project repos). Referenced from
-      GETTING-STARTED Stage 5 + kit AGENTS rules.
-- [ ] **History audit:** private context already in git history (kit ROADMAP
-      revisions etc.). Decide: acceptable for trusted private collab now +
-      history rewrite ONLY if/when going public (filter-repo; ask-first list).
+- [x] **Mechanical guard — check-kit-docs check 8** — DONE 2026-06-12: scans
+      tracked kit files against gitignored `tools/PRIVATE-MARKERS.list` (one
+      marker/line, # comments); FAIL on hit, reports marker INDEX only (output
+      stays shareable); WARN when list absent. Twin rule applied. Maiden scan
+      caught + fixed three real leaks (tool comments, engine-fork name).
+- [x] **Inbound protection — `BOUNDARY.md`** — DONE 2026-06-12: inbound
+      allowed (generic process, scrubbed lessons, anonymized repo-study
+      findings) vs never (project code, project names without consent,
+      collaborator IP, personal data); referenced from GETTING-STARTED Stage 5
+      + kit AGENTS rule 8 + tools/README + user-notes.
+- [x] **History audit — DECIDED 2026-06-12** (recorded in BOUNDARY.md):
+      pre-sweep history accepted while the kit stays private with trusted
+      collaborators; `git filter-repo` against an ask-first list REQUIRED
+      before any flip to public — the BOUNDARY.md history note is the tripwire.
+
+**WS1 COMPLETE — collaborator invite unblocked.**
 
 ### WS2 — Feature-driven app skeletons (open the track beyond the proven combo)
 

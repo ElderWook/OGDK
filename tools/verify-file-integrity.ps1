@@ -76,7 +76,7 @@ if ($pyFiles.Count -eq 0) {
 }
 
 # Check 3b: PowerShell scripts parse (catches mid-file truncation of .ps1 - the
-# 2026-06-12 DevKitGhost verify-path-health lesson: a truncated .ps1 sat committed
+# 2026-06-12 hardware-project verify-path-health lesson: a truncated .ps1 sat committed
 # and undetected because nothing parsed project scripts).
 # Platform difference (documented): the .sh twin validates *.sh via bash -n instead;
 # each platform parses what it can execute.

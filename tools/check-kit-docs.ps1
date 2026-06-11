@@ -1,7 +1,8 @@
 # Kit docs self-check (OGDK only - not propagated to projects).
 # Enforces: twin rule; user-notes.md + tools/README.md mention every tools script;
 # no ghost references; .ps1 hygiene (ASCII, no here-strings); no hardcoded user
-# paths in tools/; relative links in non-template .md resolve. Twin: check-kit-docs.sh.
+# paths in tools/; relative links in non-template .md resolve; no private markers
+# (tools/PRIVATE-MARKERS.list, gitignored, per-owner). Twin: check-kit-docs.sh.
 $ErrorActionPreference = 'Continue'
 $kit = Split-Path -Parent $PSScriptRoot
 Set-Location $kit
@@ -116,6 +117,43 @@ foreach ($f in $mdFiles) {
     }
 }
 if ($linkOk) { Write-Host '[PASS] all relative links in non-template .md files resolve' -ForegroundColor Green }
+
+# 8. private markers (tools/PRIVATE-MARKERS.list - gitignored, per-owner).
+#    Reports marker INDEX only, never the marker text, so output stays shareable.
+$markFile = 'tools/PRIVATE-MARKERS.list'
+if (Test-Path $markFile) {
+    $markers = @()
+    foreach ($line in (Get-Content $markFile -Encoding UTF8)) {
+        $t = $line.Trim()
+        if ($t -ne '' -and -not $t.StartsWith('#')) { $markers += $t }
+    }
+    $markOk = $true
+    if ($markers.Count -gt 0) {
+        $scanFiles = Get-ChildItem -Recurse -File | Where-Object {
+            $_.FullName -notmatch '\\\.git\\' -and
+            $_.Name -ne 'user-notes.local.md' -and
+            $_.Name -ne 'PRIVATE-MARKERS.list' -and
+            $_.Length -lt 1048576
+        }
+        foreach ($f in $scanFiles) {
+            $text = Get-Content $f.FullName -Raw -Encoding UTF8
+            if ($null -eq $text) { continue }
+            $lower = $text.ToLower()
+            $mIdx = 0
+            foreach ($m in $markers) {
+                $mIdx++
+                if ($lower.Contains($m.ToLower())) {
+                    $rel = $f.FullName.Substring($kit.Length + 1)
+                    Write-Host "[FAIL] private marker #$mIdx found in: $rel (text withheld - marker #$mIdx in your PRIVATE-MARKERS.list)" -ForegroundColor Red
+                    $issues++; $markOk = $false
+                }
+            }
+        }
+    }
+    if ($markOk) { Write-Host "[PASS] no private markers in scanned files ($($markers.Count) marker(s) checked)" -ForegroundColor Green }
+} else {
+    Write-Host '[WARN] tools/PRIVATE-MARKERS.list not found - private-marker scan skipped (seed yours: see tools/README.md)' -ForegroundColor Yellow
+}
 
 Write-Host '--------------------------------------' -ForegroundColor Cyan
 if ($issues -eq 0) {

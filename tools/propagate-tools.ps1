@@ -2,8 +2,8 @@
 # (Kit only - new projects get these via new-project.) Windows twin of propagate-tools.sh.
 #
 # Usage:
-#   .\tools\propagate-tools.ps1 -Target C:\DevKitGhost            # tools from PROPAGATE.list
-#   .\tools\propagate-tools.ps1 -Target C:\DevKitGhost -Skills    # also sync .claude\skills
+#   .\tools\propagate-tools.ps1 -Target C:\MyProject            # tools from PROPAGATE.list
+#   .\tools\propagate-tools.ps1 -Target C:\MyProject -Skills    # also sync .claude\skills
 #
 # Copies both twins per PROPAGATE.list entry, verifies each copy is non-empty and
 # byte-identical (the 2026-06-11 truncated-propagation lesson).
