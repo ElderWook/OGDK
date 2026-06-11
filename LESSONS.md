@@ -57,6 +57,12 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** single manifest (Index deleted); guide rewritten generic with ONE lifecycle (Proposed→Active→Completed→Archived); honest Linux-only claim; sed-escape hardening; explicit skip WARN; PROPAGATE.list + propagate-tools.{ps1,sh} consumed by both scaffolders.
 **Status:** CODIFIED 2026-06-11, this commit set.
 
+## 2026-06-12 Truncated .ps1 sat committed and undetected for a day
+**What happened:** DevKitGhost's verify-path-health.ps1 was truncated mid-string at its final line (corruption-era propagation, pre propagate-tools) and lived in git unnoticed until the user ran it after the Linux trip — first parse error on invocation.
+**Root cause:** detection gap — integrity checks compiled .py but never parsed .ps1/.sh; the gate doesn't invoke path-health; propagation predated byte-verification.
+**Proposed fix:** verify-file-integrity gains script-syntax checks (PowerShell parser for *.ps1 on Windows twin; `bash -n` for *.sh on Linux twin — documented platform difference); repair delivered via propagate-tools (its first real mission).
+**Status:** CODIFIED 2026-06-12, verify-file-integrity.{ps1,sh} + propagate run.
+
 ## 2026-06-11 Pre-commit hook for THE GATE considered, declined
 **What happened:** review flagged that the gate is honor-system — nothing mechanically stops an ungated commit.
 **Root cause:** by design; surfaced as a conscious decision rather than a defect.
