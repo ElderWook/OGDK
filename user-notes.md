@@ -13,8 +13,11 @@
 ## 1. The pipeline (every dev session)
 
 ```
-START:  .\tools\verify-path-health.ps1        # must say ALL CHECKS PASSED
+START:  git pull                              # dual-boot: the other OS may have pushed
+        .\tools\verify-path-health.ps1        # must say ALL CHECKS PASSED (Linux: .sh)
         read: AGENTS.md → docs\STATUS.md → active plan
+        (AI session? open with: "run session-start" or
+         "read AGENTS.md, then docs/00-START-HERE.md, follow the chain")
 WORK:   plans before code · docs change in the same commit as code
 END:    .\tools\gate.ps1                      # THE GATE — exit 0 or no commit
         update docs\STATUS.md  →  git add -A → commit → push
