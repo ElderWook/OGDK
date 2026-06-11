@@ -65,7 +65,46 @@ docs/00-START-HERE.md → AGENTS.md → docs/STATUS.md → active plan → role 
 
 ## Framework maps
 
-### App track — shared-core architecture
+### App track — composable feature-driven skeletons
+
+Answer the feature questions in [app/APP-ARCHITECT.md](./app/APP-ARCHITECT.md);
+each YES adds a green module, each NO deletes one. Blue is law in every app.
+Skeletons are generated per [docs-template/CODE-CONVENTIONS.md](./docs-template/CODE-CONVENTIONS.md);
+the annotated quality bar lives at [app/exemplar/](./app/exemplar/README.md).
+
+```mermaid
+flowchart TD
+    subgraph ALWAYS["always present (law)"]
+        CORE["core/<br/>pure domain logic · exact math<br/>zero dependencies"]
+        APP["app/ composition root<br/>wiring ONLY — one per surface"]
+    end
+
+    subgraph OPT["optional — one per YES in the feature questions"]
+        STORE["store/<br/>state survives restarts"]
+        SYNC["sync/<br/>multi-device + authority model"]
+        BRIDGE["bridge/<br/>2+ platform surfaces"]
+        RENDER["render/<br/>documents & exports"]
+        JOBS["jobs/<br/>background work"]
+        IDENT["identity/<br/>accounts"]
+        ADAPT["adapters/&lt;svc&gt;/<br/>per external service"]
+        API["api/<br/>versioned surface"]
+    end
+
+    APP --> STORE & SYNC & BRIDGE & RENDER & JOBS & IDENT & ADAPT & API
+    STORE & SYNC & BRIDGE & RENDER & JOBS & IDENT & ADAPT & API --> CORE
+    APP --> CORE
+
+    classDef law fill:#1f6feb,color:#fff,stroke:none
+    classDef opt fill:#238636,color:#fff,stroke:none
+    class CORE,APP law
+    class STORE,SYNC,BRIDGE,RENDER,JOBS,IDENT,ADAPT,API opt
+```
+
+**The one rule:** every arrow points toward `core/`, never away — the same one-way
+dependency law the game track lives by. The proven local-first multi-surface combo
+below is Preset A of this map, grown to production:
+
+### App track — the proven Preset A (shared-core architecture)
 
 ```mermaid
 flowchart TD
