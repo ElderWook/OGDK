@@ -266,6 +266,12 @@ machine, **you are the most valuable test the kit has ever had.**
   few lines of its output into the PR description).
 - Trying to break things politely is **encouraged**. The kit grows by being
   survived.
+- **Read [BOUNDARY.md](./BOUNDARY.md) before your first PR.** Short version:
+  generic process and scrubbed lessons may enter the kit; YOUR project's code,
+  names, and IP never do (that protection runs in your favor — nothing of yours
+  leaks here). Seed your own gitignored `tools/PRIVATE-MARKERS.list` (format in
+  BOUNDARY.md) so the gate mechanically blocks your private markers from ever
+  being committed.
 
 ---
 

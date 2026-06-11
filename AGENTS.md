@@ -29,6 +29,11 @@ Run `.\tools\verify-path-health.ps1` before any file writes.
 7. **Improvements flow back.** When a project improves a script or skill, the fix is
    copied back here in its own commit. Templates, by contrast, are starting points —
    projects may diverge from them freely and those divergences do NOT flow back.
+8. **The boundary holds in both directions.** What may enter the kit (generic
+   process, scrubbed lessons) and what never does (project code, project names,
+   collaborator IP, personal data) is defined in [BOUNDARY.md](./BOUNDARY.md).
+   Mechanical backstop: `check-kit-docs` check 8 scans tracked files against each
+   owner's gitignored `tools/PRIVATE-MARKERS.list`.
 
 ## Verification gate (before every commit)
 

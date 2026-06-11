@@ -65,8 +65,8 @@ machinery. Rules:
   happen. Declined on the same grounds as the pre-commit hook — recorded here so
   it stays declined. (If a port becomes CONCRETE, an interface layer can be a
   port-phase tactic; it is never a day-one architecture.)
-- **No lowest-common-denominator features.** Use the engine fully (DevKitRTX lighting,
-  GAS, GameFeatures) — the portability budget is spent on data discipline and
+- **No lowest-common-denominator features.** Use the engine fully (vendor lighting
+  branches, GAS, GameFeatures) — the portability budget is spent on data discipline and
   surface documentation, not on avoiding engine strengths.
 
 ## 6. Checklist (per feature, enforced at graduation)

@@ -8,6 +8,7 @@
 #   5. .ps1 hygiene: ASCII only, no here-strings (PS 5.1 + LF parse-bomb lesson)
 #   6. no hardcoded user paths in tools/ (the launch-claude-clean lesson)
 #   7. relative links in non-template .md files resolve (AGENTS gate, now mechanical)
+#   8. no private markers (tools/PRIVATE-MARKERS.list, gitignored, per-owner)
 # Build commands cannot be checked mechanically - process rule in AGENTS.md covers them.
 # Twin: check-kit-docs.ps1.
 set -u
@@ -101,6 +102,30 @@ while IFS= read -r f; do
 done < <(find . -name '*.md' -type f \
             ! -path './.git/*' ! -path './docs-template/*' ! -name '*template*' | sed 's|^\./||')
 [ "$link_ok" = 1 ] && pass "all relative links in non-template .md files resolve"
+
+# 8. private markers (tools/PRIVATE-MARKERS.list - gitignored, per-owner).
+#    Reports marker INDEX only, never the marker text, so output stays shareable.
+markfile="tools/PRIVATE-MARKERS.list"
+if [ -f "$markfile" ]; then
+    mark_ok=1
+    midx=0
+    while IFS= read -r m || [ -n "$m" ]; do
+        m="$(printf '%s' "$m" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+        case "$m" in ''|'#'*) continue ;; esac
+        midx=$((midx+1))
+        hits="$(grep -rliIF --exclude-dir=.git \
+                  --exclude='user-notes.local.md' --exclude='PRIVATE-MARKERS.list' \
+                  -- "$m" . 2>/dev/null || true)"
+        if [ -n "$hits" ]; then
+            fail "private marker #$midx found in: (text withheld - marker #$midx in your PRIVATE-MARKERS.list)"
+            printf '%s\n' "$hits" | sed -e 's|^\./||' -e 's/^/  /'
+            mark_ok=0
+        fi
+    done < "$markfile"
+    [ "$mark_ok" = 1 ] && pass "no private markers in scanned files ($midx marker(s) checked)"
+else
+    warn "tools/PRIVATE-MARKERS.list not found - private-marker scan skipped (seed yours: see tools/README.md)"
+fi
 
 echo "--------------------------------------"
 if [ "$issues" -eq 0 ]; then
