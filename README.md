@@ -4,13 +4,14 @@
 or game is an art workload, not a stack-building workload.
 
 > ## 🆕 New here? Start with **[GETTING-STARTED.md](./GETTING-STARTED.md)**
-> The 15-minute onboarding: clone → run the environment self-test
-> (`.\tools\gate.ps1` / `./tools/gate.sh` must print **GATE PASSED**) → run the
-> **agent conflict check** before letting YOUR AI tools loose here (your global
-> agent configs can silently fight this repo's rules — the guide shows you how
-> to detect and defuse that) → first session + how to contribute.
-> Collaborators: PRs welcome, especially [LESSONS.md](./LESSONS.md) entries —
-> breaking this kit politely is how it gets stronger.
+> The complete ~20-minute walkthrough, **assuming zero experience** — it starts
+> at "press the Windows key and type powershell" and ends with you contributing.
+> Stages: install git → clone → run the self-test (`.\tools\gate.ps1` must print
+> **GATE PASSED**) → the **agent conflict check** before letting YOUR AI tools
+> loose here (your global agent configs can silently fight this repo's rules —
+> the guide shows you how to detect and defuse that) → first session → PRs.
+> Collaborators: contributions welcome, especially [LESSONS.md](./LESSONS.md)
+> entries — breaking this kit politely is how it gets stronger.
 
 Two tracks on one shared process:
 

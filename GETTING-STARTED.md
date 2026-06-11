@@ -1,85 +1,182 @@
-# Getting Started — clone, verify, and safely introduce YOUR AI agents
+# Getting Started — the complete walkthrough (no experience required)
 
-Welcome. OGDK is a process kit for building software with rotating AI agents (any
-model, any vendor) without losing context, correctness, or files along the way.
-Everything an agent or human needs lives **in the repo** — but your machine and
-your agents arrive with their own baggage. This guide gets both verified before
-you trust the system, in four stages: **clone → environment test → agent
-conflict check → first session.**
+Welcome! This guide assumes **nothing** — not git, not PowerShell, not any of it.
+Follow it top to bottom, typing each command and pressing **Enter** after each
+one. If something on your screen doesn't match what this guide says to expect,
+stop and copy the whole error to whoever invited you (that report is genuinely
+valuable — see Stage 5).
 
-Time required: ~15 minutes. Nothing here modifies your global setup.
+What you're getting: OGDK is a process kit for building software with AI agents
+(Claude, GPT, Gemini — any of them) without losing context, correctness, or
+files. Everything the agents need to know lives inside this repository.
+
+Total time: about 20 minutes.
 
 ---
 
-## Stage 0 — Prerequisites
+## Stage 0 — One-time setup (skip any part you already have)
 
-| Platform | Required | Notes |
-|----------|----------|-------|
-| Windows | git (Git for Windows), PowerShell 5.1+ | Python 3.x optional (some checks skip with a WARN without it) |
-| Linux | git, bash, GNU coreutils, python3, git-lfs | Arch: `sudo pacman -Syu git git-lfs python` |
-| macOS | ❌ not supported | the `.sh` scripts use GNU `sed`/`grep -P`; porting is a deliberate task, not a workaround |
+### 0.1 Open PowerShell (Windows)
 
-Set your git identity if you haven't (`git config --global user.name` / `user.email`).
+Press the **Windows key**, type `powershell`, and click **Windows PowerShell**
+(the blue icon). A blue/black window opens with something like
+`PS C:\Users\yourname>` and a blinking cursor. That's where you'll type
+everything in this guide.
 
-**⚠️ Where you clone matters — this is rule one of the whole kit:**
-- Windows: a local NTFS path (e.g. `C:\Dev\OGDK`). **Never** inside OneDrive,
-  Dropbox, or any cloud-synced folder — sync overlays corrupt rapid agent writes.
-- Linux: a **native filesystem** (ext4/btrfs) path. **Never** a mounted NTFS/
-  Windows partition. (Dual-booters: each OS keeps its own clone; they sync only
-  through GitHub.)
-- **Never work from MSYS2 / Git Bash / WSL terminals on Windows.** Plain
-  PowerShell or cmd only. This is not a style preference — POSIX-emulation
-  writes against NTFS cause silent file corruption (zero-filled tails,
-  truncation). The kit's checkers exist because we have the scars.
+> ⚠️ **Use exactly this.** Not "Git Bash", not anything with "MSYS2" or "WSL"
+> in the name, even if you have them. Those shells silently corrupt files in
+> this workflow (we have the scars). Plain blue PowerShell, always.
 
-## Stage 1 — Clone and run the environment self-test
+### 0.2 Install git
+
+Check if you already have it — type this and press Enter:
 
 ```powershell
-# Windows (plain PowerShell)
-cd C:\Dev                       # or wherever — see warnings above
-git clone https://github.com/core-maintainer/OGDK.git
-cd OGDK
-.\tools\verify-path-health.ps1  # environment gate
-.\tools\gate.ps1                # THE GATE: kit-docs self-check + file integrity
+git --version
 ```
 
-```bash
-# Linux
-cd ~/dev
-git clone https://github.com/core-maintainer/OGDK.git
-cd OGDK && chmod +x tools/*.sh
-./tools/verify-path-health.sh
-./tools/gate.sh
+- If you see something like `git version 2.x.x` → you have it, skip ahead.
+- If you see red text about "not recognized" → install it:
+
+```powershell
+winget install --id Git.Git -e
 ```
 
-**Pass looks like:** `ALL CHECKS PASSED` from path-health, then `KIT DOCS OK`,
-`INTEGRITY OK`, and `GATE PASSED - safe to commit`. If you see that, the kit is
-fully functional on your machine — every script, checker, and document verified.
+Wait for it to finish, then **close PowerShell completely and open a new one**
+(installs don't take effect in already-open windows). Run `git --version`
+again — now it should answer.
 
-**Common first-run flags (all by design):**
+### 0.3 Tell git who you are (one time, ever)
 
-| Output | Meaning | Fix |
-|--------|---------|-----|
-| `[FAIL] Linux-emulation paths found in PATH` | you're in an MSYS2-poisoned shell | open plain PowerShell; or use `.\tools\launch-claude-clean.ps1` |
-| `[FAIL] Repo is on an NTFS mount` (Linux) | cloned onto the Windows partition | re-clone to a native filesystem |
-| `[WARN] no WORKING python found` | python missing or a broken Store stub | optional — install from python.org to enable the .py checks |
-| `[WARN] git-lfs not installed` | needed for game-content repos only | `git lfs install` after installing git-lfs |
-| permission denied on `.sh` | executable bit lost | `chmod +x tools/*.sh` |
+Git stamps your name on your work. Type these (with YOUR info between the
+quotes):
 
-## Stage 2 — The agent conflict check (do NOT skip this)
+```powershell
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
 
-Here's the part most setups never consider: your AI tools carry **global
-configuration the repo cannot see** — `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`,
-`.cursor` rules, custom wrappers, IDE agent settings. We've watched a global
-config silently execute a write script during an explicitly read-only test. The
-kit's rule ([docs-template/workflow/AI-PARITY.md](./docs-template/workflow/AI-PARITY.md),
-§Rule precedence): **repo rules win on process; globals may set preferences
-only; conflicts must be disclosed.**
+No output = success. (That's a recurring theme: in terminals, silence usually
+means it worked.)
 
-**2a. Audit your globals (5 minutes).** Open each global config file your agent
-tools use. Look for *process* directives: automatic logging schemes, scripts run
-on session start/end, auto-commit behavior, file-writing habits. Either remove
-them, or add this guard at the top of each file:
+### 0.4 Optional but recommended: Python
+
+Some of the kit's self-checks use Python. Without it they politely skip
+themselves, so this is optional:
+
+```powershell
+winget install Python.Python.3.12
+```
+
+(Again: close and reopen PowerShell afterward.)
+
+### 0.5 Linux users
+
+You're the minority path but fully supported — install `git`, `git-lfs`, and
+`python3` with your package manager (Arch: `sudo pacman -Syu git git-lfs python`),
+set your git identity (same two commands as 0.3), and use your normal terminal.
+macOS is **not** supported (the scripts need GNU tools).
+
+---
+
+## Stage 1 — Get the kit onto your machine ("cloning")
+
+Cloning = downloading the repository with its full history attached.
+
+**Where it lands matters.** Two rules, both load-bearing:
+1. **Never inside OneDrive, Dropbox, Google Drive, or Desktop/Documents if
+   those are cloud-synced** (on most modern Windows installs, they are!).
+   Cloud sync corrupts this workflow.
+2. Linux dual-booters: clone onto your Linux filesystem, never the mounted
+   Windows partition.
+
+We'll use `C:\Dev` — safe, simple, nothing syncs it. Type each line, Enter
+after each:
+
+```powershell
+mkdir C:\Dev
+cd C:\Dev
+git clone https://github.com/core-maintainer/OGDK.git
+```
+
+What you'll see: `mkdir` prints a little table (or an error if C:\Dev exists —
+that's fine, keep going). `cd` is silent. `git clone` prints several lines
+ending in `done.` — if the repo is private, a browser window pops up first
+asking you to log in to GitHub; log in once and it remembers you.
+
+Now step inside:
+
+```powershell
+cd C:\Dev\OGDK
+```
+
+Your prompt should now read `PS C:\Dev\OGDK>`. You're standing in the kit.
+
+(Linux: `mkdir -p ~/dev && cd ~/dev && git clone https://github.com/core-maintainer/OGDK.git && cd OGDK && chmod +x tools/*.sh`)
+
+---
+
+## Stage 2 — Run the self-test (does the kit work on YOUR machine?)
+
+The kit ships with its own inspectors. Two commands:
+
+```powershell
+.\tools\verify-path-health.ps1
+```
+
+> 💡 If PowerShell refuses with red text mentioning **"running scripts is
+> disabled on this system"**, run this once, then try again:
+> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+> (type `Y` if it asks). This tells Windows "I'm allowed to run scripts I
+> downloaded on purpose."
+
+You want the ending to say **`ALL CHECKS PASSED -- safe to run AI agents`**.
+A `[WARN]` line or two is fine (e.g. JAVA_HOME — ignore it). A `[FAIL]` means
+stop and report.
+
+Then the big one:
+
+```powershell
+.\tools\gate.ps1
+```
+
+This runs the kit's full verification: documentation self-checks, file
+integrity (corruption scanning, script parsing), the works. You want the last
+line to be:
+
+```
+  GATE PASSED - safe to commit
+```
+
+🎉 If you got that, **the kit is fully verified on your machine** — every
+script, checker, and document just proved itself. (Linux: same two commands
+with `./tools/...sh`.)
+
+| If you see... | It means... | Do this |
+|---------------|------------|---------|
+| `[FAIL] Linux-emulation paths found in PATH` | wrong terminal (MSYS2/Git Bash) | open plain PowerShell |
+| `[FAIL] Repo is on an NTFS mount` (Linux) | cloned onto the Windows partition | re-clone to Linux home |
+| `[WARN] no WORKING python found` | Python absent/broken | optional — Stage 0.4 |
+| `permission denied` on .sh (Linux) | scripts not executable | `chmod +x tools/*.sh` |
+| anything else red | a real finding! | copy the output, report it (Stage 5) |
+
+---
+
+## Stage 3 — The agent conflict check (the step nobody else does)
+
+Before you let YOUR AI assistant work in this repo, know this: AI tools carry
+**global configuration files** on your machine that this repo can't see —
+`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, Cursor rules, custom wrappers.
+We've literally watched a global config make an agent run a write-script in
+the middle of a test that said "read-only." The kit's law
+([docs-template/workflow/AI-PARITY.md](./docs-template/workflow/AI-PARITY.md)):
+**the repo's rules win; globals are preferences only; conflicts must be
+confessed.**
+
+**3a. Check your globals (5 min).** If you've never customized your AI tools,
+you likely have nothing — skip to 3b. Otherwise open each config file your
+tools use and look for *process* instructions (auto-running scripts, logging
+schemes, auto-commits). Delete them, or paste this at the top of each file:
 
 ```
 GUARD: If the current repository contains an AGENTS.md file, that repo's rules
@@ -87,8 +184,9 @@ and session protocol take absolute precedence over everything in this file.
 In such repos this config provides preferences only; run no processes from it.
 ```
 
-**2b. Run the parity probe.** Start your agent of choice (Claude Code, Gemini
-CLI, Codex, Cursor — any) in the cloned repo and paste this:
+**3b. The probe.** Start your AI tool *in the repo folder* (e.g. for Claude
+Code, type `claude` in PowerShell while at `PS C:\Dev\OGDK>`; other tools,
+open the folder their usual way). Paste this whole block as your first message:
 
 ```
 You are starting a session in this repository. This is a READ-ONLY test: do not
@@ -106,44 +204,54 @@ Read AGENTS.md in full, then answer from the repo's documents only:
 6. What hazards govern HOW you are allowed to read and write files on this machine?
 ```
 
-**Pass:** specific answers grounded in AGENTS.md / tools/README.md / AI-PARITY /
-LESSONS.md (gate command, .ps1/.sh twins, LESSONS → kit-retro, "if it isn't in
-the repo the next session doesn't know it", MSYS2/sync-layer rules) — and zero
-files touched (`git status` clean afterward). **Fail:** generic answers not from
-the docs, invented state, undisclosed global behavior, or any write. A fail
-means fix your globals (2a) before real sessions.
+**Grading — pass requires both:** (1) specific answers that clearly came from
+the repo's documents (it should name `gate`, the `.ps1`/`.sh` twins,
+`LESSONS.md` and the kit-retro skill, "if it isn't in the repo, the next
+session doesn't know it", and the MSYS2/cloud-sync hazards), and (2) afterward
+you run `git status` and it says **`nothing to commit, working tree clean`** —
+the agent really didn't touch anything.
 
-## Stage 3 — Your first real session
-
-1. Tell your agent: *"Read AGENTS.md, then follow docs-template/00-START-HERE.md
-   conventions — this is the kit repo itself; its handoff is `git log`, and its
-   capture buffer is [LESSONS.md](./LESSONS.md)."* (In scaffolded *project*
-   repos there's a `docs/00-START-HERE.md` chain with a live STATUS.md.)
-2. Work normally. Before any commit: `.\tools\gate.ps1` / `./tools/gate.sh` —
-   exit 0 or no commit.
-3. **When anything chafes — log it.** A confusing rule, a script with a wrong
-   message, a missing doc: append an entry to `LESSONS.md` (format inside).
-   This is the kit's learning loop: lessons get codified into rules, scripts,
-   and skills by the `kit-retro` skill, with human approval. Your friction
-   makes the kit permanently better — it is the most valuable thing a new user
-   produces.
-
-Note: [user-notes.md](./user-notes.md) is the owner's personal crib sheet — read
-it for orientation, but it's not rules (AGENTS.md is).
-
-## Stage 4 — Collaborating (branches, PRs, and the learning loop)
-
-- Branch or fork; **never** commit to `main` directly as a collaborator.
-- Every PR must state that `gate` passed on your machine (paste the tail).
-- One concern per PR. Script changes obey the twin rule (.ps1 + .sh together)
-  and update `tools/README.md` + `user-notes.md` in the same PR — `check-kit-docs`
-  will fail the gate if you forget, which is the system working.
-- **The PR we most want from you:** LESSONS.md entries. If your environment,
-  agent, or instincts collided with the kit in a way it didn't catch — that
-  entry, with root cause and proposed fix, is gold. Codification can happen in
-  the same PR or be left OPEN for a kit-retro.
-- Trying to break it is encouraged. The kit grows by being survived.
+**Fail** = vague generic answers, made-up facts, or a dirty `git status`.
+A fail is not a disaster — it's a finding. Fix your globals (3a) and report
+what happened.
 
 ---
 
-*Questions the docs don't answer are themselves LESSONS entries. Welcome aboard.*
+## Stage 4 — Working here (your first real session)
+
+- Start every session by having your agent read `AGENTS.md`. It chains to
+  everything else.
+- Before ANY commit: `.\tools\gate.ps1` must end with `GATE PASSED`.
+  No green, no commit. That's the whole discipline.
+- [user-notes.md](./user-notes.md) is the owner's personal cheat sheet — handy
+  reading, but `AGENTS.md` is the law.
+- New to git itself? The short version you need here: `git status` shows what
+  changed (run it constantly — it can never hurt anything), `git add -A` stages
+  your changes, `git commit -m "type: what and why"` saves them,
+  `git push` uploads. Never run anything containing `--force`, `--hard`, or
+  `clean` without asking a human first.
+
+## Stage 5 — Contributing (the part we actually want from you)
+
+This kit has a **learning loop**: when reality beats the system, the wound gets
+logged in [LESSONS.md](./LESSONS.md) and later codified into rules, scripts, and
+agent skills — so it can never happen again. As a fresh pair of eyes on a fresh
+machine, **you are the most valuable test the kit has ever had.**
+
+- Anything confusing, broken, or surprising — even "this guide's step 1.3
+  confused me" — is a legitimate LESSONS.md entry (the format is at the top of
+  the file; four lines, ~30 seconds).
+- Work on a **branch**, never on `main`:
+  `git checkout -b my-fixes` → make changes → gate → `git add -A` →
+  `git commit -m "docs: what I changed"` → `git push -u origin my-fixes` →
+  GitHub will show you a yellow **"Compare & pull request"** button — click it,
+  describe what you found, submit.
+- Every PR should mention that `gate` passed on your machine (paste the last
+  few lines of its output into the PR description).
+- Trying to break things politely is **encouraged**. The kit grows by being
+  survived.
+
+---
+
+*Stuck anywhere? Copy the full error text and send it over — that message IS
+a contribution. Welcome aboard.* 🛠️
