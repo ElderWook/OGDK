@@ -11,14 +11,11 @@ description: Run the OGDK session-end protocol — verification gate, docs-with-
 > `git commit -m "wip: <plan> — <state>"`, push. Everything else can wait; stranded
 > context cannot be recovered.
 
-1. **Integrity gate:** run `.\tools\verify-file-integrity.ps1` (Linux: `.sh`). Any FAIL
-   means possible file corruption (NUL-fill, truncation) — fix before committing anything.
-1b. **Coverage gate:** run `.\tools\check-reference-coverage.ps1` (Linux: `.sh`). FAILs
-   block archiving; STALE warnings mean a touched component's reference page wasn't
-   updated — fix it now or record why in STATUS.md.
-2. **Verification gate:** run the exact commands in `AGENTS.md §Verification gate`.
-   All must pass. If anything fails, fix or record it as an open hazard — never hand
-   off silently broken state.
+1. **THE GATE:** run `.\tools\gate.ps1` (Linux: `./tools/gate.sh`). One command — it
+   chains file integrity, reference coverage, and the project's tests/builds. Exit 0
+   or no commit. STALE coverage warnings mean a touched component's reference page
+   wasn't updated — fix now or record why in STATUS.md. If anything fails, fix or
+   record it as an open hazard — never hand off silently broken state.
 2. **Docs-with-code check:** for every code change this session, confirm the relevant
    doc (`docs/core|presentation|adapters|workflow`) was updated in the same commit.
 3. **Plan lifecycle:** if a plan was completed, graduate its content into `docs/core/`,
@@ -31,5 +28,5 @@ description: Run the OGDK session-end protocol — verification gate, docs-with-
    - New/resolved hazards
    - "Next up" for the next session
    Keep it to one screen; move stale content out.
-5. **Commit** docs updates with the work (one concern per commit).
+5. **Commit** docs updates with the work (one concern per commit), then **push**.
 6. Report to the user: gate results, what landed, what the next session should do first.

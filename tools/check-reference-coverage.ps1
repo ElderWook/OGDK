@@ -33,7 +33,6 @@ foreach ($line in (Get-Content $manifest -Encoding UTF8)) {
     if ($status -eq 'planned') { continue }
     if ($status -eq 'missing') {
         $backlog++
-        Write-Host "[WARN] MISSING page: $comp (source: $src)" -ForegroundColor Yellow
         continue
     }
     if ($status -ne 'current' -and $status -ne 'stale') {
@@ -64,6 +63,9 @@ foreach ($line in (Get-Content $manifest -Encoding UTF8)) {
     }
 }
 
+if ($backlog -gt 0) {
+    Write-Host "[WARN] backlog: $backlog component(s) lack reference pages - see docs/reference/COVERAGE.md" -ForegroundColor Yellow
+}
 Write-Host '--------------------------------------' -ForegroundColor Cyan
 Write-Host "  backlog (missing pages): $backlog   stale: $stale   hard issues: $issues"
 if ($issues -eq 0) {

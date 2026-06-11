@@ -3,6 +3,9 @@
 > **For AI models:** this is the user's personal crib sheet. Use it to answer "what
 > was that command" questions directly instead of re-deriving from the codebase.
 > It is NOT the rules file — AGENTS.md and the session chain still govern work.
+> If you add/change/remove a script or a build command anywhere in the stack, update
+> this file in the same session — `check-kit-docs` catches missing script rows
+> mechanically; build commands are on the honor system, so be the honor.
 > **For me:** skim the section header, copy the command, move on.
 
 ---
@@ -13,7 +16,7 @@
 START:  .\tools\verify-path-health.ps1        # must say ALL CHECKS PASSED
         read: AGENTS.md → docs\STATUS.md → active plan
 WORK:   plans before code · docs change in the same commit as code
-END:    run the gate (AGENTS.md §Verification gate)
+END:    .\tools\gate.ps1                      # THE GATE — exit 0 or no commit
         update docs\STATUS.md  →  git add -A → commit → push
 ```
 
@@ -25,6 +28,7 @@ Golden rule: **if it isn't in the repo, the next session doesn't know it.**
 |------|------|------|
 | OGDK | `C:\OGDK` | the kit — process, templates, scaffolder |
 | DevSandbox | `C:\DevSandbox` | game proving ground (DevKitRTX UE fork, module `DevKitRTX_57`) |
+| DevKitGhost | `C:\DevKitGhost` | DevKitPanel — circuit-mapping hardware (PRIVATE until PPA) |
 | OpenBook | `C:\OpenBook_Release` | bookkeeping app (Tauri+Svelte), app-track origin |
 
 New project: `C:\OGDK\tools\new-project.ps1 -Name "X" -Type App|Game`
@@ -88,6 +92,7 @@ the repo must be empty):
 git remote add origin https://github.com/<me>/<repo>.git
 git push -u origin main        # -u links the branch; afterwards plain `git push` works
 git remote -v                  # show what's connected
+git remote set-url origin <url>  # fix a wrong bookmark
 ```
 
 Dual-boot rule: Windows and Arch each keep their OWN clone on native filesystem;
@@ -97,14 +102,11 @@ they sync **only** through GitHub (push on one, pull on the other). Never cross-
 
 | Script | What |
 |--------|------|
+| `gate.ps1/.sh` | **THE GATE — the only pre-commit command I need to remember.** Chains integrity + coverage + that repo's tests/builds. Exit 0 = commit. (gate.template.* = scaffolder source) |
 | `verify-path-health.ps1/.sh` | session-start env gate (MSYS2 poison / NTFS mount / identity / LFS) |
 | `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, git fsck) — run after heavy AI writes |
 | `check-reference-coverage.ps1/.sh` | docs gate: every component tracked to a reference page; flags STALE/MISSING |
 | `check-kit-docs.ps1/.sh` | (OGDK only) keeps THIS file honest: twin rule + every script documented here and in tools/README; flags ghost refs |
-
-> **Models:** if you add/change/remove a script or a build command anywhere in the
-> stack, update this file in the same session — `check-kit-docs` catches missing
-> script rows mechanically; build commands are on the honor system, so be the honor.
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |
 | `new-project.ps1/.sh` | (OGDK only) scaffold App/Game project |
 
@@ -114,7 +116,9 @@ Linux: `chmod +x tools/*.sh` once after fresh clone if scripts won't run.
 
 **Game (DevSandbox / UE):**
 - Regenerate VS files: right-click `DevKitRTX_57.uproject` → *Generate Visual Studio project files*
-- Build: open `.sln` in VS → Build (Development Editor | Win64), or just open the .uproject (compiles on launch)
+- Build: VS Solution Explorer → Games folder → right-click `DevKitRTX_57` → Build
+  (config **Development Editor | Win64**; avoid Build Solution — can rebuild the engine)
+- Smoke test: launch editor → Output Log → filter `OasisCore` → "OasisCore module up"
 - Quick perf reads in editor console: `stat unit` · `stat game` · `stat gpu` · `memreport -full`
 - Deep profiling: Unreal Insights (record on the milestone scene)
 
@@ -125,11 +129,17 @@ node openbook-relay/server.js              # relay :5180  (or start-relay.bat)
 npm run dev                                # desktop :5173
 npm run dev --prefix openbook-mobile       # mobile :5174
 npm test                                   # full suite — must be green before commit
-npm run build ; npm run build --prefix openbook-mobile   # the gate
+npm run build ; npm run build --prefix openbook-mobile
 ```
 
-**Verification gates (run before every commit):** defined per-project in AGENTS.md
-§Verification gate. Game = compiles + smoke tests + clean status. App = npm test + both builds.
+**DevKitGhost (Python phase):**
+```powershell
+python -m unittest discover tests          # unit tests
+python simulations\sim_detection.py        # Monte Carlo (writes results md)
+```
+
+**The gate wraps all of these:** `.\tools\gate.ps1` in any repo runs that repo's
+checks + tests/builds in one shot.
 
 ## 9. UE project layout rules (30-second refresher)
 
@@ -146,6 +156,7 @@ npm run build ; npm run build --prefix openbook-mobile   # the gate
 | what are the rules here? | `AGENTS.md` (repo root) |
 | what's in flight right now? | `docs\STATUS.md` |
 | why was X designed this way? | `docs\plans\` (incl. rejected options) |
+| how do I USE a shipped component? | `docs\reference\` (SDK tier; COVERAGE.md = index of everything) |
 | how do the modules/perf/naming work? | `docs\core\conventions\` |
 | how does multi-model work stay sane? | `docs\workflow\AI-PARITY.md` |
 | LFS details | `docs\core\conventions\git-lfs.md` |
@@ -154,7 +165,9 @@ npm run build ; npm run build --prefix openbook-mobile   # the gate
 ## 11. Hard-won hazards (do not relearn these the fun way)
 
 - Never launch AI agents from MSYS2 / Git Bash / WSL on Windows → silent NTFS file corruption
-- Never let agents run `git` through a synced mount (Cowork) — git truth = my local PowerShell
+- Never let agents run `git` OR shell-write files through a synced mount (Cowork) —
+  stale offsets corrupt real files; git truth = my local PowerShell; agents use file
+  tools only
 - Never work on the shared NTFS partition from Arch — separate clones, sync via GitHub
 - Binary committed without LFS = permanent repo weight — `git check-attr filter` before new types
 - `.ps1` scripts: ASCII only, no here-strings (PS 5.1 + LF endings = parse bombs)

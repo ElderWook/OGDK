@@ -44,7 +44,8 @@ the short version: **if it isn't in the repo, the next session doesn't know it.*
   next session, never left as the final state of a plan.
 
 **End of session**
-1. Run `tools/verify-file-integrity` (corruption check), then the verification gate (AGENTS.md).
+1. Run the gate: `.\tools\gate.ps1` (Linux: `./tools/gate.sh`) — integrity →
+   reference coverage → project tests/builds. Exit 0 or no commit.
 2. Update `docs/STATUS.md` — what moved, what's next, new hazards. This is the handoff;
    if it's not in STATUS.md, the next agent doesn't know it.
 3. Completed plans graduate: content into `core/`, a polished page per shipped

@@ -31,7 +31,7 @@ while IFS='|' read -r _ comp src page status _; do
     case "$comp" in ""|Component|_none*|----*|:---*) continue ;; esac
     case "$status" in
         planned) continue ;;
-        missing) backlog=$((backlog+1)); warn "MISSING page: $comp (source: $src)"; continue ;;
+        missing) backlog=$((backlog+1)); continue ;;
         current|stale) ;;
         *) fail "$comp: unknown status '$status' in COVERAGE.md"; continue ;;
     esac
@@ -60,6 +60,7 @@ while IFS='|' read -r _ comp src page status _; do
     fi
 done < "$MANIFEST"
 
+[ "$backlog" -gt 0 ] && warn "backlog: $backlog component(s) lack reference pages - see docs/reference/COVERAGE.md"
 echo "--------------------------------------"
 echo "  backlog (missing pages): $backlog   stale: $stale   hard issues: $issues"
 if [ "$issues" -eq 0 ]; then

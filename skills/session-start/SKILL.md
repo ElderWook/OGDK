@@ -5,7 +5,7 @@ description: Run the OGDK session-start protocol — verify environment safety, 
 
 # Session start
 
-Follow in order. Do not edit any file until step 5.
+Follow in order. Do not edit any file until step 6.
 
 1. **Environment (Windows):** run `.\tools\verify-path-health.ps1`. If any FAIL, stop —
    report it and do not write files until the PATH is fixed.

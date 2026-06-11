@@ -9,10 +9,12 @@ its own work.
 
 Everything currently lives on one machine. One disk failure erases the LLC.
 
-- [ ] Private GitHub repos: `OGDK`, `DevSandbox`, `OpenBook` — push all three
-- [ ] Confirm LFS objects actually uploaded (`git lfs ls-files` after push; clone to a
-      temp dir and open the project as the real test)
-- [ ] Habit: push at every session end (add to session-end skill expectations)
+- [x] Private GitHub repos pushed: `OGDK`, `DevSandbox`, `DevKitGhost` (+ OpenBook on
+      its pre-existing remote) — 2026-06-10
+- [x] LFS verified on GitHub UI ("Stored with Git LFS") — 2026-06-10
+- [ ] Clone test: fresh `git clone` to a temp dir, open/build the project (the real
+      proof; also the dual-boot bridge rehearsal)
+- [x] Push-at-session-end in session-end skill + interruption protocol — 2026-06-10
 
 **Exit criteria:** a fresh `git clone` on a second machine yields a working project.
 
@@ -21,12 +23,14 @@ Everything currently lives on one machine. One disk failure erases the LLC.
 The app track is proven (OpenBook). The game track is sound-on-paper only. Use
 validates; docs don't.
 
-- [ ] `docs/plans/OASISCORE-PLAN.md` → OasisCore plugin skeleton (empty but compiling:
-      .uplugin, Build.cs, module classes)
-- [ ] First GameFeature plugin (`GF_Sample`) with one automation smoke test
-- [ ] Milestone scene + first perf baseline (Insights trace; record numbers in STATUS)
-- [ ] Pin the DevKitRTX branch/commit in AGENTS.md §Engine
-- [ ] Flow every friction point back into `game/` docs (expect several — that's the point)
+- [x] OASISCORE-PLAN → OasisCore plugin compiled + load-verified on DevKitRTX — 2026-06-11
+- [x] GF_Sample GameFeature with subsystem smoke test (log-line gate passed) — 2026-06-11
+      (formal automation spec arrives with the first real gameplay system)
+- [ ] Milestone scene + first perf baseline (blocked on first real content — unblocks
+      when game design starts)
+- [ ] Pin the DevKitRTX branch/commit in AGENTS.md §Engine (user knows the answer; 2-min task)
+- [x] Friction flowed back: reference pages (oasiscore-plugin, gamefeature-pattern)
+      capture the pattern learnings — 2026-06-11
 
 **Exit criteria:** a session can add a small gameplay system entirely inside a GF_
 plugin, gate passes, and no kit doc needed correcting along the way.
@@ -36,13 +40,13 @@ plugin, gate passes, and no kit doc needed correcting along the way.
 A gate that relies on remembering is a suggestion. Promote AGENTS.md gates from
 prose to a runnable command per project.
 
-- [ ] `tools/gate.ps1` + `tools/gate.sh` twin in each project: runs that project's
-      full verification gate, exit code 0/1 (kit ships the template; AGENTS.md
-      §Verification gate becomes "run `.\tools\gate.ps1`")
-- [ ] App track: GitHub Actions CI running tests + builds on push (free, catches
-      cross-machine breakage)
-- [ ] Game track: gate stays local (UE CI needs heavy self-hosted runners — defer
-      until it hurts; rule of two applies to infrastructure too)
+- [x] `tools/gate.{ps1,sh}` in every repo + kit template via scaffolder; all AGENTS.md
+      gates now say "run gate" — 2026-06-11 (bash twins tested in sandbox; user
+      smoke-tests .ps1 per repo)
+- [x] App track CI: OpenBook `.github/workflows/ci.yml` already existed (Node 22,
+      installs + tests + builds on push) — verified 2026-06-11
+- [x] Game track: gate stays local by design (UE build-freshness proxy in
+      DevSandbox's gate; CI deferred until it hurts — rule of two for infra)
 
 **Exit criteria:** "did I break it?" is one command, same on both OSes.
 

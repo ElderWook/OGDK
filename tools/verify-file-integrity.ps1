@@ -44,14 +44,26 @@ if ($nulHits.Count -gt 0) {
     Write-Host '[PASS] no NUL bytes in tracked text files' -ForegroundColor Green
 }
 
-# Check 3: Python files compile (catches mid-file truncation)
-$py = Get-Command python -ErrorAction SilentlyContinue
-if (-not $py) { $py = Get-Command python3 -ErrorAction SilentlyContinue }
-if ($py) {
+# Check 3: Python files compile (catches mid-file truncation).
+# Find a python that ACTUALLY LAUNCHES (Windows Store stubs and broken installs
+# exist on PATH but fail with launcher errors - seen in the wild as 0x800702E4).
+$pyCmd = $null
+foreach ($cand in @('python', 'py', 'python3')) {
+    $c = Get-Command $cand -ErrorAction SilentlyContinue
+    if (-not $c) { continue }
+    & $c.Source --version 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) { $pyCmd = $c.Source; break }
+}
+$pyFiles = @(git ls-files '*.py' 2>$null)
+if ($pyFiles.Count -eq 0) {
+    Write-Host '[PASS] no tracked .py files (compile check not applicable)' -ForegroundColor Green
+} elseif (-not $pyCmd) {
+    Write-Host '[WARN] no WORKING python found (broken install or Store stub?) - .py compile check skipped. Fix: install from python.org or `winget install Python.Python.3.12`' -ForegroundColor Yellow
+} else {
     $pyBad = @()
-    foreach ($f in (git ls-files '*.py' 2>$null)) {
+    foreach ($f in $pyFiles) {
         if (-not (Test-Path $f)) { continue }
-        & $py.Source -m py_compile $f 2>$null
+        & $pyCmd -m py_compile $f 2>$null
         if ($LASTEXITCODE -ne 0) { $pyBad += $f }
     }
     if ($pyBad.Count -gt 0) {
@@ -59,7 +71,7 @@ if ($py) {
         $pyBad | ForEach-Object { Write-Host "       $_" -ForegroundColor Yellow }
         $issues++
     } else {
-        Write-Host '[PASS] all tracked .py files compile' -ForegroundColor Green
+        Write-Host "[PASS] all tracked .py files compile ($pyCmd)" -ForegroundColor Green
     }
 }
 

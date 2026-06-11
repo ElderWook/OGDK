@@ -36,6 +36,8 @@ cp "$KIT/CLAUDE.template.md" "$PROJ/CLAUDE.md"
 mkdir -p "$PROJ/tools"
 cp "$KIT/tools/verify-path-health.ps1" "$KIT/tools/launch-claude-clean.ps1" "$KIT/tools/verify-file-integrity.ps1" "$KIT/tools/check-reference-coverage.ps1" \
    "$KIT/tools/verify-path-health.sh"  "$KIT/tools/launch-claude-clean.sh"  "$KIT/tools/verify-file-integrity.sh"  "$KIT/tools/check-reference-coverage.sh" "$PROJ/tools/"
+cp "$KIT/tools/gate.template.ps1" "$PROJ/tools/gate.ps1"
+cp "$KIT/tools/gate.template.sh"  "$PROJ/tools/gate.sh"
 chmod +x "$PROJ/tools/"*.sh
 
 # 4. Skills for Claude Code
@@ -87,7 +89,7 @@ fi
 
 echo
 echo "Done. Next steps:"
-echo "  1. Fill in AGENTS.md (architecture, invariants, verification gate)"
+echo "  1. Fill in AGENTS.md (architecture, invariants) + tools/gate §project checks"
 if [ "$TYPE" = "Game" ]; then
     echo "  2. Create the .uproject + Source/ + Plugins/ per docs/core/game-architecture.md"
 else

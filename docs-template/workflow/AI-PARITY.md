@@ -54,10 +54,14 @@ index can be silently wrong from their side.
   (it can rewrite `.git/index` based on stale stat data). Git truth comes from a
   native local shell only; the agent asks the human (or a local agent) to run git
   commands and report output.
-- File reads/writes through the session's direct file tools are fine; shell-side
-  views of the same files may lag — when they disagree, the direct file tools win.
-- Confirmed in practice 2026-06-10: stale mount produced truncated file reads and
-  `git status` reporting false-clean / phantom deletes.
+- **Never append to or partially modify files through the mount's shell** — a write
+  positioned against a stale file length lands at the wrong offset and corrupts the
+  real file (one byte overwritten mid-file). Whole-file writes via the session's
+  direct file tools are the ONLY safe mutation; shell-side file mutation is banned.
+- Shell-side *reads* may lag too — when shell view and direct file tools disagree,
+  the direct file tools win.
+- Confirmed in practice 2026-06-10/11: stale mount produced truncated reads, false
+  git status, AND offset-corrupted appends. All three, one day.
 
 ## 5. Trust calibration
 
