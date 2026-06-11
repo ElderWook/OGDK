@@ -116,17 +116,22 @@ Goal: a user states the features their app needs; the stack guides the leanest
 correct skeleton — the proven Tauri+Svelte+SQLite+relay shape becomes ONE preset,
 not the only path.
 
-- [ ] `app/APP-ARCHITECT.md`: feature→module decision guide (needs offline? →
-      local-first store pattern · multi-device? → sync+authority model · mobile? →
-      $platform bridge · heavy docs/PDF? → render module · none of the above? →
-      delete that module). Composable: every module optional except the core
-      invariants (exact math, durable writes, integrity)
-- [ ] Expand the README app mermaid into the composable view: modules drawn as
-      optional blocks with their "include when..." conditions
-- [ ] Scaffolder follow-up (later, not sprint): `-Features` flag or interactive
-      prompt mapping answers to skeleton dirs — design only for now
-- [ ] Invariants vs choices made explicit in app/STACK.md: what is LAW regardless
-      of combination vs what was merely the origin app's choice
+- [x] `app/APP-ARCHITECT.md` — DONE 2026-06-12: feature questions → module catalog
+      → five presets (proven combo = Preset A) → composable mermaid; boundary law
+      unified with the game track's one-way rule
+- [x] README app mermaid expanded to the composable view — DONE 2026-06-12
+- [x] **CODE-CONVENTIONS + the generation policy** — DONE 2026-06-12: language
+      skeletons are GENERATED per conventions, never stored (stored boilerplate
+      rots; agents emit fresh annotated skeletons; rule of two can graduate hot
+      presets to templates). Annotation standard: @intent/@flow/@boundary/
+      @invariant/@risk/@todo
+- [x] **Annotated exemplar shipped** — DONE 2026-06-12: `app/exemplar/` (~120-line
+      pure-Python tab ledger: pure core + atomic-write adapter + composition root
+      + mirrored tests, 8/8 green) — the quality bar every generated skeleton
+      must match, in any language
+- [ ] Scaffolder follow-up (later, not sprint): `-Features` flag mapping answers
+      to skeleton generation — design only for now
+- [x] Invariants vs choices explicit — DONE 2026-06-12 (APP-ARCHITECT §4)
 
 ### WS3 — Engine portability for the game track
 
