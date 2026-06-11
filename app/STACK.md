@@ -1,6 +1,6 @@
 # App track — web / local / mobile stack
 
-Proven in **the origin app** (`C:\the origin app_Release`). One codebase, three surfaces:
+Proven in the **origin app project** (a private Oasis production app). One codebase, three surfaces:
 desktop (Tauri), mobile (PWA/wrapped web), and an optional relay server for
 device-to-device sync. Local-first by default.
 

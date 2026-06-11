@@ -1,0 +1,7 @@
+# Per-operator private files — NEVER committed (privacy boundary, WS1)
+user-notes.local.md
+tools/PRIVATE-MARKERS.list
+
+# OS junk
+.DS_Store
+Thumbs.db

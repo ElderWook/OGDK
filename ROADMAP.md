@@ -9,20 +9,19 @@ its own work.
 
 Everything currently lives on one machine. One disk failure erases the LLC.
 
-- [x] Private GitHub repos pushed: `OGDK`, `DevSandbox`, `DevKitGhost` (+ the origin app on
-      its pre-existing remote) — 2026-06-10
+- [x] Private GitHub repos pushed: the kit + all three project repos — 2026-06-10
 - [x] LFS verified on GitHub UI ("Stored with Git LFS") — 2026-06-10
-- [x] Clone test PASSED 2026-06-11: virgin DevKitGhost clone ran its full gate green;
-      DevSandbox clone pulled LFS content ("Filtering content") — the repo is the
-      whole truth, the kit travels
+- [x] Clone test PASSED 2026-06-11: a virgin project clone ran its full gate green;
+      the game repo's clone pulled LFS content ("Filtering content") — the repo is
+      the whole truth, the kit travels
 - [x] Push-at-session-end in session-end skill + interruption protocol — 2026-06-10
 
 **Exit criteria:** a fresh `git clone` on a second machine yields a working project.
 
-## Phase 2 — Prove the game track (in DevSandbox)
+## Phase 2 — Prove the game track (in the game proving-ground repo)
 
-The app track is proven (the origin app). The game track is sound-on-paper only. Use
-validates; docs don't.
+The app track is proven (origin app project). The game track is sound-on-paper only.
+Use validates; docs don't.
 
 - [x] OASISCORE-PLAN → OasisCore plugin compiled + load-verified on DevKitRTX — 2026-06-11
 - [x] GF_Sample GameFeature with subsystem smoke test (log-line gate passed) — 2026-06-11
@@ -44,14 +43,14 @@ prose to a runnable command per project.
 - [x] `tools/gate.{ps1,sh}` in every repo + kit template via scaffolder; all AGENTS.md
       gates now say "run gate" — 2026-06-11 (bash twins tested in sandbox; user
       smoke-tests .ps1 per repo)
-- [x] App track CI: the origin app `.github/workflows/ci.yml` already existed (Node 22,
-      installs + tests + builds on push) — verified 2026-06-11
-- [x] Game track: gate stays local by design (UE build-freshness proxy in
-      DevSandbox's gate; CI deferred until it hurts — rule of two for infra)
+- [x] App track CI: the origin app's `.github/workflows/ci.yml` already existed
+      (Node 22, installs + tests + builds on push) — verified 2026-06-11
+- [x] Game track: gate stays local by design (UE build-freshness proxy in the game
+      repo's gate; CI deferred until it hurts — rule of two for infra)
 - [ ] Propagate 2026-06-11 tool additions (`new-reference-page.{ps1,sh}`,
-      `release-notes.{ps1,sh}`) to existing projects — DevKitGhost + DevSandbox
-      (+ the origin app if it adopts the reference tier). One implementation plan, both
-      repos knocked out together; scaffolder already covers all future projects.
+      `release-notes.{ps1,sh}`) to existing projects via propagate-tools (the
+      origin app too if it adopts the reference tier); scaffolder already covers
+      all future projects.
 - [ ] **Final kit smoke test — hostile-environment pass:** validated cross-platform
       locally (Arch gate green 2026-06-11), but "works on my machines" isn't the bar.
       Test as if on someone ELSE's box: fresh Windows clone, stock PowerShell 5.1,
@@ -90,15 +89,14 @@ Goal: personal/private-project data fully stripped from the kit and mechanically
 prevented from returning — in BOTH directions (founder's data out; collaborators'
 project IP never in).
 
-- [ ] **Sweep the kit** for private context: kit ROADMAP currently names DevKitGhost
-      phases/PPA and the game slate (move specifics to project repos; kit speaks
-      abstractly: "hardware project", "first game title"); kit LESSONS entries
-      containing `C:\Users\<name>` paths and machine specifics (genericize);
-      user-notes repo map + Arch checklist username; any email/handle scans
-- [ ] **user-notes disposition decision:** it's per-OWNER by nature. Proposal:
-      keep the file (check-kit-docs depends on it) but make it the generic
-      "operator's crib sheet" — personal repo maps and project pointers move to a
-      gitignored `user-notes.local.md` companion. DECIDE before sweep.
+- [x] **Sweep the kit** for private context — DONE 2026-06-12: personal paths
+      genericized in LESSONS; project names abstracted kit-wide ("the hardware
+      project", "the game proving-ground", "the origin app"); no emails/usernames
+      outside necessary clone URLs
+- [x] **user-notes split** — DONE 2026-06-12: tracked `user-notes.md` is the
+      generic operator crib; personal repo map/machine setup/project commands live
+      in gitignored `user-notes.local.md`; GETTING-STARTED instructs every operator
+      to create their own
 - [ ] **Mechanical guard — check-kit-docs check 8:** scan tracked kit files
       against a `PRIVATE-MARKERS.list` (gitignored, per-owner: usernames, emails,
       project codenames, home paths). FAIL on hit. Twin rule applies.
@@ -152,10 +150,10 @@ Tracks the kit will likely grow, logged here so the intent survives sessions.
 Each activates only when its first real project starts (and extracts to a kit
 track when a second one exists):
 
-- **`embedded/` — firmware & low-level.** Seeded by DevKitGhost's bench phase
-  (toolchain pinning, flash/RAM size budgets as the embedded twin of perf
+- **`embedded/` — firmware & low-level.** Seeded by the hardware project's bench
+  phase (toolchain pinning, flash/RAM size budgets as the embedded twin of perf
   budgets, flashing-script twins, HIL test protocol, binary artifact policy,
-  bootloader/OTA concerns). Activation trigger: DevKitGhost Phase H1 or any
+  bootloader/OTA concerns). Activation trigger: that project's bench phase or any
   second embedded project.
 - **`retro/` — Xbox 360 console development. ❤️ Founder's origin story.**
   Homebrew/hardware-research development for the console that got the founder
