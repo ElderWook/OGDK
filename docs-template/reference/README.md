@@ -21,6 +21,14 @@ reference page for every component the plan shipped. The plan-writer skill requi
 "Documentation impact" section naming those pages up front, so nothing is discovered
 missing at the end. No reference page, no archive — the plan stays open.
 
+## The coverage manifest (how plans discover existing pages)
+
+`COVERAGE.md` maps every shipped component's source paths to its page. Plans MUST
+check the manifest in their §Documentation impact step: touch a mapped path → its
+page is an UPDATE entry; ship a new component → new row + new page, same commit.
+`tools/check-reference-coverage.{ps1,sh}` verifies pages exist and flags STALE ones
+(source committed after its page) — run at session end.
+
 ## Writing a page
 
 Copy `COMPONENT-TEMPLATE.md` → `<component-name>.md` (kebab-case). Fill every

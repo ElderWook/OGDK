@@ -35,9 +35,12 @@ How each phase is verified. Game track: include the perf note
 ## 6. Risks & mitigations
 
 ## 7. Documentation impact
-Which `docs/reference/` pages this plan will CREATE or UPDATE when complete
-(one per shipped component). The plan cannot be archived until these exist —
-see docs/reference/README.md (the graduation rule).
+MANDATORY discovery step: open `docs/reference/COVERAGE.md` and check every source
+path this plan touches against the manifest. Any touched path that maps to an
+existing page -> that page is listed here as UPDATE (you do not get to not know).
+New components -> CREATE entries here AND a new COVERAGE.md row in the same commit.
+The plan cannot be archived until every entry exists/is updated — the graduation
+rule (docs/reference/README.md), checked by tools/check-reference-coverage.
 ```
 
 3. Register the plan in `docs/STATUS.md §Active plans` with status "Proposed".

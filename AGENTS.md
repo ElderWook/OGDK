@@ -32,6 +32,9 @@ Run `.\tools\verify-path-health.ps1` before any file writes.
 
 ## Verification gate (before every commit)
 
+- `.\tools\check-kit-docs.ps1` (Linux: `.sh`) passes — twin rule + user-notes.md and
+  tools/README.md current. Adding/renaming/removing a script or build command
+  updates those docs in the SAME commit.
 - Link check: every relative `](…)` link in non-template `.md` files resolves
   (template links resolve post-scaffold — verify by eye against `tools/new-project.ps1`).
 - If `new-project.ps1` or any template changed: scaffold a throwaway
