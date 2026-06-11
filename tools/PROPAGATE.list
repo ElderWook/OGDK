@@ -1,0 +1,11 @@
+# Tools that travel to every project (both .ps1/.sh twins per name).
+# Consumed by: new-project.{ps1,sh} (scaffold) and propagate-tools.{ps1,sh} (update
+# existing projects). Kit-only scripts (new-project, check-kit-docs, propagate-tools)
+# and gate.template.* (copied as gate.* by the scaffolder) are NOT listed.
+# One base name per line; '#' starts a comment.
+verify-path-health
+launch-claude-clean
+verify-file-integrity
+check-reference-coverage
+new-reference-page
+release-notes
