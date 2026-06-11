@@ -10,5 +10,6 @@
 - `presentation/` — UI / platform-wrapper specs
 - `adapters/` — network adapters, relays, external integrations
 - `workflow/` — release, versioning, operational guides · `workflow/AI-PARITY.md` — the multi-model contract
-- `plans/` — design proposals; graduate into `core/` once implemented, then archive
+- `reference/` — SDK tier: one polished page per shipped component (`reference/README.md` for the rules)
+- `plans/` — design proposals; graduate into `core/` + `reference/` once implemented, then archive
   (see DOCUMENTATION-VERSIONING-GUIDE.md)
