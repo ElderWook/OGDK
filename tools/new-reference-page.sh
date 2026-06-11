@@ -42,16 +42,22 @@ PAGE="$REF/$NAME.md"
 
 TODAY="$(date +%F)"
 
+# sed-escape replacement text: backslash, the '&' whole-match token, and our
+# delimiters ('/', '#'). Titles like "Probes & Tomography" must land literally.
+esc() { printf '%s' "$1" | sed -e 's/[\\&/#]/\\&/g'; }
+COMP_E="$(esc "$COMP")"
+SRC_E="$(esc "$SRC")"
+
 # 1. Page from template: stamp title, source path, and changelog date
-sed -e "s/<Component Name>/$COMP/" \
-    -e "s#\`<path/to/module>\`#\`$SRC\`#" \
+sed -e "s/<Component Name>/$COMP_E/" \
+    -e "s#\`<path/to/module>\`#\`$SRC_E\`#" \
     -e "s/<date>/$TODAY/" \
     "$TPL" > "$PAGE"
 
 # 2. Manifest row (replace the '_none yet_' placeholder if it is still there)
 ROW="| $COMP | $SRC | $NAME.md | current |"
 if grep -q '^| _none yet_' "$MAN"; then
-    sed -i "s#^| _none yet_ .*#$ROW#" "$MAN"
+    sed -i "s#^| _none yet_ .*#$(esc "$ROW")#" "$MAN"
 else
     printf '%s\n' "$ROW" >> "$MAN"
 fi

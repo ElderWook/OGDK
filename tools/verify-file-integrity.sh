@@ -57,6 +57,8 @@ if command -v python3 >/dev/null; then
     else
         pass "all tracked .py files compile"
     fi
+else
+    warn "python3 not found - .py truncation check SKIPPED (install python3 to restore this gate)"
 fi
 
 # Check 4: tracked text files ending mid-line (no trailing newline = truncation smell)

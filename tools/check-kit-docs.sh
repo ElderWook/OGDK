@@ -5,6 +5,9 @@
 #   2. user-notes.md mentions every tools script (the crib sheet cannot go stale)
 #   3. tools/README.md mentions every tools script
 #   4. user-notes/README do not mention scripts that no longer exist
+#   5. .ps1 hygiene: ASCII only, no here-strings (PS 5.1 + LF parse-bomb lesson)
+#   6. no hardcoded user paths in tools/ (the launch-claude-clean lesson)
+#   7. relative links in non-template .md files resolve (AGENTS gate, now mechanical)
 # Build commands cannot be checked mechanically - process rule in AGENTS.md covers them.
 # Twin: check-kit-docs.ps1.
 set -u
@@ -53,6 +56,51 @@ for doc in user-notes.md tools/README.md; do
     done
 done
 [ "$ghost_ok" = 1 ] && pass "no ghost script references in docs"
+
+# 5. .ps1 hygiene: ASCII only + no here-strings (Windows PowerShell 5.1 with LF endings)
+ps_ok=1
+for f in tools/*.ps1; do
+    if LC_ALL=C grep -qP '[^\x00-\x7F]' "$f"; then
+        fail "non-ASCII byte(s) in $f - PS 5.1 hazard (tools/README.md rule 2)"; ps_ok=0
+    fi
+    if grep -qE "@[\"']" "$f"; then
+        fail "here-string in $f - breaks PS 5.1 parsing with LF endings"; ps_ok=0
+    fi
+done
+[ "$ps_ok" = 1 ] && pass ".ps1 hygiene: ASCII-only, no here-strings"
+
+# 6. hardcoded user paths in tools/ (kit must work on ANY machine)
+hard_ok=1
+hardpat='C:\\Users\\[A-Za-z]|/home/[a-z]|/Users/[A-Za-z]'
+for f in tools/*; do
+    [ -f "$f" ] || continue
+    hits="$(grep -nE "$hardpat" "$f" 2>/dev/null || true)"
+    if [ -n "$hits" ]; then
+        fail "hardcoded user path in $f:"
+        printf '%s\n' "$hits" | sed 's/^/  /'
+        hard_ok=0
+    fi
+done
+[ "$hard_ok" = 1 ] && pass "no hardcoded user paths in tools/"
+
+# 7. relative markdown links resolve (non-template .md only; templates resolve
+#    post-scaffold and are excluded - verified by the scaffold throwaway test)
+link_ok=1
+while IFS= read -r f; do
+    dir="$(dirname "$f")"
+    for link in $(grep -oE '\]\([^)]+\)' "$f" 2>/dev/null | sed -e 's/^](//' -e 's/)$//' | sort -u); do
+        case "$link" in
+            http://*|https://*|mailto:*|\#*) continue ;;
+        esac
+        target="${link%%#*}"
+        [ -n "$target" ] || continue
+        # skip non-path artifacts (e.g. the literal "](...)" examples in prose)
+        printf '%s' "$target" | grep -q '[A-Za-z0-9]' || continue
+        [ -e "$dir/$target" ] || { fail "$f: broken relative link -> $link"; link_ok=0; }
+    done
+done < <(find . -name '*.md' -type f \
+            ! -path './.git/*' ! -path './docs-template/*' ! -name '*template*' | sed 's|^\./||')
+[ "$link_ok" = 1 ] && pass "all relative links in non-template .md files resolve"
 
 echo "--------------------------------------"
 if [ "$issues" -eq 0 ]; then
