@@ -46,8 +46,14 @@ for doc in user-notes.md tools/README.md; do
 done
 
 # 4. mentioned-but-deleted scripts (scan doc for tool-like names not on disk)
+#    - docs AND skills (skills name scripts too; a renamed tool must not leave
+#    skills pointing at a ghost)
 ghost_ok=1
-for doc in user-notes.md tools/README.md; do
+ghost_docs="user-notes.md tools/README.md"
+if [ -d skills ]; then
+    ghost_docs="$ghost_docs $(find skills -name 'SKILL.md' -type f | sort)"
+fi
+for doc in $ghost_docs; do
     for name in $(grep -oE '[a-z][a-z0-9-]+\.(ps1|sh)' "$doc" | sort -u); do
         base="${name%.*}"
         if [ ! -f "tools/${base}.ps1" ] && [ ! -f "tools/${base}.sh" ]; then
@@ -115,6 +121,7 @@ if [ -f "$markfile" ]; then
         midx=$((midx+1))
         hits="$(grep -rliIF --exclude-dir=.git \
                   --exclude='user-notes.local.md' --exclude='PRIVATE-MARKERS.list' \
+                  --exclude='TARGETS.list' \
                   -- "$m" . 2>/dev/null || true)"
         if [ -n "$hits" ]; then
             fail "private marker #$midx found in: (text withheld - marker #$midx in your PRIVATE-MARKERS.list)"
@@ -125,6 +132,16 @@ if [ -f "$markfile" ]; then
     [ "$mark_ok" = 1 ] && pass "no private markers in scanned files ($midx marker(s) checked)"
 else
     warn "tools/PRIVATE-MARKERS.list not found - private-marker scan skipped (seed yours: see tools/README.md)"
+fi
+
+# 9. learning-loop nudge: OPEN lessons in the kit's LESSONS.md (kit-retro trigger)
+if [ -f "LESSONS.md" ]; then
+    open_lessons=$(grep -c 'OPEN' LESSONS.md 2>/dev/null || echo 0)
+    if [ "$open_lessons" -ge 5 ]; then
+        warn "$open_lessons OPEN lesson(s) in LESSONS.md - run the kit-retro skill (threshold: 5)"
+    elif [ "$open_lessons" -gt 0 ]; then
+        printf '[INFO] %s OPEN lesson(s) in LESSONS.md (kit-retro at 5)\n' "$open_lessons"
+    fi
 fi
 
 echo "--------------------------------------"

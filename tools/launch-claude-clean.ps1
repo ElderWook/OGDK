@@ -65,3 +65,4 @@ Write-Host "claude: $claude" -ForegroundColor DarkGray
 Write-Host "Working directory: $PWD" -ForegroundColor DarkGray
 Write-Host ''
 & $claude @args
+exit $LASTEXITCODE

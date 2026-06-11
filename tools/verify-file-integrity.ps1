@@ -98,6 +98,29 @@ if ($psFiles.Count -eq 0) {
     Write-Host '[PASS] all tracked .ps1 files parse' -ForegroundColor Green
 }
 
+# Check 4b: EOF sentinel on tools scripts. A truncated script can PASS syntax
+# checks if the cut lands inside a comment (2026-06-12 lesson - bash -n approved
+# a script missing its last 30 lines). Every tools script must therefore END
+# with an explicit final statement: a line starting with 'exit' or '# EOF'.
+$sentBad = @()
+$sentFiles = @(git ls-files 'tools/*.ps1' 'tools/*.sh' 2>$null)
+foreach ($f in $sentFiles) {
+    if (-not (Test-Path $f)) { continue }
+    $lines = @(Get-Content $f -Encoding UTF8 | Where-Object { $_.Trim() -ne '' })
+    if ($lines.Count -eq 0) { $sentBad += $f; continue }
+    $last = $lines[$lines.Count - 1].Trim()
+    if ($last -notmatch '^(exit($|\s)|# EOF$)') { $sentBad += $f }
+}
+if ($sentFiles.Count -eq 0) {
+    Write-Host '[PASS] no tools scripts tracked (EOF sentinel not applicable)' -ForegroundColor Green
+} elseif ($sentBad.Count -gt 0) {
+    Write-Host "[FAIL] tools script(s) missing EOF sentinel - last non-blank line must start with 'exit' or be '# EOF' (truncation guard):" -ForegroundColor Red
+    $sentBad | ForEach-Object { Write-Host "       $_" -ForegroundColor Yellow }
+    $issues++
+} else {
+    Write-Host '[PASS] all tools scripts end with an EOF sentinel' -ForegroundColor Green
+}
+
 # Check 4: trailing-newline smell test on source/docs
 $noEol = @()
 foreach ($f in (git ls-files 2>$null | Where-Object { $_ -match '\.(py|sh|md)$' })) {

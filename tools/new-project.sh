@@ -42,6 +42,10 @@ done < "$KIT/tools/PROPAGATE.list"
 cp "$KIT/tools/gate.template.ps1" "$PROJ/tools/gate.ps1"
 cp "$KIT/tools/gate.template.sh"  "$PROJ/tools/gate.sh"
 chmod +x "$PROJ/tools/"*.sh
+# Provenance stamp: which kit commit these tools came from (drift visibility)
+kitver="unknown"
+git -C "$KIT" rev-parse --short HEAD >/dev/null 2>&1 && kitver="$(git -C "$KIT" rev-parse --short HEAD)"
+printf '%s\n' "$kitver $(date +%Y-%m-%d) (kit commit + propagation date - written by propagate-tools/new-project; do not edit)" > "$PROJ/tools/KIT-VERSION"
 
 # 4. Skills for Claude Code
 mkdir -p "$PROJ/.claude"
@@ -101,3 +105,4 @@ else
 fi
 echo "  3. Write your first plan in docs/plans/, update docs/STATUS.md"
 echo "  4. See OGDK checklists/new-project.md for the full list"
+exit 0

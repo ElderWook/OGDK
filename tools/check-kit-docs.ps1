@@ -43,9 +43,15 @@ foreach ($doc in @('user-notes.md', 'tools/README.md')) {
     if ($docOk) { Write-Host "[PASS] $doc covers all tools scripts" -ForegroundColor Green }
 }
 
-# 4. ghost references (mentioned but deleted)
+# 4. ghost references (mentioned but deleted) - docs AND skills (skills name
+#    scripts too; a renamed tool must not leave skills pointing at a ghost)
 $ghostOk = $true
-foreach ($doc in @('user-notes.md', 'tools/README.md')) {
+$ghostDocs = @('user-notes.md', 'tools/README.md')
+if (Test-Path 'skills') {
+    $ghostDocs += (Get-ChildItem skills -Recurse -Filter SKILL.md | ForEach-Object {
+        $_.FullName.Substring($kit.Length + 1) })
+}
+foreach ($doc in $ghostDocs) {
     $docText = Get-Content $doc -Raw -Encoding UTF8
     $names = [regex]::Matches($docText, '[a-z][a-z0-9-]+\.(ps1|sh)') | ForEach-Object { $_.Value } | Sort-Object -Unique
     foreach ($name in $names) {
@@ -133,6 +139,7 @@ if (Test-Path $markFile) {
             $_.FullName -notmatch '\\\.git\\' -and
             $_.Name -ne 'user-notes.local.md' -and
             $_.Name -ne 'PRIVATE-MARKERS.list' -and
+            $_.Name -ne 'TARGETS.list' -and
             $_.Length -lt 1048576
         }
         foreach ($f in $scanFiles) {
@@ -153,6 +160,16 @@ if (Test-Path $markFile) {
     if ($markOk) { Write-Host "[PASS] no private markers in scanned files ($($markers.Count) marker(s) checked)" -ForegroundColor Green }
 } else {
     Write-Host '[WARN] tools/PRIVATE-MARKERS.list not found - private-marker scan skipped (seed yours: see tools/README.md)' -ForegroundColor Yellow
+}
+
+# 9. learning-loop nudge: OPEN lessons in the kit's LESSONS.md (kit-retro trigger)
+if (Test-Path 'LESSONS.md') {
+    $openLessons = @(Get-Content 'LESSONS.md' -Encoding UTF8 | Where-Object { $_ -match 'OPEN' }).Count
+    if ($openLessons -ge 5) {
+        Write-Host "[WARN] $openLessons OPEN lesson(s) in LESSONS.md - run the kit-retro skill (threshold: 5)" -ForegroundColor Yellow
+    } elseif ($openLessons -gt 0) {
+        Write-Host "[INFO] $openLessons OPEN lesson(s) in LESSONS.md (kit-retro at 5)" -ForegroundColor Cyan
+    }
 }
 
 Write-Host '--------------------------------------' -ForegroundColor Cyan

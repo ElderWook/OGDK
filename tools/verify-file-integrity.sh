@@ -76,6 +76,30 @@ else
     pass "all tracked .sh files parse (bash -n)"
 fi
 
+# Check 4b: EOF sentinel on tools scripts. A truncated script can PASS syntax
+# checks if the cut lands inside a comment (2026-06-12 lesson - bash -n approved
+# a script missing its last 30 lines). Every tools script must therefore END
+# with an explicit final statement: a line starting with 'exit' or '# EOF'.
+sent_bad=""
+sent_count=0
+while IFS= read -r f; do
+    [ -f "$f" ] || continue
+    sent_count=$((sent_count+1))
+    last="$(grep -v '^[[:space:]]*$' "$f" | tail -1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    case "$last" in
+        exit|exit\ *|'# EOF') ;;
+        *) sent_bad="$sent_bad  $f"$'\n' ;;
+    esac
+done < <(git ls-files 'tools/*.ps1' 'tools/*.sh' 2>/dev/null || true)
+if [ "$sent_count" -eq 0 ]; then
+    pass "no tools scripts tracked (EOF sentinel not applicable)"
+elif [ -n "$sent_bad" ]; then
+    fail "tools script(s) missing EOF sentinel - last non-blank line must start with 'exit' or be '# EOF' (truncation guard):"
+    printf '%s' "$sent_bad"
+else
+    pass "all tools scripts end with an EOF sentinel"
+fi
+
 # Check 4: tracked text files ending mid-line (no trailing newline = truncation smell)
 noeol=""
 while IFS= read -r f; do

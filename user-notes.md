@@ -107,14 +107,14 @@ Your SSH/GPG/auth specifics: `user-notes.local.md`.
 | Script | What |
 |--------|------|
 | `gate.ps1/.sh` | **THE GATE — the only pre-commit command to remember.** Chains integrity + coverage + that repo's tests/builds. Exit 0 = commit. (gate.template.* = scaffolder source) |
-| `verify-path-health.ps1/.sh` | session-start env gate (MSYS2 poison / NTFS mount / identity / LFS) |
-| `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, .py compile, script-syntax parse, git fsck) — run after heavy AI writes |
-| `check-reference-coverage.ps1/.sh` | docs gate: every component tracked to a reference page; flags STALE/MISSING |
+| `verify-path-health.ps1/.sh` | session-start env gate (MSYS2 poison / NTFS mount / identity / LFS); prints tools/KIT-VERSION provenance in project repos |
+| `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, .py compile, script-syntax parse, EOF sentinel on tools scripts, git fsck) — run after heavy AI writes |
+| `check-reference-coverage.ps1/.sh` | docs gate: every component tracked to a reference page; flags STALE/MISSING; nudges on OPEN lessons (kit-retro at 5) and stale STATUS.md handoff |
 | `check-kit-docs.ps1/.sh` | (OGDK only) keeps THIS file honest: twin rule + every script documented here and in tools/README; flags ghost refs; check 8 scans tracked files for your private markers (gitignored `tools/PRIVATE-MARKERS.list` — seed yours; policy: BOUNDARY.md) |
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |
 | `new-project.ps1/.sh` | (OGDK only) scaffold App/Game project |
 | `new-reference-page.ps1/.sh` | scaffold a reference page + its COVERAGE.md row in one shot: `-n slug -c "Title" -s "source/path"` from project root. Fill the page, commit with the component |
-| `propagate-tools.ps1/.sh` | (OGDK only) update an EXISTING project's tools from the kit: `.\tools\propagate-tools.ps1 -Target <project-root> [-Skills]`. List of what travels: `tools/PROPAGATE.list` |
+| `propagate-tools.ps1/.sh` | (OGDK only) update EXISTING project tools from the kit: `-Target <project-root>` or `-All` (your gitignored `tools/TARGETS.list`), `[-Skills]`. What travels: `tools/PROPAGATE.list`; stamps `tools/KIT-VERSION` in targets |
 | `release-notes.ps1/.sh` | draft release notes from git log (latest tag → HEAD, or pass tags). Prints markdown — redirect to file, edit, ship |
 
 Linux: `chmod +x tools/*.sh` once after fresh clone if scripts won't run.

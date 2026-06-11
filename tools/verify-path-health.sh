@@ -87,6 +87,13 @@ else
     warn "node not found (only matters for app-track projects)"
 fi
 
+# Provenance: which kit commit this repo's tools came from (projects only;
+# stamped by new-project/propagate-tools - absent in the kit itself and in
+# repos that have not re-propagated yet).
+if [ -f "$REPO_ROOT/tools/KIT-VERSION" ]; then
+    printf '[INFO] tools provenance: %s\n' "$(head -1 "$REPO_ROOT/tools/KIT-VERSION")"
+fi
+
 echo
 echo "--------------------------------------"
 if [ "$issues" -eq 0 ]; then

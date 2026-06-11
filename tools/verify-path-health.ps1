@@ -122,6 +122,15 @@ if (-not $javaHome) {
     Write-Host "[PASS] JAVA_HOME -> $javaHome" -ForegroundColor Green
 }
 
+# Provenance: which kit commit this repo's tools came from (projects only;
+# stamped by new-project/propagate-tools - absent in the kit itself and in
+# repos that have not re-propagated yet).
+$kvFile = Join-Path $repoRoot 'tools\KIT-VERSION'
+if (Test-Path $kvFile) {
+    $kv = (Get-Content $kvFile -Encoding UTF8 | Select-Object -First 1)
+    Write-Host "[INFO] tools provenance: $kv" -ForegroundColor Cyan
+}
+
 # Summary
 Write-Host ""
 Write-Host "--------------------------------------" -ForegroundColor Cyan
@@ -135,3 +144,4 @@ if ($issues.Count -eq 0) {
     Write-Host "  Use: .\tools\launch-claude-clean.ps1 instead" -ForegroundColor Cyan
 }
 Write-Host "--------------------------------------" -ForegroundColor Cyan
+exit $issues.Count
