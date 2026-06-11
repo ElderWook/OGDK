@@ -18,8 +18,10 @@ description: Run the OGDK session-end protocol — verification gate, docs-with-
    off silently broken state.
 2. **Docs-with-code check:** for every code change this session, confirm the relevant
    doc (`docs/core|presentation|adapters|workflow`) was updated in the same commit.
-3. **Plan lifecycle:** if a plan was completed, graduate its content into `docs/core/`
-   and move the plan to `docs/plans/archive/`.
+3. **Plan lifecycle:** if a plan was completed, graduate its content into `docs/core/`,
+   **create/update the `docs/reference/` page for every component it shipped**
+   (its §Documentation impact list; template in `docs/reference/COMPONENT-TEMPLATE.md`),
+   and only then move the plan to `docs/plans/archive/`. No reference page, no archive.
 4. **Update `docs/STATUS.md`** (the handoff — most important step):
    - Last updated date, branch, version
    - What landed this session (with commit hashes)
