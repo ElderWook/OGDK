@@ -79,6 +79,73 @@ findings merge through the normal lessons→retro pipeline, not git branches.
 - [ ] Run `kit-retro` at milestones or when a LESSONS.md hits 5+ OPEN entries
 - [ ] Connect GitHub MCP/connector for chat-side PR + issue work once available
 
+## Sprint workstreams (2026-06-12 — pre-hiatus push; plan of record)
+
+Declared during the founder's gung-ho window. Order matters: WS1 blocks adding any
+collaborator; WS2/WS3 are share-readiness depth.
+
+### WS1 — Privacy & IP boundary (BLOCKS collaborator invite)
+
+Goal: personal/private-project data fully stripped from the kit and mechanically
+prevented from returning — in BOTH directions (founder's data out; collaborators'
+project IP never in).
+
+- [ ] **Sweep the kit** for private context: kit ROADMAP currently names DevKitGhost
+      phases/PPA and the game slate (move specifics to project repos; kit speaks
+      abstractly: "hardware project", "first game title"); kit LESSONS entries
+      containing `C:\Users\<name>` paths and machine specifics (genericize);
+      user-notes repo map + Arch checklist username; any email/handle scans
+- [ ] **user-notes disposition decision:** it's per-OWNER by nature. Proposal:
+      keep the file (check-kit-docs depends on it) but make it the generic
+      "operator's crib sheet" — personal repo maps and project pointers move to a
+      gitignored `user-notes.local.md` companion. DECIDE before sweep.
+- [ ] **Mechanical guard — check-kit-docs check 8:** scan tracked kit files
+      against a `PRIVATE-MARKERS.list` (gitignored, per-owner: usernames, emails,
+      project codenames, home paths). FAIL on hit. Twin rule applies.
+- [ ] **Inbound protection — `BOUNDARY.md` policy:** what may enter the kit
+      (generic process, genericized lessons, anonymized findings) vs never
+      (project code, project names without consent, anything from a
+      collaborator's repos; kit-level LESSONS must be scrubbed of project
+      specifics — project LESSONS stay in project repos). Referenced from
+      GETTING-STARTED Stage 5 + kit AGENTS rules.
+- [ ] **History audit:** private context already in git history (kit ROADMAP
+      revisions etc.). Decide: acceptable for trusted private collab now +
+      history rewrite ONLY if/when going public (filter-repo; ask-first list).
+
+### WS2 — Feature-driven app skeletons (open the track beyond the proven combo)
+
+Goal: a user states the features their app needs; the stack guides the leanest
+correct skeleton — the proven Tauri+Svelte+SQLite+relay shape becomes ONE preset,
+not the only path.
+
+- [ ] `app/APP-ARCHITECT.md`: feature→module decision guide (needs offline? →
+      local-first store pattern · multi-device? → sync+authority model · mobile? →
+      $platform bridge · heavy docs/PDF? → render module · none of the above? →
+      delete that module). Composable: every module optional except the core
+      invariants (exact math, durable writes, integrity)
+- [ ] Expand the README app mermaid into the composable view: modules drawn as
+      optional blocks with their "include when..." conditions
+- [ ] Scaffolder follow-up (later, not sprint): `-Features` flag or interactive
+      prompt mapping answers to skeleton dirs — design only for now
+- [ ] Invariants vs choices made explicit in app/STACK.md: what is LAW regardless
+      of combination vs what was merely the origin app's choice
+
+### WS3 — Engine portability for the game track
+
+Goal: a future engine port (Godot/Unity/custom) is a guided re-implementation,
+not archaeology. Honest framing: UE code does NOT port; architecture, data, and
+design DO — maximize the share that ports.
+
+- [ ] `game/conventions/engine-portability.md`: the portable core (one-way
+      dependency pattern, feature-module decomposition, data-driven tuning,
+      tag-based identity) vs the engine-bound shell (UE APIs, BP, GAS specifics);
+      rule: gameplay DESIGN data lives in engine-neutral sources where cheap
+      (tables/JSON imported into engine assets, not authored only inside them)
+- [ ] "Engine boundary" rule in game/STACK.md: every GF_ plugin's reference page
+      documents its engine-API surface — that section IS the port checklist
+- [ ] GDD discipline already helps (mechanics specified engine-neutrally in
+      GDDs/plans); make that an explicit convention line
+
 ## Future tracks (recorded intent — NOT started; rule of two governs)
 
 Tracks the kit will likely grow, logged here so the intent survives sessions.
