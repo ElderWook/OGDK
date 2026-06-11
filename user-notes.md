@@ -129,7 +129,7 @@ If gate.sh passes on Arch, cross-platform parity is proven end-to-end.
 |--------|------|
 | `gate.ps1/.sh` | **THE GATE — the only pre-commit command I need to remember.** Chains integrity + coverage + that repo's tests/builds. Exit 0 = commit. (gate.template.* = scaffolder source) |
 | `verify-path-health.ps1/.sh` | session-start env gate (MSYS2 poison / NTFS mount / identity / LFS) |
-| `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, git fsck) — run after heavy AI writes |
+| `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, .py compile, script-syntax parse, git fsck) — run after heavy AI writes |
 | `check-reference-coverage.ps1/.sh` | docs gate: every component tracked to a reference page; flags STALE/MISSING |
 | `check-kit-docs.ps1/.sh` | (OGDK only) keeps THIS file honest: twin rule + every script documented here and in tools/README; flags ghost refs |
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |

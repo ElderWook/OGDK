@@ -75,6 +75,29 @@ if ($pyFiles.Count -eq 0) {
     }
 }
 
+# Check 3b: PowerShell scripts parse (catches mid-file truncation of .ps1 - the
+# 2026-06-12 DevKitGhost verify-path-health lesson: a truncated .ps1 sat committed
+# and undetected because nothing parsed project scripts).
+# Platform difference (documented): the .sh twin validates *.sh via bash -n instead;
+# each platform parses what it can execute.
+$psFiles = @(git ls-files '*.ps1' 2>$null)
+$psBad = @()
+foreach ($f in $psFiles) {
+    if (-not (Test-Path $f)) { continue }
+    $tokens = $null; $parseErrors = $null
+    [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $f).Path, [ref]$tokens, [ref]$parseErrors)
+    if ($parseErrors -and $parseErrors.Count -gt 0) { $psBad += "$f : $($parseErrors[0].Message)" }
+}
+if ($psFiles.Count -eq 0) {
+    Write-Host '[PASS] no tracked .ps1 files (parse check not applicable)' -ForegroundColor Green
+} elseif ($psBad.Count -gt 0) {
+    Write-Host '[FAIL] PowerShell files do not parse (possible truncation):' -ForegroundColor Red
+    $psBad | ForEach-Object { Write-Host "       $_" -ForegroundColor Yellow }
+    $issues++
+} else {
+    Write-Host '[PASS] all tracked .ps1 files parse' -ForegroundColor Green
+}
+
 # Check 4: trailing-newline smell test on source/docs
 $noEol = @()
 foreach ($f in (git ls-files 2>$null | Where-Object { $_ -match '\.(py|sh|md)$' })) {

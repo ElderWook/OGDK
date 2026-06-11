@@ -8,7 +8,7 @@ on BSD tools. If a Mac ever joins the fleet, that's a deliberate porting task.
 | Pair | Purpose |
 |------|---------|
 | `verify-path-health.{ps1,sh}` | session-start environment gate. Windows: MSYS2/WSL PATH poisoning, malformed PATH, cloud-sync overlays. Linux: NTFS-mount hazard, git identity, LFS, autocrlf. |
-| `verify-file-integrity.{ps1,sh}` | pre-commit corruption gate: NUL bytes in tracked text files (zero-fill signature), .py compile check (truncation), trailing-newline smell test, `git fsck`. Run after heavy agent writes, before committing. |
+| `verify-file-integrity.{ps1,sh}` | pre-commit corruption gate: NUL bytes in tracked text files (zero-fill signature), .py compile check (truncation), script-syntax parse (.ps1 via PowerShell parser on Windows / .sh via `bash -n` on Linux — documented platform difference), trailing-newline smell test, `git fsck`. Run after heavy agent writes, before committing. |
 | `check-reference-coverage.{ps1,sh}` | documentation gate: parses `docs/reference/COVERAGE.md`, fails on pages that don't exist, warns on STALE pages (source committed after page) and MISSING backlog. Run at session end. |
 | `check-kit-docs.{ps1,sh}` | (kit only, not propagated) self-check: twin rule, user-notes.md + this README mention every script, no ghost references to deleted scripts. Run before any kit commit. |
 | `gate.{ps1,sh}` | THE GATE — one command per repo: integrity → coverage → project tests/builds, exit 0 or no commit. Kit ships `gate.template.{ps1,sh}` via the scaffolder; each project fills its §project checks. The kit's own gate runs kit-docs + integrity. |

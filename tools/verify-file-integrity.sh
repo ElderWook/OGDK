@@ -61,6 +61,21 @@ else
     warn "python3 not found - .py truncation check SKIPPED (install python3 to restore this gate)"
 fi
 
+# Check 3b: shell scripts parse via bash -n (catches mid-file truncation of .sh).
+# Platform difference (documented): the .ps1 twin validates *.ps1 via the PowerShell
+# parser instead; each platform parses what it can execute.
+sh_bad=""
+while IFS= read -r f; do
+    [ -f "$f" ] || continue
+    bash -n "$f" 2>/dev/null || sh_bad="$sh_bad  $f"$'\n'
+done < <(git ls-files '*.sh' 2>/dev/null || true)
+if [ -n "$sh_bad" ]; then
+    fail "shell scripts do not parse (possible truncation):"
+    printf '%s' "$sh_bad"
+else
+    pass "all tracked .sh files parse (bash -n)"
+fi
+
 # Check 4: tracked text files ending mid-line (no trailing newline = truncation smell)
 noeol=""
 while IFS= read -r f; do
