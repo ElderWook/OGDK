@@ -139,15 +139,16 @@ Goal: a future engine port (Godot/Unity/custom) is a guided re-implementation,
 not archaeology. Honest framing: UE code does NOT port; architecture, data, and
 design DO — maximize the share that ports.
 
-- [ ] `game/conventions/engine-portability.md`: the portable core (one-way
-      dependency pattern, feature-module decomposition, data-driven tuning,
-      tag-based identity) vs the engine-bound shell (UE APIs, BP, GAS specifics);
-      rule: gameplay DESIGN data lives in engine-neutral sources where cheap
-      (tables/JSON imported into engine assets, not authored only inside them)
-- [ ] "Engine boundary" rule in game/STACK.md: every GF_ plugin's reference page
-      documents its engine-API surface — that section IS the port checklist
-- [ ] GDD discipline already helps (mechanics specified engine-neutrally in
-      GDDs/plans); make that an explicit convention line
+- [x] `game/conventions/engine-portability.md` — DONE 2026-06-12: three-layer
+      model (design ports 100% / data ~100% via neutral-sources rule / code ports
+      as SHAPE); engine-abstraction wrapper layer explicitly DECLINED (recorded —
+      costs every feature daily to maybe save a hypothetical port)
+- [x] Engine boundary rule — DONE 2026-06-12: game/STACK.md module rule 8; every
+      game component's reference page carries an **Engine surface** section; the
+      sections collectively ARE the port checklist. Propagated to the game repo
+      (conventions + gamefeature-pattern reference updated)
+- [x] GDD discipline made explicit — DONE 2026-06-12 (design layer of the
+      three-layer model: mechanics in design terms, never engine terms)
 
 ## Future tracks (recorded intent — NOT started; rule of two governs)
 
