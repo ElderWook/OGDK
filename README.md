@@ -60,7 +60,7 @@ docs/00-START-HERE.md → AGENTS.md → docs/STATUS.md → active plan → role 
 
 ## Track guides
 
-- [app/STACK.md](./app/STACK.md) — the web/local/mobile stack, proven in OpenBook
+- [app/STACK.md](./app/STACK.md) — the web/local/mobile stack, proven in the origin app project
 - [game/STACK.md](./game/STACK.md) — Unreal architecture: thin game, plugin modules, perf budgets
 
 ## Framework maps

@@ -28,16 +28,16 @@ Format: see docs-template/LESSONS.md.
 **Status:** CODIFIED 2026-06-11, AI-PARITY.md §4 (reads lag too) + this retro buffer.
 
 ## 2026-06-11 UE freshness check compared plugin sources to game DLL
-**What happened:** DevSandbox gate failed forever after plugin-only rebuilds; plugin code never updates the game DLL.
+**What happened:** the game repo's gate failed forever after plugin-only rebuilds; plugin code never updates the game DLL.
 **Root cause:** gate design assumed one DLL; modular architecture compiles per-plugin.
 **Proposed fix:** compare against newest editor DLL across game + plugins.
-**Status:** CODIFIED 2026-06-11, DevSandbox tools/gate.{ps1,sh}.
+**Status:** CODIFIED 2026-06-11, the game repo's tools/gate.{ps1,sh}.
 
 ## 2026-06-11 Broken Python stub read as file corruption
 **What happened:** integrity check FAILed every .py file because the machine's python was a broken launcher stub (0x800702E4) — the checker blamed the files.
 **Root cause:** scripts trusted Get-Command without verifying the interpreter launches.
 **Proposed fix:** probe python/py/python3 with --version before use; distinct env-vs-file messaging.
-**Status:** CODIFIED 2026-06-11, verify-file-integrity.ps1 + DevKitGhost gate.ps1.
+**Status:** CODIFIED 2026-06-11, verify-file-integrity.ps1 + the affected project's gate.ps1.
 
 ## 2026-06-11 Global agent config silently overrode a read-only repo instruction
 **What happened:** during the first cross-vendor parity test (Gemini, explicitly read-only), the agent ran a global agy "unified session" script (`update_unified_history.ps1`) — an instruction layer neither the prompt nor the repo could see. The chain-following itself scored perfectly.
@@ -52,13 +52,13 @@ Format: see docs-template/LESSONS.md.
 **Status:** CODIFIED 2026-06-11 (script genericized, all repos); checker shipped same day — check-kit-docs check 6 (C:\Users\, /home/, /Users/ scan over tools/).
 
 ## 2026-06-11 Full kit review found latent drift hazards before they fired
-**What happened:** an intensive review (modularity/stability/automation) found: a duplicate hand-maintained reference Index next to the machine-checked COVERAGE.md; DOCUMENTATION-VERSIONING-GUIDE shipping OpenBook/WyeR specifics into every project (kit rule 3 violation) and a second, conflicting plan-lifecycle vocabulary — file was also truncated mid-sentence since import; tools/README claiming macOS support the GNU-only scripts don't have; new-reference-page mangling titles containing sed metacharacters (& #); verify-file-integrity.sh silently skipping the .py check when python3 is absent; tool propagation hardcoded in two scaffolders with no path to existing projects.
+**What happened:** an intensive review (modularity/stability/automation) found: a duplicate hand-maintained reference Index next to the machine-checked COVERAGE.md; DOCUMENTATION-VERSIONING-GUIDE shipping origin-project specifics into every project (kit rule 3 violation) and a second, conflicting plan-lifecycle vocabulary — file was also truncated mid-sentence since import; tools/README claiming macOS support the GNU-only scripts don't have; new-reference-page mangling titles containing sed metacharacters (& #); verify-file-integrity.sh silently skipping the .py check when python3 is absent; tool propagation hardcoded in two scaffolders with no path to existing projects.
 **Root cause:** rules existed as prose faster than checks existed as scripts; day-1 imports never re-audited against kit rule 3.
 **Proposed fix:** single manifest (Index deleted); guide rewritten generic with ONE lifecycle (Proposed→Active→Completed→Archived); honest Linux-only claim; sed-escape hardening; explicit skip WARN; PROPAGATE.list + propagate-tools.{ps1,sh} consumed by both scaffolders.
 **Status:** CODIFIED 2026-06-11, this commit set.
 
 ## 2026-06-12 Truncated .ps1 sat committed and undetected for a day
-**What happened:** DevKitGhost's verify-path-health.ps1 was truncated mid-string at its final line (corruption-era propagation, pre propagate-tools) and lived in git unnoticed until the user ran it after the Linux trip — first parse error on invocation.
+**What happened:** a project's verify-path-health.ps1 was truncated mid-string at its final line (corruption-era propagation, pre propagate-tools) and lived in git unnoticed until the operator ran it after the Linux trip — first parse error on invocation.
 **Root cause:** detection gap — integrity checks compiled .py but never parsed .ps1/.sh; the gate doesn't invoke path-health; propagation predated byte-verification.
 **Proposed fix:** verify-file-integrity gains script-syntax checks (PowerShell parser for *.ps1 on Windows twin; `bash -n` for *.sh on Linux twin — documented platform difference); repair delivered via propagate-tools (its first real mission).
 **Status:** CODIFIED 2026-06-12, verify-file-integrity.{ps1,sh} + propagate run.

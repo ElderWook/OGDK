@@ -219,12 +219,27 @@ what happened.
 
 ## Stage 4 — Working here (your first real session)
 
+**⭐ First: create YOUR private notes file (one minute — do not skip).**
+The tracked [user-notes.md](./user-notes.md) is the *shared, generic* operator crib
+sheet for everyone. Your personal world — repo locations on your machine, usernames,
+project build commands, machine quirks — goes in a companion file that **git ignores
+and never commits**, so you can write freely without it ever leaking into the repo:
+
+```powershell
+notepad user-notes.local.md        # creates it (Linux: nano user-notes.local.md)
+```
+
+Start it with whatever helps you. It's already covered by `.gitignore`. AI agents
+working in this repo are instructed to route personal and machine-specific notes
+there automatically — your crib sheet stays current across sessions WITHOUT ever
+entering version control. Tracked notes = everyone's; `.local` notes = yours alone.
+
 - Start every session by having your agent read `AGENTS.md`. It chains to
   everything else.
 - Before ANY commit: `.\tools\gate.ps1` must end with `GATE PASSED`.
   No green, no commit. That's the whole discipline.
-- [user-notes.md](./user-notes.md) is the owner's personal cheat sheet — handy
-  reading, but `AGENTS.md` is the law.
+- [user-notes.md](./user-notes.md) is the shared crib sheet — handy
+  reading, but `AGENTS.md` is the law. Your personal notes: `user-notes.local.md`.
 - New to git itself? The short version you need here: `git status` shows what
   changed (run it constantly — it can never hurt anything), `git add -A` stages
   your changes, `git commit -m "type: what and why"` saves them,

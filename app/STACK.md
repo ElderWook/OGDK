@@ -1,6 +1,6 @@
 # App track — web / local / mobile stack
 
-Proven in **OpenBook** (`C:\OpenBook_Release`). One codebase, three surfaces:
+Proven in the **origin app project** (a private Oasis production app). One codebase, three surfaces:
 desktop (Tauri), mobile (PWA/wrapped web), and an optional relay server for
 device-to-device sync. Local-first by default.
 
@@ -40,7 +40,7 @@ device-to-device sync. Local-first by default.
 
 ## packages/ (rule of two)
 
-Empty until a second project needs a module. Extraction queue from OpenBook, in order
+Empty until a second project needs a module. Extraction queue from the origin app, in order
 of generality: `money-cents` → `atomic-sqlite-persist` → `migrations-runner` →
 `pdf-engine` (theme/primitives + generators split) → sync parity-test harness.
 

@@ -15,7 +15,7 @@ Run `.\tools\verify-path-health.ps1` before any file writes.
    second project needs them — never extracted speculatively.
 3. **Everything in `docs-template/`, `skills/`, and `*.template.md` must work for a
    reader with ZERO context** — any model, any account, cold start. If a change
-   assumes knowledge of OpenBook or a specific game, it's wrong.
+   assumes knowledge of any origin project or a specific game, it's wrong.
 4. **Templates use `{{TOKEN}}` placeholders** only for values `tools/new-project.ps1`
    replaces (`{{PROJECT_NAME}}`, `{{DATE}}`). Adding a token means updating the script
    in the same commit.
