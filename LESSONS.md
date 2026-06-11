@@ -46,7 +46,7 @@ Format: see docs-template/LESSONS.md.
 **Status:** CODIFIED 2026-06-11, AI-PARITY.md (kit + projects); agy global cleanup is the user's follow-up.
 
 ## 2026-06-11 Kit shipped user-hardcoded launcher for months-of-future use
-**What happened:** launch-claude-clean.ps1 carried C:\Users\operator\... paths from OpenBook into every scaffolded project; would break on any other machine.
+**What happened:** launch-claude-clean.ps1 carried hardcoded `C:\Users\<owner>\...` paths from its origin project into every scaffolded project; would break on any other machine.
 **Root cause:** day-1 copy was never re-audited against kit rule 3 (zero-context usability); no check covers hardcoded user paths.
 **Proposed fix (open part):** consider a check-kit-docs rule flagging `C:\\Users\\` in tools/.
 **Status:** CODIFIED 2026-06-11 (script genericized, all repos); checker shipped same day — check-kit-docs check 6 (C:\Users\, /home/, /Users/ scan over tools/).
