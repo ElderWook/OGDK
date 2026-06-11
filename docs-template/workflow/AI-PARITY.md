@@ -20,6 +20,23 @@ any other left off with zero verbal handoff.** These are the mechanics.
 If a rule needs to exist, it goes in AGENTS.md. If a pointer file grows past ~10 lines,
 something is in the wrong place.
 
+**Rule precedence (the invisible-config problem).** Agent tools also carry global,
+user-level configuration (~/.claude, ~/.gemini, agy profiles, IDE rules) that the repo
+cannot see. Declared order, binding on every agent in this repo:
+
+1. **This repo's AGENTS.md and session chain win on any process conflict.** Global
+   config may set personal preferences (tone, editor, model choice) — never process
+   (logging schemes, write behavior, alternative session protocols).
+2. An agent whose global config instructs actions this repo forbids (e.g., writing
+   session logs into or about the repo, auto-running scripts) must follow the repo
+   and SAY SO, so the human can fix the global.
+3. Any global-vs-repo conflict that actually fires gets a LESSONS.md entry — globals
+   are invisible to other sessions, so the conflict must be made visible in the repo.
+
+Confirmed in practice 2026-06-11: a cross-vendor parity test (read-only by explicit
+instruction) still executed a global agy "unified session" script — the agent obeyed
+config neither the repo nor the prompt could see.
+
 ## 2. The contract every session signs
 
 **On start** — follow `docs/00-START-HERE.md`: PATH health (Windows) → AGENTS.md →
