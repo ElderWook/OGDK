@@ -73,6 +73,26 @@ VERIFY. Seeded with six real lessons from the build itself.
 - [ ] Run `kit-retro` at milestones or when a LESSONS.md hits 5+ OPEN entries
 - [ ] Connect GitHub MCP/connector for chat-side PR + issue work once available
 
+## Future tracks (recorded intent — NOT started; rule of two governs)
+
+Tracks the kit will likely grow, logged here so the intent survives sessions.
+Each activates only when its first real project starts (and extracts to a kit
+track when a second one exists):
+
+- **`embedded/` — firmware & low-level.** Seeded by DevKitGhost's bench phase
+  (toolchain pinning, flash/RAM size budgets as the embedded twin of perf
+  budgets, flashing-script twins, HIL test protocol, binary artifact policy,
+  bootloader/OTA concerns). Activation trigger: DevKitGhost Phase H1 or any
+  second embedded project.
+- **`retro/` — Xbox 360 console development. ❤️ Founder's origin story.**
+  Homebrew/hardware-research development for the console that got the founder
+  into tech. The user holds substantial existing material (community knowledge,
+  hardware notes — RGH/JTAG-era ecosystem) ready to be structured into the
+  track when it activates: toolchain + SDK conventions, hardware reference
+  pages, the same chain/gates/lessons process as every track. This one is
+  allowed to be a labor of love rather than a revenue line — the kit should
+  serve joy too. Activation trigger: the founder says "now."
+
 ## Anti-goals (the traps that would un-finish the kit)
 
 - **No speculative extraction.** Nothing enters `app/packages/` or OasisCore without
