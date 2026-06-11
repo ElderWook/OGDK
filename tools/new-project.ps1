@@ -41,6 +41,7 @@ if ($Type -eq 'Game') {
     Copy-Item -Recurse (Join-Path $kit 'game\conventions') (Join-Path $proj 'docs\core\conventions')
 } else {
     Set-Content -Path (Join-Path $proj '.gitignore') -Value @('node_modules/','dist/','*.sqlite','.env')
+    Set-Content -Path (Join-Path $proj '.gitattributes') -Value @('* text=auto','*.sh text eol=lf','*.ps1 text eol=crlf','*.bat text eol=crlf')
     Copy-Item (Join-Path $kit 'app\STACK.md') (Join-Path $proj 'docs\core\app-architecture.md')
 }
 

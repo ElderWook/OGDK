@@ -1,0 +1,46 @@
+# LESSONS — the learning loop's capture buffer (OGDK kit-level)
+
+> Append-only. Every session that hits **friction the system didn't prevent** logs it
+> here before ending (session-end skill, step 4). Entries are raw material for the
+> `kit-retro` skill, which periodically converts them into permanent upgrades to
+> skills, AGENTS rules, gate scripts, and reference docs — then marks them CODIFIED.
+
+Format: see docs-template/LESSONS.md.
+
+---
+
+## 2026-06-10 PS 5.1 here-strings parse-bomb with LF endings
+**What happened:** new-project.ps1 failed to parse on the user's machine; cause was here-strings in a file written with LF line endings.
+**Root cause:** no constraint existed on .ps1 authoring style for sandbox-written files.
+**Proposed fix:** ASCII-only / no-here-strings rule for all .ps1.
+**Status:** CODIFIED 2026-06-10, AGENTS.md twin rule + tools/README.md §Rules.
+
+## 2026-06-11 Sync-layer mount corrupted files via shell append
+**What happened:** a trailing-newline sweep appended through stale mount views, overwriting one byte mid-file in ~35 files across all repos.
+**Root cause:** no rule against partial/offset-dependent shell writes through the mount; stale views made the operation land at wrong offsets.
+**Proposed fix:** ban all shell-side file mutation through mounts except whole-file writes; file tools are authoritative.
+**Status:** CODIFIED 2026-06-11, AI-PARITY.md §4 + AGENTS templates + memory.
+
+## 2026-06-11 Coverage checker propagated truncated via mount cp
+**What happened:** check-reference-coverage.ps1 copies shipped truncated to all three projects (parse error at gate time).
+**Root cause:** cp from the kit mount reads stale views of host-written files — propagation itself was an unsafe mount read.
+**Proposed fix:** propagate kit files via host file tools or freshly bash-written content only; size/parse-verify after copy.
+**Status:** CODIFIED 2026-06-11, AI-PARITY.md §4 (reads lag too) + this retro buffer.
+
+## 2026-06-11 UE freshness check compared plugin sources to game DLL
+**What happened:** DevSandbox gate failed forever after plugin-only rebuilds; plugin code never updates the game DLL.
+**Root cause:** gate design assumed one DLL; modular architecture compiles per-plugin.
+**Proposed fix:** compare against newest editor DLL across game + plugins.
+**Status:** CODIFIED 2026-06-11, DevSandbox tools/gate.{ps1,sh}.
+
+## 2026-06-11 Broken Python stub read as file corruption
+**What happened:** integrity check FAILed every .py file because the machine's python was a broken launcher stub (0x800702E4) — the checker blamed the files.
+**Root cause:** scripts trusted Get-Command without verifying the interpreter launches.
+**Proposed fix:** probe python/py/python3 with --version before use; distinct env-vs-file messaging.
+**Status:** CODIFIED 2026-06-11, verify-file-integrity.ps1 + DevKitGhost gate.ps1.
+
+## 2026-06-11 Kit shipped user-hardcoded launcher for months-of-future use
+**What happened:** launch-claude-clean.ps1 carried C:\Users\operator\... paths from OpenBook into every scaffolded project; would break on any other machine.
+**Root cause:** day-1 copy was never re-audited against kit rule 3 (zero-context usability); no check covers hardcoded user paths.
+**Proposed fix (open part):** consider a check-kit-docs rule flagging `C:\\Users\\` in tools/.
+**Status:** CODIFIED 2026-06-11 (script genericized, all repos); checker idea OPEN.

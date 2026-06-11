@@ -1,0 +1,6 @@
+# Line endings: policy lives HERE, not in per-machine git config (dual-boot safe)
+* text=auto
+*.sh text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.pdf binary
