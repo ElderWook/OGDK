@@ -33,8 +33,14 @@ How each phase is verified. Game track: include the perf note
 (expected steady-state + worst-case cost, per game/conventions/performance.md).
 
 ## 6. Risks & mitigations
+
+## 7. Documentation impact
+Which `docs/reference/` pages this plan will CREATE or UPDATE when complete
+(one per shipped component). The plan cannot be archived until these exist —
+see docs/reference/README.md (the graduation rule).
 ```
 
 3. Register the plan in `docs/STATUS.md §Active plans` with status "Proposed".
-4. On approval, status → "Active". On completion, graduate content to `docs/core/`
-   and move the file to `docs/plans/archive/`.
+4. On approval, status → "Active". On completion: graduate content to `docs/core/`,
+   **write/update every reference page named in §7 (same commit)**, then move the
+   plan to `docs/plans/archive/`. No reference page, no archive.

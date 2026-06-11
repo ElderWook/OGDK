@@ -47,7 +47,9 @@ the short version: **if it isn't in the repo, the next session doesn't know it.*
 1. Run `tools/verify-file-integrity` (corruption check), then the verification gate (AGENTS.md).
 2. Update `docs/STATUS.md` — what moved, what's next, new hazards. This is the handoff;
    if it's not in STATUS.md, the next agent doesn't know it.
-3. Completed plans move to `docs/plans/archive/`; their content graduates into `core/`.
+3. Completed plans graduate: content into `core/`, a polished page per shipped
+   component into `reference/` (the SDK tier — see `reference/README.md`), THEN the
+   plan moves to `docs/plans/archive/`. No reference page, no archive.
 
 ## Why this exists
 Work rotates across models, accounts, and people. Context does not carry over — this

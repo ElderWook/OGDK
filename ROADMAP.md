@@ -61,9 +61,18 @@ prose to a runnable command per project.
   exception (it's structure, not logic).
 - **No kit polishing as procrastination.** Tooling work feels productive and ships
   nothing. After Phase 3, kit time is capped at milestone retros.
-- **No new doc types.** The chain is START-HERE → AGENTS → STATUS → plan → core. If
-  information doesn't fit, the answer is almost always "put it in an existing doc",
-  not a new category.
+- **No new doc types.** The chain is START-HERE → AGENTS → STATUS → plan → core →
+  reference. If information doesn't fit, the answer is almost always "put it in an
+  existing doc", not a new category.
+
+## The reference tier (added 2026-06-11)
+
+Every project carries `docs/reference/` — SDK-grade, one polished page per shipped
+component, written for consumers with zero session context (finish-line model:
+official platform SDK docs). Enforced by the graduation rule: **a plan cannot be
+archived until its reference pages exist** (plan-writer §7 names them up front;
+session-end checks them). This is how the "perfect docs of every component" goal
+survives contact with shipping pressure — it's a gate, not an aspiration.
 
 ## The steady-state loop (what life looks like after Phase 3)
 
