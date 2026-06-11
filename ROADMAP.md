@@ -69,6 +69,12 @@ step 4) → the `kit-retro` skill CODIFIES open lessons into skills/rules/script
 reference pages (human-approved — skills never self-modify silently) → the gates
 VERIFY. Seeded with six real lessons from the build itself.
 
+**Input valve (added 2026-06-12): the `repo-study` skill ("Student mode")** — study
+excellent external repos in an isolated workspace (never cloned into kit repos;
+license-disciplined; read-only) and convert their practices into LESSONS entries
+via ADOPT/ADAPT/DECLINE/CONFIRMS verdicts. Ideas flow in; foreign code does not;
+findings merge through the normal lessons→retro pipeline, not git branches.
+
 - [ ] Use the skills in real Claude Code sessions; log every chafe to LESSONS.md
 - [ ] Run `kit-retro` at milestones or when a LESSONS.md hits 5+ OPEN entries
 - [ ] Connect GitHub MCP/connector for chat-side PR + issue work once available
