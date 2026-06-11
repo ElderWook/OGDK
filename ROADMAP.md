@@ -12,8 +12,9 @@ Everything currently lives on one machine. One disk failure erases the LLC.
 - [x] Private GitHub repos pushed: `OGDK`, `DevSandbox`, `DevKitGhost` (+ the origin app on
       its pre-existing remote) — 2026-06-10
 - [x] LFS verified on GitHub UI ("Stored with Git LFS") — 2026-06-10
-- [ ] Clone test: fresh `git clone` to a temp dir, open/build the project (the real
-      proof; also the dual-boot bridge rehearsal)
+- [x] Clone test PASSED 2026-06-11: virgin DevKitGhost clone ran its full gate green;
+      DevSandbox clone pulled LFS content ("Filtering content") — the repo is the
+      whole truth, the kit travels
 - [x] Push-at-session-end in session-end skill + interruption protocol — 2026-06-10
 
 **Exit criteria:** a fresh `git clone` on a second machine yields a working project.
@@ -50,13 +51,16 @@ prose to a runnable command per project.
 
 **Exit criteria:** "did I break it?" is one command, same on both OSes.
 
-## Phase 4 — Session ergonomics (continuous, low priority)
+## Phase 4 — The learning loop (continuous; formalized 2026-06-11)
 
-- [ ] Use session-start/session-end/plan-writer skills in real Claude Code sessions;
-      edit them where they chafe; copy improvements back to the kit
-- [ ] Kit retro at every project milestone (~30 min): what did the kit fail to
-      prevent? One commit of fixes, no more
-- [ ] Connect GitHub MCP/connector for chat-side PR + issue work once repos are remote
+The kit actively learns: sessions CAPTURE friction (`docs/LESSONS.md`, session-end
+step 4) → the `kit-retro` skill CODIFIES open lessons into skills/rules/scripts/
+reference pages (human-approved — skills never self-modify silently) → the gates
+VERIFY. Seeded with six real lessons from the build itself.
+
+- [ ] Use the skills in real Claude Code sessions; log every chafe to LESSONS.md
+- [ ] Run `kit-retro` at milestones or when a LESSONS.md hits 5+ OPEN entries
+- [ ] Connect GitHub MCP/connector for chat-side PR + issue work once available
 
 ## Anti-goals (the traps that would un-finish the kit)
 

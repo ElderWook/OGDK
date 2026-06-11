@@ -1,79 +1,67 @@
+# Launches Claude Code from a guaranteed-clean PATH (no MSYS2, WSL, or Cygwin injection).
+#
+# WHY: MSYS2 coreutils (sed, cp, mv, git) injected into PATH use POSIX file APIs against
+# NTFS, producing zero-filled tails and truncation during rapid in-place writes - the
+# corruption class this kit guards against. This script rebuilds PATH from Windows-native
+# tools only, verifies the result, then launches claude.
+#
+# USAGE: .\tools\launch-claude-clean.ps1   (from a plain PowerShell terminal)
+# Twin: launch-claude-clean.sh (Linux runs the health gate then launches; no PATH surgery needed).
+$ErrorActionPreference = 'Continue'
 
-<#
-.SYNOPSIS
-    Launches claude.exe from a guaranteed-clean PATH (no MSYS2, WSL, or Cygwin injection).
-
-.DESCRIPTION
-    The truncation/corruption issue was traced to MSYS2 (C:\msys64\ucrt64\bin) being injected
-    into the process PATH when Claude Code or agy is launched from an MSYS2 terminal.
-    MSYS2 coreutils (sed, cp, mv, git) use POSIX file APIs against NTFS, which can produce
-    zero-filled tails and truncation — especially during rapid in-place writes.
-
-    This script sanitizes the PATH to only Windows-native tools before launching claude,
-    ensuring no Linux-emulation binaries can corrupt files.
-
-.USAGE
-    Right-click → "Run with PowerShell"   (or pin as a shortcut)
-    Or from a plain PowerShell terminal:  .\tools\launch-claude-clean.ps1
-#>
-
-# ── 1. Build a clean PATH (Windows-native tools only) ──────────────────────────
-$CLEAN_PATH = @(
+# -- 1. Build a clean PATH from Windows-native locations that exist on this machine ----
+$candidates = @(
     "$env:SystemRoot\system32",
     "$env:SystemRoot",
     "$env:SystemRoot\System32\Wbem",
     "$env:SystemRoot\System32\WindowsPowerShell\v1.0",
     "$env:SystemRoot\System32\OpenSSH",
-    "C:\Program Files\Git\cmd",
-    "C:\Program Files\Git\usr\bin",        # git's bundled Unix tools (safe on Windows)
-    "C:\Program Files\nodejs",
-    "C:\Users\operator\AppData\Local\agy\bin",
-    "C:\Users\operator\.cargo\bin",
-    "C:\Users\operator\.local\bin",            # claude.exe lives here
-    "C:\Users\operator\AppData\Roaming\npm",
-    "C:\Users\operator\AppData\Local\Programs\Antigravity IDE\bin",
-    "C:\Users\operator\AppData\Local\Microsoft\WindowsApps",
-    "C:\Users\operator\AppData\Local\Microsoft\WinGet\Links"
-) -join ';'
+    "$env:ProgramFiles\Git\cmd",
+    "$env:ProgramFiles\Git\usr\bin",       # git's bundled Unix tools (safe on Windows)
+    "$env:ProgramFiles\nodejs",
+    "$env:ProgramFiles\PowerShell\7",
+    "$env:USERPROFILE\.local\bin",          # claude.exe default install location
+    "$env:USERPROFILE\.cargo\bin",
+    "$env:USERPROFILE\.dotnet\tools",
+    "$env:APPDATA\npm",
+    "$env:LOCALAPPDATA\Microsoft\WindowsApps",
+    "$env:LOCALAPPDATA\Microsoft\WinGet\Links"
+)
+$env:PATH = ($candidates | Where-Object { $_ -and (Test-Path $_) }) -join ';'
 
-$env:PATH = $CLEAN_PATH
-
-# ── 2. Sanity-check: confirm MSYS2 is gone ─────────────────────────────────────
-$msysInPath = ($env:PATH -split ';') | Where-Object { $_ -match 'msys|ucrt|mingw|cygwin' }
-if ($msysInPath) {
-    Write-Warning "MSYS2 still detected in PATH after cleanup — aborting!"
-    $msysInPath | ForEach-Object { Write-Warning "  $_" }
+# -- 2. Sanity-check: confirm MSYS2/WSL/Cygwin are gone --------------------------------
+$bad = ($env:PATH -split ';') | Where-Object { $_ -match 'msys|ucrt|mingw|cygwin|\\wsl' }
+if ($bad) {
+    Write-Warning 'Linux-emulation paths still present after cleanup - aborting!'
+    $bad | ForEach-Object { Write-Warning "  $_" }
     exit 1
 }
 
-# ── 3. Verify git resolves to Windows Git, not MSYS2 ──────────────────────────
+# -- 3. Verify git resolves to Windows Git ---------------------------------------------
 $gitPath = (Get-Command git -ErrorAction SilentlyContinue).Source
 if ($gitPath -and $gitPath -notmatch 'Program Files\\Git') {
-    Write-Warning "git resolves to '$gitPath' — not Windows Git! Check your PATH."
-} else {
+    Write-Warning "git resolves to '$gitPath' - not Windows Git! Check your PATH."
+} elseif ($gitPath) {
     Write-Host "[OK] git -> $gitPath" -ForegroundColor Green
-}
-
-# ── 4. Confirm sed is NOT MSYS2 sed (it shouldn't exist in clean PATH) ─────────
-$sedPath = (Get-Command sed -ErrorAction SilentlyContinue).Source
-if ($sedPath -and $sedPath -match 'msys|ucrt|mingw') {
-    Write-Warning "sed resolves to MSYS2 sed: '$sedPath'"
-} elseif ($sedPath) {
-    Write-Host "[OK] sed -> $sedPath" -ForegroundColor Green
 } else {
-    Write-Host "[OK] sed not in PATH (expected — no MSYS2)" -ForegroundColor Green
+    Write-Warning 'git not found on the clean PATH'
 }
 
-# ── 5. Launch claude ───────────────────────────────────────────────────────────
-$claudeExe = "C:\Users\operator\.local\bin\claude.exe"
-if (-not (Test-Path $claudeExe)) {
-    Write-Error "claude.exe not found at $claudeExe"
+# -- 4. Locate claude -------------------------------------------------------------------
+$claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
+if (-not $claude) {
+    $fallback = Join-Path $env:USERPROFILE '.local\bin\claude.exe'
+    if (Test-Path $fallback) { $claude = $fallback }
+}
+if (-not $claude) {
+    Write-Error 'claude not found on the clean PATH (expected in %USERPROFILE%\.local\bin). Install Claude Code or add its location to the candidates list in this script.'
     exit 1
 }
 
-Write-Host ""
-Write-Host "Launching claude from clean Windows-native PATH..." -ForegroundColor Cyan
+# -- 5. Launch ---------------------------------------------------------------------------
+Write-Host ''
+Write-Host 'Launching claude from clean Windows-native PATH...' -ForegroundColor Cyan
+Write-Host "claude: $claude" -ForegroundColor DarkGray
 Write-Host "Working directory: $PWD" -ForegroundColor DarkGray
-Write-Host ""
-
-& $claudeExe @args
+Write-Host ''
+& $claude @args

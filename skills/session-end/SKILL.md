@@ -22,11 +22,15 @@ description: Run the OGDK session-end protocol — verification gate, docs-with-
    **create/update the `docs/reference/` page for every component it shipped**
    (its §Documentation impact list; template in `docs/reference/COMPONENT-TEMPLATE.md`),
    and only then move the plan to `docs/plans/archive/`. No reference page, no archive.
-4. **Update `docs/STATUS.md`** (the handoff — most important step):
+4. **Log lessons (the learning loop):** if this session hit friction the system
+   didn't prevent — unclear rule, wrong script output, repeated mistake, manual step
+   that should be mechanical — append an entry to `docs/LESSONS.md` (format inside).
+   30 seconds now; the kit-retro skill turns it into a permanent upgrade later.
+5. **Update `docs/STATUS.md`** (the handoff — most important step):
    - Last updated date, branch, version
    - What landed this session (with commit hashes)
    - New/resolved hazards
    - "Next up" for the next session
    Keep it to one screen; move stale content out.
-5. **Commit** docs updates with the work (one concern per commit), then **push**.
-6. Report to the user: gate results, what landed, what the next session should do first.
+6. **Commit** docs updates with the work (one concern per commit), then **push**.
+7. Report to the user: gate results, what landed, what the next session should do first.

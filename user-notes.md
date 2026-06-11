@@ -98,6 +98,23 @@ git remote set-url origin <url>  # fix a wrong bookmark
 Dual-boot rule: Windows and Arch each keep their OWN clone on native filesystem;
 they sync **only** through GitHub (push on one, pull on the other). Never cross-mount.
 
+### Arch first-boot checklist (the Linux test)
+
+```bash
+sudo pacman -Syu git git-lfs python nodejs npm
+git lfs install                                  # once per machine
+git config --global user.name  "core-maintainer"
+git config --global user.email "<my github email>"
+git config --global core.autocrlf input          # belt; .gitattributes is suspenders
+mkdir -p ~/dev && cd ~/dev                       # NATIVE filesystem — never the NTFS partition
+git clone https://github.com/core-maintainer/OGDK.git
+git clone https://github.com/core-maintainer/DevKitGhost.git
+cd DevKitGhost && chmod +x tools/*.sh
+./tools/verify-path-health.sh                    # expect ALL CHECKS PASSED (native fs, identity, lfs)
+./tools/gate.sh                                  # expect GATE PASSED — that's the whole Linux test
+```
+If gate.sh passes on Arch, cross-platform parity is proven end-to-end.
+
 ## 7. Scripts (tools\ in every project — .ps1 Windows / .sh Linux twins)
 
 | Script | What |
@@ -155,6 +172,7 @@ checks + tests/builds in one shot.
 |----------|------|
 | what are the rules here? | `AGENTS.md` (repo root) |
 | what's in flight right now? | `docs\STATUS.md` |
+| what has the system learned / what should it? | `docs\LESSONS.md` (capture) + kit-retro skill (codify) |
 | why was X designed this way? | `docs\plans\` (incl. rejected options) |
 | how do I USE a shipped component? | `docs\reference\` (SDK tier; COVERAGE.md = index of everything) |
 | how do the modules/perf/naming work? | `docs\core\conventions\` |

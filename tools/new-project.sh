@@ -52,6 +52,7 @@ if [ "$TYPE" = "Game" ]; then
     cp -r "$KIT/game/conventions" "$PROJ/docs/core/conventions"
 else
     printf 'node_modules/\ndist/\n*.sqlite\n.env\n' > "$PROJ/.gitignore"
+    printf '* text=auto\n*.sh text eol=lf\n*.ps1 text eol=crlf\n*.bat text eol=crlf\n' > "$PROJ/.gitattributes"
     cp "$KIT/app/STACK.md" "$PROJ/docs/core/app-architecture.md"
 fi
 
