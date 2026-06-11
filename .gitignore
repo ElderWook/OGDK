@@ -1,6 +1,7 @@
 # Per-operator private files — NEVER committed (privacy boundary, WS1)
 user-notes.local.md
 tools/PRIVATE-MARKERS.list
+tools/TARGETS.list
 
 # OS junk
 .DS_Store

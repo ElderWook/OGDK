@@ -61,6 +61,27 @@ while IFS='|' read -r _ comp src page status _; do
 done < "$MANIFEST"
 
 [ "$backlog" -gt 0 ] && warn "backlog: $backlog component(s) lack reference pages - see docs/reference/COVERAGE.md"
+
+# Learning-loop nudge: count OPEN lessons (the kit-retro trigger, now mechanical)
+if [ -f "docs/LESSONS.md" ]; then
+    open_lessons=$(grep -c 'OPEN' docs/LESSONS.md 2>/dev/null || echo 0)
+    if [ "$open_lessons" -ge 5 ]; then
+        warn "$open_lessons OPEN lesson(s) in docs/LESSONS.md - run the kit-retro skill (threshold: 5)"
+    elif [ "$open_lessons" -gt 0 ]; then
+        printf '[INFO] %s OPEN lesson(s) in docs/LESSONS.md (kit-retro at 5)\n' "$open_lessons"
+    fi
+fi
+
+# Handoff freshness: STATUS.md trailing HEAD by >3 days means sessions are
+# committing without updating the handoff (session-end step 5 skipped)
+if [ "$HAVE_GIT" = 1 ] && [ -f "docs/STATUS.md" ]; then
+    status_ts=$(git log -1 --format=%ct -- docs/STATUS.md 2>/dev/null || echo 0)
+    head_ts=$(git log -1 --format=%ct 2>/dev/null || echo 0)
+    if [ "$status_ts" != 0 ] && [ "$head_ts" != 0 ] && [ $((head_ts - status_ts)) -gt 259200 ]; then
+        warn "docs/STATUS.md last committed >3 days before HEAD - handoff may be stale (session-end step 5)"
+    fi
+fi
+
 echo "--------------------------------------"
 echo "  backlog (missing pages): $backlog   stale: $stale   hard issues: $issues"
 if [ "$issues" -eq 0 ]; then

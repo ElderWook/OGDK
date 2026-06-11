@@ -32,6 +32,10 @@ foreach ($raw in (Get-Content (Join-Path $kit 'tools\PROPAGATE.list') -Encoding 
 }
 Copy-Item (Join-Path $kit 'tools\gate.template.ps1') (Join-Path $proj 'tools\gate.ps1')
 Copy-Item (Join-Path $kit 'tools\gate.template.sh')  (Join-Path $proj 'tools\gate.sh')
+# Provenance stamp: which kit commit these tools came from (drift visibility)
+$kitver = 'unknown'
+try { $v = git -C $kit rev-parse --short HEAD 2>$null; if ($LASTEXITCODE -eq 0 -and $v) { $kitver = $v.Trim() } } catch { }
+Set-Content -Path (Join-Path $proj 'tools\KIT-VERSION') -Value "$kitver $(Get-Date -Format yyyy-MM-dd) (kit commit + propagation date - written by propagate-tools/new-project; do not edit)" -Encoding ASCII
 
 # 4. Skills for Claude Code
 New-Item -ItemType Directory -Path (Join-Path $proj '.claude') | Out-Null
@@ -104,3 +108,4 @@ if ($Type -eq 'Game') {
 }
 Write-Host '  3. Write your first plan in docs/plans/, update docs/STATUS.md'
 Write-Host '  4. See OGDK checklists/new-project.md for the full list'
+exit 0

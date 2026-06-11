@@ -67,3 +67,4 @@ echo "Tracked  $MAN: $ROW"
 echo
 echo "Next: fill in the page sections, then commit page + manifest + component together."
 echo "Verify: ./tools/check-reference-coverage.sh"
+exit 0

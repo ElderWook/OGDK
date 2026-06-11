@@ -63,6 +63,18 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** verify-file-integrity gains script-syntax checks (PowerShell parser for *.ps1 on Windows twin; `bash -n` for *.sh on Linux twin — documented platform difference); repair delivered via propagate-tools (its first real mission).
 **Status:** CODIFIED 2026-06-12, verify-file-integrity.{ps1,sh} + propagate run.
 
+## 2026-06-12 Truncation hid inside a comment and passed bash -n
+**What happened:** during verification, a stale mount view of check-kit-docs.sh was cut off mid-COMMENT ~30 lines early — `bash -n` passed it (a file ending in a comment is valid syntax) and the missing checks simply never ran, silently.
+**Root cause:** syntax parsing proves parseability, not completeness; nothing asserted "this file has an ending."
+**Proposed fix:** EOF sentinel — every tools script must END with a line starting `exit` or `# EOF`; verify-file-integrity FAILs otherwise (check 4b).
+**Status:** CODIFIED 2026-06-12, verify-file-integrity.{ps1,sh} check 4b + sentinel lines added to all kit scripts.
+
+## 2026-06-12 Kit had no provenance or fleet view for propagated tools
+**What happened:** stack review found projects can't tell which kit commit their tools came from, and tool fixes required remembering every project — the exact gap the truncated-script incident exploited.
+**Root cause:** propagation was one-target with no version stamp; drift invisible until breakage.
+**Proposed fix:** tools/KIT-VERSION stamped by new-project + propagate-tools (printed by verify-path-health each session); propagate-tools -All/--all over gitignored tools/TARGETS.list.
+**Status:** CODIFIED 2026-06-12, propagate-tools.{ps1,sh} + new-project.{ps1,sh} + verify-path-health.{ps1,sh}.
+
 ## 2026-06-11 Pre-commit hook for THE GATE considered, declined
 **What happened:** review flagged that the gate is honor-system — nothing mechanically stops an ungated commit.
 **Root cause:** by design; surfaced as a conscious decision rather than a defect.

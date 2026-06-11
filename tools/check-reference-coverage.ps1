@@ -66,6 +66,27 @@ foreach ($line in (Get-Content $manifest -Encoding UTF8)) {
 if ($backlog -gt 0) {
     Write-Host "[WARN] backlog: $backlog component(s) lack reference pages - see docs/reference/COVERAGE.md" -ForegroundColor Yellow
 }
+# Learning-loop nudge: count OPEN lessons (the kit-retro trigger, now mechanical)
+if (Test-Path 'docs/LESSONS.md') {
+    $openLessons = @(Get-Content 'docs/LESSONS.md' -Encoding UTF8 | Where-Object { $_ -match 'OPEN' }).Count
+    if ($openLessons -ge 5) {
+        Write-Host "[WARN] $openLessons OPEN lesson(s) in docs/LESSONS.md - run the kit-retro skill (threshold: 5)" -ForegroundColor Yellow
+    } elseif ($openLessons -gt 0) {
+        Write-Host "[INFO] $openLessons OPEN lesson(s) in docs/LESSONS.md (kit-retro at 5)" -ForegroundColor Cyan
+    }
+}
+
+# Handoff freshness: STATUS.md trailing HEAD by >3 days means sessions are
+# committing without updating the handoff (session-end step 5 skipped)
+if ($haveGit -and (Test-Path 'docs/STATUS.md')) {
+    $statusTs = Get-LastCommitTime 'docs/STATUS.md'
+    $tHead = git log -1 --format=%ct 2>$null
+    $headTs = 0; if ($tHead) { $headTs = [long]$tHead }
+    if ($statusTs -ne 0 -and $headTs -ne 0 -and ($headTs - $statusTs) -gt 259200) {
+        Write-Host '[WARN] docs/STATUS.md last committed >3 days before HEAD - handoff may be stale (session-end step 5)' -ForegroundColor Yellow
+    }
+}
+
 Write-Host '--------------------------------------' -ForegroundColor Cyan
 Write-Host "  backlog (missing pages): $backlog   stale: $stale   hard issues: $issues"
 if ($issues -eq 0) {

@@ -11,3 +11,4 @@ if ! bash "$DIR/verify-path-health.sh"; then
     exit 1
 fi
 exec claude "$@"
+# EOF
