@@ -11,6 +11,32 @@ pass() { printf '[PASS] %s\n' "$1"; }
 warn() { printf '[WARN] %s\n' "$1"; }
 fail() { printf '[FAIL] %s\n' "$1"; issues=$((issues+1)); }
 
+# First-init bootstrap: in the kit repo (where user-notes.md lives), auto-create the
+# operator's PRIVATE notes file if missing. It is gitignored - personal/machine/
+# project specifics go there, never into tracked files. No-op in project repos.
+if [ -f "$REPO_ROOT/user-notes.md" ] && [ ! -f "$REPO_ROOT/user-notes.local.md" ]; then
+    cat > "$REPO_ROOT/user-notes.local.md" <<'SEEDEOF'
+# user-notes.local.md - YOUR private notes (gitignored, never committed)
+
+> Auto-created on first run of verify-path-health. Personal, machine, and
+> project specifics live HERE: repo paths, usernames, build commands, quirks.
+> AI agents in this kit route personal notes to this file automatically.
+> The tracked user-notes.md stays generic for everyone. Make this one yours.
+
+## My repos & locations
+
+| Repo | Path | What |
+|------|------|------|
+|      |      |      |
+
+## My machine setup (auth, OS notes, identity)
+
+## My project build & run commands
+
+SEEDEOF
+    printf '[INIT] created user-notes.local.md (your private, gitignored notes file)\n'
+fi
+
 echo "======================================"
 echo "  Environment Health Check (OGDK)     "
 echo "======================================"

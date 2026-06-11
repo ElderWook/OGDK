@@ -219,20 +219,21 @@ what happened.
 
 ## Stage 4 — Working here (your first real session)
 
-**⭐ First: create YOUR private notes file (one minute — do not skip).**
-The tracked [user-notes.md](./user-notes.md) is the *shared, generic* operator crib
-sheet for everyone. Your personal world — repo locations on your machine, usernames,
-project build commands, machine quirks — goes in a companion file that **git ignores
-and never commits**, so you can write freely without it ever leaking into the repo:
+**⭐ Your private notes file already exists — go claim it.**
+When you ran `verify-path-health` in Stage 2, the kit auto-created
+`user-notes.local.md` for you (you saw the `[INIT]` line). That file is **git-ignored
+and never commits** — it's where YOUR personal world lives: repo locations on your
+machine, usernames, project build commands, machine quirks. The tracked
+[user-notes.md](./user-notes.md) stays generic for everyone; the `.local` file is
+yours alone. Open it now and fill in your repo paths:
 
 ```powershell
-notepad user-notes.local.md        # creates it (Linux: nano user-notes.local.md)
+notepad user-notes.local.md        # Linux: nano user-notes.local.md
 ```
 
-Start it with whatever helps you. It's already covered by `.gitignore`. AI agents
-working in this repo are instructed to route personal and machine-specific notes
-there automatically — your crib sheet stays current across sessions WITHOUT ever
-entering version control. Tracked notes = everyone's; `.local` notes = yours alone.
+AI agents working in this repo are instructed to route personal and machine-specific
+notes there automatically — so your crib sheet stays current across sessions WITHOUT
+ever entering version control. Tracked notes = everyone's; `.local` = yours alone.
 
 - Start every session by having your agent read `AGENTS.md`. It chains to
   everything else.

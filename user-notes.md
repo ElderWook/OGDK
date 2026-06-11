@@ -8,9 +8,10 @@
 > mechanically; build commands are on the honor system, so be the honor.
 >
 > **Personal/machine/project specifics do NOT belong in this file.** Each operator
-> keeps their own `user-notes.local.md` beside this one — gitignored, never
-> committed, never propagated. Repo maps, usernames, machine paths, private project
-> commands: all go there. Models: route personal content to the .local file.
+> has their own `user-notes.local.md` beside this one — auto-created by
+> verify-path-health on first run, gitignored, never committed, never propagated.
+> Repo maps, usernames, machine paths, private project commands: all go there.
+> Models: route personal content to the .local file.
 
 ---
 
