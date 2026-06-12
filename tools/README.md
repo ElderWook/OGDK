@@ -18,6 +18,14 @@ on BSD tools. If a Mac ever joins the fleet, that's a deliberate porting task.
 | `new-reference-page.{ps1,sh}` | scaffold `docs/reference/<slug>.md` from COMPONENT-TEMPLATE.md AND append its COVERAGE.md row in one command — the graduation rule, mechanical. Run from a project root; fill the page before committing (page + manifest + component in the same commit). |
 | `release-notes.{ps1,sh}` | draft tag-to-tag release notes from `git log` to stdout (redirect to a file, then edit). Groups `type:`-prefixed subjects, lumps the rest under "Other changes" — no commit-message discipline required. Drafts only; never writes files; history stays in git. |
 
+## The banner
+
+Tools print a small OGDK ASCII banner at startup unless the `OGDK_BANNER`
+environment variable is set. The gates set it (and the .ps1 gates clear it on
+exit), so a gate run shows ONE banner, not one per chained tool. Exceptions:
+`release-notes` (stdout is the deliverable you redirect to a file) and
+`launch-claude-clean` (its banner arrives via the path-health check it runs).
+
 ## Rules
 
 1. **Twin rule:** any change to a script updates its twin in the SAME commit

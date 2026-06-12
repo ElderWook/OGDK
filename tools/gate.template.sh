@@ -6,6 +6,16 @@ set -u
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 total=0
 step() { echo; echo "=== GATE: $1 ==="; }
+if [ -z "${OGDK_BANNER:-}" ]; then
+cat <<'OGDKART'
+   ___   ____ ____  _  __
+  / _ \ / ___|  _ \| |/ /
+ | | | | |  _| | | | ' /
+ | |_| | |_| | |_| | . \
+  \___/ \____|____/|_|\_\
+OGDKART
+fi
+export OGDK_BANNER=1
 
 step "file integrity"
 bash "$DIR/verify-file-integrity.sh" || total=$((total+$?))

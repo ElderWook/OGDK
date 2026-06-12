@@ -37,6 +37,15 @@ SEEDEOF
     printf '[INIT] created user-notes.local.md (your private, gitignored notes file)\n'
 fi
 
+if [ -z "${OGDK_BANNER:-}" ]; then
+cat <<'OGDKART'
+   ___   ____ ____  _  __
+  / _ \ / ___|  _ \| |/ /
+ | | | | |  _| | | | ' /
+ | |_| | |_| | |_| | . \
+  \___/ \____|____/|_|\_\
+OGDKART
+fi
 echo "======================================"
 echo "  Environment Health Check (OGDK)     "
 echo "======================================"
