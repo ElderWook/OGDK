@@ -6,3 +6,10 @@ tools/TARGETS.list
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Python compiled bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+

@@ -80,8 +80,8 @@ index can be silently wrong from their side.
   positioned against a stale file length lands at the wrong offset and corrupts the
   real file (one byte overwritten mid-file). Whole-file writes via the session's
   direct file tools are the ONLY safe mutation; shell-side file mutation is banned.
-- Shell-side *reads* may lag too — when shell view and direct file tools disagree,
-  the direct file tools win.
+- Shell-side *reads* may lag too — when shell view and direct file tools disagree, the direct file tools win.
+- **In-sandbox shell verification / gate runs must use file-tool-sourced copies.** Because mount reads can serve stale or truncated views, any check running in a synced-mount shell is non-authoritative. If `verify-file-integrity` runs in an environment where git commands are unavailable or return empty results, it must print a warning and fall back to local file system scanning (`find`/`Get-ChildItem`) to ensure integrity is checked.
 - **Sanctioned escape hatch:** a HOST-side shell MCP server (Desktop Commander or
   equivalent) runs commands natively on the host, bypassing the mount entirely —
   gates, git truth, and builds MAY run through it from a sandboxed session
