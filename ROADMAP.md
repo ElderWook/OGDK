@@ -47,10 +47,10 @@ prose to a runnable command per project.
       (Node 22, installs + tests + builds on push) — verified 2026-06-11
 - [x] Game track: gate stays local by design (UE build-freshness proxy in the game
       repo's gate; CI deferred until it hurts — rule of two for infra)
-- [ ] Propagate 2026-06-11 tool additions (`new-reference-page.{ps1,sh}`,
-      `release-notes.{ps1,sh}`) to existing projects via propagate-tools (the
-      origin app too if it adopts the reference tier); scaffolder already covers
-      all future projects.
+- [x] Propagate tool additions to existing projects — DONE 2026-06-12 via
+      `propagate-tools -All` (TARGETS.list fleet propagation; all three project
+      repos stamped with KIT-VERSION; the origin app adopted the reference tier
+      and cleared its 10-page backlog same day).
 - [ ] **Final kit smoke test — hostile-environment pass:** validated cross-platform
       locally (Arch gate green 2026-06-11), but "works on my machines" isn't the bar.
       Test as if on someone ELSE's box: fresh Windows clone, stock PowerShell 5.1,
