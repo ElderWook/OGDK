@@ -39,13 +39,33 @@ fi
 
 # Check 2: NUL bytes in tracked text files (zero-filled tails)
 TEXT_RE='\.(md|txt|py|js|ts|jsx|tsx|json|ps1|sh|bat|cs|cpp|c|h|hpp|ini|yml|yaml|toml|svelte|dart|cjs|mjs|html|css|xml|sql|uproject|uplugin|gitignore|gitattributes)$'
+tracked_files=$(git ls-files 2>/dev/null | grep -E "$TEXT_RE" || true)
+
+if [ -z "$tracked_files" ]; then
+    warn "git ls-files returned no files. Falling back to local file system scan..."
+    tracked_files=$(find . -type f \
+        -not -path '*/.*' \
+        -not -path './node_modules/*' \
+        -not -path './dist/*' \
+        -not -path './target/*' \
+        -not -path './bin/*' \
+        -not -path './obj/*' \
+        -not -path './build/*' \
+        -not -path './artifacts/*' \
+        -not -path '*/__pycache__/*' \
+        2>/dev/null | sed 's|^\./||' | grep -E "$TEXT_RE" || true)
+fi
+
 nul_hits=""
-while IFS= read -r f; do
-    [ -f "$f" ] || continue
-    if LC_ALL=C grep -qaP '\x00' "$f" 2>/dev/null; then
-        nul_hits="$nul_hits  $f"$'\n'
-    fi
-done < <(git ls-files 2>/dev/null | grep -E "$TEXT_RE" || true)
+if [ -n "$tracked_files" ]; then
+    while IFS= read -r f; do
+        [ -z "$f" ] && continue
+        [ -f "$f" ] || continue
+        if LC_ALL=C grep -qaP '\x00' "$f" 2>/dev/null; then
+            nul_hits="$nul_hits  $f"$'\n'
+        fi
+    done <<< "$tracked_files"
+fi
 if [ -n "$nul_hits" ]; then
     fail "NUL bytes found in text files (zero-fill corruption signature):"
     printf '%s' "$nul_hits"
@@ -56,10 +76,17 @@ fi
 # Check 3: Python files compile (catches mid-file truncation of .py)
 py_bad=""
 if command -v python3 >/dev/null; then
-    while IFS= read -r f; do
-        [ -f "$f" ] || continue
-        python3 -m py_compile "$f" 2>/dev/null || py_bad="$py_bad  $f"$'\n'
-    done < <(git ls-files '*.py' 2>/dev/null || true)
+    py_files=$(git ls-files '*.py' 2>/dev/null || true)
+    if [ -z "$py_files" ] && [ -n "$tracked_files" ]; then
+        py_files=$(echo "$tracked_files" | grep -E '\.py$' || true)
+    fi
+    if [ -n "$py_files" ]; then
+        while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            [ -f "$f" ] || continue
+            python3 -m py_compile "$f" 2>/dev/null || py_bad="$py_bad  $f"$'\n'
+        done <<< "$py_files"
+    fi
     if [ -n "$py_bad" ]; then
         fail "Python files do not compile (possible truncation):"
         printf '%s' "$py_bad"
@@ -74,10 +101,17 @@ fi
 # Platform difference (documented): the .ps1 twin validates *.ps1 via the PowerShell
 # parser instead; each platform parses what it can execute.
 sh_bad=""
-while IFS= read -r f; do
-    [ -f "$f" ] || continue
-    bash -n "$f" 2>/dev/null || sh_bad="$sh_bad  $f"$'\n'
-done < <(git ls-files '*.sh' 2>/dev/null || true)
+sh_files=$(git ls-files '*.sh' 2>/dev/null || true)
+if [ -z "$sh_files" ] && [ -n "$tracked_files" ]; then
+    sh_files=$(echo "$tracked_files" | grep -E '\.sh$' || true)
+fi
+if [ -n "$sh_files" ]; then
+    while IFS= read -r f; do
+        [ -z "$f" ] && continue
+        [ -f "$f" ] || continue
+        bash -n "$f" 2>/dev/null || sh_bad="$sh_bad  $f"$'\n'
+    done <<< "$sh_files"
+fi
 if [ -n "$sh_bad" ]; then
     fail "shell scripts do not parse (possible truncation):"
     printf '%s' "$sh_bad"
@@ -91,15 +125,22 @@ fi
 # with an explicit final statement: a line starting with 'exit' or '# EOF'.
 sent_bad=""
 sent_count=0
-while IFS= read -r f; do
-    [ -f "$f" ] || continue
-    sent_count=$((sent_count+1))
-    last="$(grep -v '^[[:space:]]*$' "$f" | tail -1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    case "$last" in
-        exit|exit\ *|'# EOF') ;;
-        *) sent_bad="$sent_bad  $f"$'\n' ;;
-    esac
-done < <(git ls-files 'tools/*.ps1' 'tools/*.sh' 2>/dev/null || true)
+sent_files=$(git ls-files 'tools/*.ps1' 'tools/*.sh' 2>/dev/null || true)
+if [ -z "$sent_files" ] && [ -n "$tracked_files" ]; then
+    sent_files=$(echo "$tracked_files" | grep -E '^tools/[^/]+\.(ps1|sh)$' || true)
+fi
+if [ -n "$sent_files" ]; then
+    while IFS= read -r f; do
+        [ -z "$f" ] && continue
+        [ -f "$f" ] || continue
+        sent_count=$((sent_count+1))
+        last="$(grep -v '^[[:space:]]*$' "$f" | tail -1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+        case "$last" in
+            exit|exit\ *|'# EOF') ;;
+            *) sent_bad="$sent_bad  $f"$'\n' ;;
+        esac
+    done <<< "$sent_files"
+fi
 if [ "$sent_count" -eq 0 ]; then
     pass "no tools scripts tracked (EOF sentinel not applicable)"
 elif [ -n "$sent_bad" ]; then
@@ -111,10 +152,18 @@ fi
 
 # Check 4: tracked text files ending mid-line (no trailing newline = truncation smell)
 noeol=""
-while IFS= read -r f; do
-    [ -f "$f" ] && [ -s "$f" ] || continue
-    [ "$(tail -c 1 "$f" | od -An -tx1 | tr -d ' \n')" != "0a" ] && noeol="$noeol  $f"$'\n'
-done < <(git ls-files 2>/dev/null | grep -E '\.(py|sh|md)$' || true)
+eol_files=$(git ls-files 2>/dev/null | grep -E '\.(py|sh|md)$' || true)
+if [ -z "$eol_files" ] && [ -n "$tracked_files" ]; then
+    eol_files=$(echo "$tracked_files" | grep -E '\.(py|sh|md)$' || true)
+fi
+if [ -n "$eol_files" ]; then
+    while IFS= read -r f; do
+        [ -z "$f" ] && continue
+        [ -f "$f" ] || continue
+        [ -s "$f" ] || continue
+        [ "$(tail -c 1 "$f" | od -An -tx1 | tr -d ' \n')" != "0a" ] && noeol="$noeol  $f"$'\n'
+    done <<< "$eol_files"
+fi
 if [ -n "$noeol" ]; then
     warn "files lacking trailing newline (verify they are complete):"
     printf '%s' "$noeol"

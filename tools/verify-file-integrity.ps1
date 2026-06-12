@@ -34,7 +34,25 @@ if (Test-Path '.git') {
 
 # Check 2: NUL bytes in tracked text files
 $textExt = '\.(md|txt|py|js|ts|jsx|tsx|json|ps1|sh|bat|cs|cpp|c|h|hpp|ini|yml|yaml|toml|svelte|dart|cjs|mjs|html|css|xml|sql|uproject|uplugin|gitignore|gitattributes)$'
-$tracked = git ls-files 2>$null | Where-Object { $_ -match $textExt }
+$tracked = git ls-files 2>$null | Where-Object { $_ -and $_ -match $textExt }
+if (-not $tracked -or $tracked.Count -eq 0) {
+    Write-Host '[WARN] git ls-files returned no files. Falling back to local file system scan...' -ForegroundColor Yellow
+    $excludeDirs = @('.git', 'node_modules', 'dist', 'target', 'bin', 'obj', 'build', 'artifacts', '__pycache__')
+    $tracked = @()
+    Get-ChildItem -Path . -File -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+        $relPath = $_.FullName.Substring($repoRoot.Length + 1).Replace('\', '/')
+        $isExcluded = $false
+        foreach ($d in $excludeDirs) {
+            if ($relPath -like "$d/*" -or $relPath -eq $d -or $relPath -like "*/$d/*") {
+                $isExcluded = $true
+                break
+            }
+        }
+        if (-not $isExcluded -and $relPath -match $textExt) {
+            $tracked += $relPath
+        }
+    }
+}
 $nulHits = @()
 foreach ($f in $tracked) {
     if (-not (Test-Path $f)) { continue }
@@ -61,7 +79,10 @@ foreach ($cand in @('python', 'py', 'python3')) {
     & $c.Source --version 2>&1 | Out-Null
     if ($LASTEXITCODE -eq 0) { $pyCmd = $c.Source; break }
 }
-$pyFiles = @(git ls-files '*.py' 2>$null)
+$pyFiles = @(git ls-files '*.py' 2>$null) | Where-Object { $_ }
+if ($pyFiles.Count -eq 0 -and $tracked) {
+    $pyFiles = @($tracked | Where-Object { $_ -match '\.py$' })
+}
 if ($pyFiles.Count -eq 0) {
     Write-Host '[PASS] no tracked .py files (compile check not applicable)' -ForegroundColor Green
 } elseif (-not $pyCmd) {
@@ -87,7 +108,10 @@ if ($pyFiles.Count -eq 0) {
 # and undetected because nothing parsed project scripts).
 # Platform difference (documented): the .sh twin validates *.sh via bash -n instead;
 # each platform parses what it can execute.
-$psFiles = @(git ls-files '*.ps1' 2>$null)
+$psFiles = @(git ls-files '*.ps1' 2>$null) | Where-Object { $_ }
+if ($psFiles.Count -eq 0 -and $tracked) {
+    $psFiles = @($tracked | Where-Object { $_ -match '\.ps1$' })
+}
 $psBad = @()
 foreach ($f in $psFiles) {
     if (-not (Test-Path $f)) { continue }
@@ -110,7 +134,10 @@ if ($psFiles.Count -eq 0) {
 # a script missing its last 30 lines). Every tools script must therefore END
 # with an explicit final statement: a line starting with 'exit' or '# EOF'.
 $sentBad = @()
-$sentFiles = @(git ls-files 'tools/*.ps1' 'tools/*.sh' 2>$null)
+$sentFiles = @(git ls-files 'tools/*.ps1' 'tools/*.sh' 2>$null) | Where-Object { $_ }
+if ($sentFiles.Count -eq 0 -and $tracked) {
+    $sentFiles = @($tracked | Where-Object { $_ -match '^tools/[^/]+\.(ps1|sh)$' })
+}
 foreach ($f in $sentFiles) {
     if (-not (Test-Path $f)) { continue }
     $lines = @(Get-Content $f -Encoding UTF8 | Where-Object { $_.Trim() -ne '' })
@@ -130,7 +157,11 @@ if ($sentFiles.Count -eq 0) {
 
 # Check 4: trailing-newline smell test on source/docs
 $noEol = @()
-foreach ($f in (git ls-files 2>$null | Where-Object { $_ -match '\.(py|sh|md)$' })) {
+$eolFiles = @(git ls-files 2>$null | Where-Object { $_ -match '\.(py|sh|md)$' }) | Where-Object { $_ }
+if ($eolFiles.Count -eq 0 -and $tracked) {
+    $eolFiles = @($tracked | Where-Object { $_ -match '\.(py|sh|md)$' })
+}
+foreach ($f in $eolFiles) {
     if (-not (Test-Path $f)) { continue }
     $fi = Get-Item $f
     if ($fi.Length -eq 0) { continue }
