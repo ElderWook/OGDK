@@ -59,7 +59,7 @@ propagate_one() {
     echo "=== $target ==="
     copied=0; failed=0
     while IFS= read -r name; do
-        name="${name%%#*}"; name="$(echo "$name" | xargs)"
+        name="${name%%#*}"; name="${name%$'\r'}"; name="$(echo "$name" | xargs)"  # strip CR: list may be a CRLF checkout (2026-06-11 lesson)
         [ -n "$name" ] || continue
         for ext in sh ps1; do
             src="$KIT/tools/$name.$ext"
@@ -109,7 +109,7 @@ if [ "$ALL" = 1 ]; then
     [ -f "$TARGETS_LIST" ] || { echo "Missing $TARGETS_LIST - create it (gitignored): one project root per line." >&2; exit 1; }
     found=0
     while IFS= read -r t; do
-        t="${t%%#*}"; t="$(echo "$t" | xargs)"
+        t="${t%%#*}"; t="${t%$'\r'}"; t="$(echo "$t" | xargs)"  # strip CR (CRLF checkout)
         [ -n "$t" ] || continue
         found=$((found+1))
         propagate_one "$t"
