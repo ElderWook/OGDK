@@ -97,7 +97,7 @@ Format: see docs-template/LESSONS.md.
 **What happened:** a Cowork sandbox's mount view showed ~29 kit files truncated mid-line (one with a NUL-filled tail) while every file on the host disk was intact and complete. An audit nearly misdiagnosed repo corruption; the smoke test had to rebuild a faithful working copy from direct file-tool reads before any shell verification was trustworthy. Separately: verify-file-integrity in a git-less copy "passed" while scanning ZERO files (`git ls-files` empty → every check vacuous).
 **Root cause:** AI-PARITY §4 bans git and shell WRITES through mounts; verification READS were assumed safe but stale views lie on read too. Integrity checks enumerate files via git only, with no signal when the enumeration is empty.
 **Proposed fix:** AI-PARITY §4 note — in-sandbox shell verification requires file-tool-sourced copies (mount reads are non-authoritative); verify-file-integrity.{ps1,sh} should WARN "0 files checked" (or fall back to `find`) when git enumeration returns nothing.
-**Status:** OPEN (logged 2026-06-11; parser fixes shipped same day, AI-PARITY note + integrity fallback not yet implemented).
+**Status:** CODIFIED 2026-06-12, verify-file-integrity.{ps1,sh} local scanning fallbacks + AI-PARITY.md update.
 
 ## 2026-06-11 Pre-commit hook for THE GATE considered, declined
 **What happened:** review flagged that the gate is honor-system — nothing mechanically stops an ungated commit.
