@@ -72,10 +72,23 @@ function Propagate-One([string]$t) {
     if ($Skills) {
         $skillsSrc = Join-Path $kit "skills"
         if (Test-Path $skillsSrc) {
-            $dotClaude = Join-Path $t ".claude"
-            if (-not (Test-Path $dotClaude)) { New-Item -ItemType Directory -Path $dotClaude | Out-Null }
-            Copy-Item -Recurse -Force (Join-Path $skillsSrc "*") (Join-Path $dotClaude "skills")
-            Write-Host "[OK]   skills/ -> .claude\skills\" -ForegroundColor Green
+            # Per-skill replace: remove the existing entry (file OR folder - old
+            # flat layouts left leaf files that break a blind recursive copy),
+            # then copy fresh. Entries the kit does not know are kept but flagged.
+            $dstSkills = Join-Path $t ".claude\skills"
+            New-Item -ItemType Directory -Force -Path $dstSkills | Out-Null
+            foreach ($sd in (Get-ChildItem $skillsSrc -Directory)) {
+                $dstSkill = Join-Path $dstSkills $sd.Name
+                if (Test-Path $dstSkill) { Remove-Item $dstSkill -Recurse -Force }
+                Copy-Item -Recurse $sd.FullName $dstSkill
+            }
+            $kitNames = @(Get-ChildItem $skillsSrc -Directory | ForEach-Object { $_.Name })
+            foreach ($e in (Get-ChildItem $dstSkills -Force)) {
+                if ($kitNames -notcontains $e.Name) {
+                    Write-Host "[WARN] unknown entry in .claude\skills (not from kit - relic or custom? delete by hand if relic): $($e.Name)" -ForegroundColor Yellow
+                }
+            }
+            Write-Host "[OK]   skills/ -> .claude\skills\ (per-skill replace)" -ForegroundColor Green
         } else {
             Write-Host "[FAIL] kit skills/ missing" -ForegroundColor Red
             $failed++
