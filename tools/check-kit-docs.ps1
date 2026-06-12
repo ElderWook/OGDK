@@ -8,6 +8,13 @@ $kit = Split-Path -Parent $PSScriptRoot
 Set-Location $kit
 $issues = 0
 
+if (-not $env:OGDK_BANNER) {
+    Write-Host '   ___   ____ ____  _  __' -ForegroundColor Cyan
+    Write-Host '  / _ \ / ___|  _ \| |/ /' -ForegroundColor Cyan
+    Write-Host ' | | | | |  _| | | | '' /' -ForegroundColor Cyan
+    Write-Host ' | |_| | |_| | |_| | . \' -ForegroundColor Cyan
+    Write-Host '  \___/ \____|____/|_|\_\' -ForegroundColor Cyan
+}
 Write-Host '======================================' -ForegroundColor Cyan
 Write-Host '  Kit Docs Self-Check (OGDK)          ' -ForegroundColor Cyan
 Write-Host '======================================' -ForegroundColor Cyan

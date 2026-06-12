@@ -20,6 +20,15 @@ done
 PROJ="$DEST/$NAME"
 [ ! -e "$PROJ" ] || { echo "Target already exists: $PROJ"; exit 1; }
 
+if [ -z "${OGDK_BANNER:-}" ]; then
+cat <<'OGDKART'
+   ___   ____ ____  _  __
+  / _ \ / ___|  _ \| |/ /
+ | | | | |  _| | | | ' /
+ | |_| | |_| | |_| | . \
+  \___/ \____|____/|_|\_\
+OGDKART
+fi
 echo "Scaffolding $TYPE project '$NAME' -> $PROJ"
 mkdir -p "$PROJ"
 

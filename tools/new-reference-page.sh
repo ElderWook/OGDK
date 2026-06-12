@@ -31,6 +31,16 @@ case "$NAME" in
     *[!a-z0-9-]*) echo "page-slug must be lowercase letters, digits, hyphens: '$NAME'" >&2; exit 1 ;;
 esac
 
+if [ -z "${OGDK_BANNER:-}" ]; then
+cat <<'OGDKART'
+   ___   ____ ____  _  __
+  / _ \ / ___|  _ \| |/ /
+ | | | | |  _| | | | ' /
+ | |_| | |_| | |_| | . \
+  \___/ \____|____/|_|\_\
+OGDKART
+fi
+
 REF="docs/reference"
 TPL="$REF/COMPONENT-TEMPLATE.md"
 MAN="$REF/COVERAGE.md"

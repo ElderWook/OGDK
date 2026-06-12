@@ -25,6 +25,14 @@ $list = Join-Path $kit "tools\PROPAGATE.list"
 $targetsList = Join-Path $kit "tools\TARGETS.list"
 if (-not (Test-Path $list)) { Write-Error "Missing $list"; exit 1 }
 
+if (-not $env:OGDK_BANNER) {
+    Write-Host '   ___   ____ ____  _  __' -ForegroundColor Cyan
+    Write-Host '  / _ \ / ___|  _ \| |/ /' -ForegroundColor Cyan
+    Write-Host ' | | | | |  _| | | | '' /' -ForegroundColor Cyan
+    Write-Host ' | |_| | |_| | |_| | . \' -ForegroundColor Cyan
+    Write-Host '  \___/ \____|____/|_|\_\' -ForegroundColor Cyan
+}
+
 $kitver = "unknown"
 try {
     $v = git -C $kit rev-parse --short HEAD 2>$null

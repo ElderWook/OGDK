@@ -11,6 +11,13 @@ $kit  = Split-Path -Parent $PSScriptRoot
 $proj = Join-Path $Dest $Name
 if (Test-Path $proj) { throw "Target already exists: $proj" }
 
+if (-not $env:OGDK_BANNER) {
+    Write-Host '   ___   ____ ____  _  __' -ForegroundColor Cyan
+    Write-Host '  / _ \ / ___|  _ \| |/ /' -ForegroundColor Cyan
+    Write-Host ' | | | | |  _| | | | '' /' -ForegroundColor Cyan
+    Write-Host ' | |_| | |_| | |_| | . \' -ForegroundColor Cyan
+    Write-Host '  \___/ \____|____/|_|\_\' -ForegroundColor Cyan
+}
 Write-Host "Scaffolding $Type project '$Name' -> $proj"
 New-Item -ItemType Directory -Path $proj | Out-Null
 

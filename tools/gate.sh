@@ -4,6 +4,16 @@
 set -u
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 total=0
+if [ -z "${OGDK_BANNER:-}" ]; then
+cat <<'OGDKART'
+   ___   ____ ____  _  __
+  / _ \ / ___|  _ \| |/ /
+ | | | | |  _| | | | ' /
+ | |_| | |_| | |_| | . \
+  \___/ \____|____/|_|\_\
+OGDKART
+fi
+export OGDK_BANNER=1
 echo "=== GATE: kit docs ==="
 bash "$DIR/check-kit-docs.sh" || total=$((total+$?))
 echo; echo "=== GATE: file integrity ==="

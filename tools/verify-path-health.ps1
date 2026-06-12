@@ -39,6 +39,13 @@ if ((Test-Path $sharedNotes) -and (-not (Test-Path $localNotes))) {
     Write-Host "[INIT] created user-notes.local.md (your private, gitignored notes file)" -ForegroundColor Cyan
 }
 
+if (-not $env:OGDK_BANNER) {
+    Write-Host '   ___   ____ ____  _  __' -ForegroundColor Cyan
+    Write-Host '  / _ \ / ___|  _ \| |/ /' -ForegroundColor Cyan
+    Write-Host ' | | | | |  _| | | | '' /' -ForegroundColor Cyan
+    Write-Host ' | |_| | |_| | |_| | . \' -ForegroundColor Cyan
+    Write-Host '  \___/ \____|____/|_|\_\' -ForegroundColor Cyan
+}
 Write-Host "======================================" -ForegroundColor Cyan
 Write-Host "  PATH Health Check (OGDK)            " -ForegroundColor Cyan
 Write-Host "======================================" -ForegroundColor Cyan

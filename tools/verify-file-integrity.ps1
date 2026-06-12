@@ -8,6 +8,13 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 $issues = 0
 
+if (-not $env:OGDK_BANNER) {
+    Write-Host '   ___   ____ ____  _  __' -ForegroundColor Cyan
+    Write-Host '  / _ \ / ___|  _ \| |/ /' -ForegroundColor Cyan
+    Write-Host ' | | | | |  _| | | | '' /' -ForegroundColor Cyan
+    Write-Host ' | |_| | |_| | |_| | . \' -ForegroundColor Cyan
+    Write-Host '  \___/ \____|____/|_|\_\' -ForegroundColor Cyan
+}
 Write-Host '======================================' -ForegroundColor Cyan
 Write-Host '  File Integrity Check (OGDK)         ' -ForegroundColor Cyan
 Write-Host '======================================' -ForegroundColor Cyan

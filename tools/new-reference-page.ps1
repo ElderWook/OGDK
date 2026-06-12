@@ -16,6 +16,14 @@ param(
 )
 $ErrorActionPreference = "Stop"
 
+if (-not $env:OGDK_BANNER) {
+    Write-Host '   ___   ____ ____  _  __' -ForegroundColor Cyan
+    Write-Host '  / _ \ / ___|  _ \| |/ /' -ForegroundColor Cyan
+    Write-Host ' | | | | |  _| | | | '' /' -ForegroundColor Cyan
+    Write-Host ' | |_| | |_| | |_| | . \' -ForegroundColor Cyan
+    Write-Host '  \___/ \____|____/|_|\_\' -ForegroundColor Cyan
+}
+
 if ($Name -notmatch '^[a-z0-9-]+$') {
     Write-Error "page-slug must be lowercase letters, digits, hyphens: '$Name'"; exit 1
 }

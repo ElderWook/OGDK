@@ -33,6 +33,16 @@ for arg in "$@"; do
     esac
 done
 
+if [ -z "${OGDK_BANNER:-}" ]; then
+cat <<'OGDKART'
+   ___   ____ ____  _  __
+  / _ \ / ___|  _ \| |/ /
+ | | | | |  _| | | | ' /
+ | |_| | |_| | |_| | . \
+  \___/ \____|____/|_|\_\
+OGDKART
+fi
+
 kitver="unknown"
 if git -C "$KIT" rev-parse --short HEAD >/dev/null 2>&1; then
     kitver="$(git -C "$KIT" rev-parse --short HEAD)"
