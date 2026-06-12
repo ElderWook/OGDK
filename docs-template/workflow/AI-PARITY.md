@@ -20,6 +20,11 @@ any other left off with zero verbal handoff.** These are the mechanics.
 If a rule needs to exist, it goes in AGENTS.md. If a pointer file grows past ~10 lines,
 something is in the wrong place.
 
+**Agent tools (MCP)** follow the same one-source pattern: the checked-in MCP config
+(`.mcp.json` and tool mirrors) is the sanctioned-server contract, governed by
+[MCP.md](./MCP.md) — including the repo sensitivity tier that decides what may
+connect at all. Connecting a server is an access decision, not a preference.
+
 **Rule precedence (the invisible-config problem).** Agent tools also carry global,
 user-level configuration (~/.claude, ~/.gemini, agy profiles, IDE rules) that the repo
 cannot see. Declared order, binding on every agent in this repo:
@@ -77,6 +82,11 @@ index can be silently wrong from their side.
   direct file tools are the ONLY safe mutation; shell-side file mutation is banned.
 - Shell-side *reads* may lag too — when shell view and direct file tools disagree,
   the direct file tools win.
+- **Sanctioned escape hatch:** a HOST-side shell MCP server (Desktop Commander or
+  equivalent) runs commands natively on the host, bypassing the mount entirely —
+  gates, git truth, and builds MAY run through it from a sandboxed session
+  (rules + tier policy: [MCP.md](./MCP.md) §3). The bans above govern the
+  MOUNT's shell; they do not apply to a true host shell.
 - Confirmed in practice 2026-06-10/11: stale mount produced truncated reads, false
   git status, AND offset-corrupted appends. All three, one day.
 

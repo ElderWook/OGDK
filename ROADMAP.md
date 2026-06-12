@@ -28,7 +28,10 @@ Use validates; docs don't.
       (formal automation spec arrives with the first real gameplay system)
 - [ ] Milestone scene + first perf baseline (blocked on first real content — unblocks
       when game design starts)
-- [ ] Pin the engine-fork branch/commit in the game repo's AGENTS.md §Engine (user knows the answer; 2-min task)
+- [x] Engine-fork pin recorded in the game repo's AGENTS.md §Engine — DONE
+      2026-06-12 (version + CompatibleChangelist from Build.version; provenance
+      noted as zip-sourced: updates = new sibling folder + pin update, no local
+      engine git history to diff)
 - [x] Friction flowed back: reference pages (oasiscore-plugin, gamefeature-pattern)
       capture the pattern learnings — 2026-06-11
 
@@ -76,7 +79,13 @@ findings merge through the normal lessons→retro pipeline, not git branches.
 
 - [ ] Use the skills in real Claude Code sessions; log every chafe to LESSONS.md
 - [ ] Run `kit-retro` at milestones or when a LESSONS.md hits 5+ OPEN entries
-- [ ] Connect GitHub MCP/connector for chat-side PR + issue work once available
+- [x] MCP integration policy — DONE 2026-06-12: `docs-template/workflow/MCP.md`
+      (sensitivity tiers per repo; host-shell escape hatch superseding the
+      ask-the-human rule; config map; secrets-as-env-vars; declines recorded),
+      `templates/mcp.json.template`, AI-PARITY §1+§4 wiring; propagated to all
+      projects with the hardware project marked `restricted` (pre-filing IP
+      freeze: local-only servers). Actually CONNECTING GitHub MCP per tool is
+      a per-operator action — policy and config template are ready for it.
 
 ## Sprint workstreams (2026-06-12 — pre-hiatus push; plan of record)
 

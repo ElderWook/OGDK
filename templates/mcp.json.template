@@ -1,0 +1,12 @@
+{
+  "//": "OGDK template: copy to repo root as .mcp.json (Claude Code) and mirror in .gemini/settings.json if Gemini is used. POLICY: docs/workflow/MCP.md - check the repo's sensitivity tier before adding servers. NEVER inline a token; ${ENV_VAR} references only.",
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}
