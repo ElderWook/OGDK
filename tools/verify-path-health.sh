@@ -70,7 +70,11 @@ else
     if [ -z "$(git config user.email || true)" ]; then
         fail "git identity not set (git config --global user.name / user.email)"
     else
-        pass "git identity: $(git config user.email)"
+        email="$(git config user.email)"
+        pass "git identity: $email"
+        if [[ ! "$(echo "$email" | tr '[:upper:]' '[:lower:]')" =~ noreply ]]; then
+            warn "git email is a public/personal address ($email). Consider using a GitHub noreply email to protect your privacy."
+        fi
     fi
 fi
 

@@ -9,3 +9,4 @@ verify-file-integrity
 check-reference-coverage
 new-reference-page
 release-notes
+test-hostile-env
