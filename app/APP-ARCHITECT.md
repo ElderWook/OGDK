@@ -109,3 +109,58 @@ flowchart TD
 
 Blue = law (every app). Green = opt-in per feature answer. All arrows point
 toward `core` — never away from it.
+
+---
+
+## 6. Scaffolder Feature Mapping Design (Roadmap Follow-Up)
+
+To prevent boilerplate rot, language-specific code is generated on-demand by the AI agent, while the kit's scaffolding tools orchestrate the correct module directory structures. Future updates to the scaffolder (`new-project.ps1` / `new-project.sh`) will introduce a `-Features` flag to map feature requirements directly to initial code structures.
+
+### Flag Syntax and Composition
+- **Argument:** `-Features <module1,module2,...>` (Linux: `-f <module1,module2,...>`) or `-Preset <A|B|C|D|E>` (Linux: `-p <A|B|C|D|E>`).
+- **Interactive Fallback:** If scaffolding an `App` type without `-Features` or `-Preset`, the tool will offer an interactive CLI checkbox prompt to select desired features.
+
+### Scaffolder Directory and Stub Generation Map
+
+When specific features/modules are enabled, the scaffolder generates the matching directories under the project's source root (e.g. `src/`) and seeds them with baseline stubs containing structural annotations:
+
+1. **`store` (Local persistence)**
+   - **Path:** `src/store/`
+   - **Baseline Stub:** `src/store/store.ts` (or equivalent language extension).
+   - **Annotation:** `@intent: durable atomic persistence layer with migrations; @boundary: core domain logic has no direct access to store.`
+
+2. **`sync` (Multi-device replication)**
+   - **Path:** `src/sync/`
+   - **Baseline Stub:** `src/sync/sync.ts`
+   - **Annotation:** `@intent: multi-device synchronization and replication; @invariant: conflict resolution and authority policies defined on day one.`
+
+3. **`bridge` (Multi-platform integration)**
+   - **Path:** `src/bridge/`
+   - **Baseline Stub:** `src/bridge/bridge.ts`
+   - **Annotation:** `@intent: platform surface abstraction ($platform pattern); @boundary: platform-specific code calls pure core through interfaces.`
+
+4. **`render` (Documents/exports generation)**
+   - **Path:** `src/render/`
+   - **Baseline Stub:** `src/render/render.ts`
+   - **Annotation:** `@intent: documents and exports generator; @invariant: presentation themes must remain separate from core generation primitives.`
+
+5. **`jobs` (Background processing)**
+   - **Path:** `src/jobs/`
+   - **Baseline Stub:** `src/jobs/jobs.ts`
+   - **Annotation:** `@intent: background work queue and task worker loop; @boundary: job processing runs asynchronously without blocking main thread.`
+
+6. **`identity` (Authentication/Authorization)**
+   - **Path:** `src/identity/`
+   - **Baseline Stub:** `src/identity/identity.ts`
+   - **Annotation:** `@intent: sessions, permissions, and third-party identity management; @risk: buy-don't-build the cryptography or protocol handling.`
+
+7. **`adapters` (Third-party services)**
+   - **Path:** `src/adapters/`
+   - **Baseline Stub:** `src/adapters/README.md`
+   - **Annotation:** `@intent: integration adapters; @boundary: one separate folder per external service; zero inline integration calls inside core.`
+
+8. **`api` (External interface surface)**
+   - **Path:** `src/api/`
+   - **Baseline Stub:** `src/api/api.ts`
+   - **Annotation:** `@intent: versioned public external API or IPC surface; @invariant: API versioning must be decoupled from internal core changes.`
+

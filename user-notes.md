@@ -109,6 +109,7 @@ Your SSH/GPG/auth specifics: `user-notes.local.md`.
 | `gate.ps1/.sh` | **THE GATE — the only pre-commit command to remember.** Chains integrity + coverage + that repo's tests/builds. Exit 0 = commit. (gate.template.* = scaffolder source) |
 | `verify-path-health.ps1/.sh` | session-start env gate (MSYS2 poison / NTFS mount / identity / LFS); prints tools/KIT-VERSION provenance in project repos |
 | `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, .py compile, script-syntax parse, EOF sentinel on tools scripts, git fsck) — run after heavy AI writes |
+| `test-hostile-env.ps1/.sh` | hostile-environment smoke test suite (simulates space-in-path, clean git config setup, and verifies health/gate/scaffolding) |
 | `check-reference-coverage.ps1/.sh` | docs gate: every component tracked to a reference page; flags STALE/MISSING; nudges on OPEN lessons (kit-retro at 5) and stale STATUS.md handoff |
 | `check-kit-docs.ps1/.sh` | (OGDK only) keeps THIS file honest: twin rule + every script documented here and in tools/README; flags ghost refs; check 8 scans tracked files for your private markers (gitignored `tools/PRIVATE-MARKERS.list` — seed yours; policy: BOUNDARY.md) |
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |

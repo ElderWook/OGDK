@@ -74,6 +74,17 @@ if (-not $gitPath) {
     $issues += "git -> MSYS2"
 } else {
     Write-Host "[PASS] git -> $gitPath" -ForegroundColor Green
+    
+    $gitEmail = (git config user.email)
+    if (-not $gitEmail) {
+        Write-Host "[FAIL] git identity not set (git config --global user.name / user.email)" -ForegroundColor Red
+        $issues += "git identity not set"
+    } else {
+        Write-Host "[PASS] git identity: $gitEmail" -ForegroundColor Green
+        if ($gitEmail -notmatch 'noreply') {
+            Write-Host "[WARN] git email is a public/personal address ($gitEmail). Consider using a GitHub noreply email to protect your privacy." -ForegroundColor Yellow
+        }
+    }
 }
 
 # Check 3: sed -- warn if it is MSYS2 sed
