@@ -73,7 +73,7 @@ done < "$MANIFEST"
 
 # Learning-loop nudge: count OPEN lessons (the kit-retro trigger, now mechanical)
 if [ -f "docs/LESSONS.md" ]; then
-    open_lessons=$(grep -c 'OPEN' docs/LESSONS.md 2>/dev/null || true)  # no '|| echo 0': grep -c prints 0 AND exits 1 on no match (2026-06-11 lesson)
+    open_lessons=$(grep -c 'Status:.*OPEN' docs/LESSONS.md 2>/dev/null || true)  # no '|| echo 0': grep -c prints 0 AND exits 1 on no match (2026-06-11 lesson)
     open_lessons=${open_lessons:-0}
     if [ "$open_lessons" -ge 5 ]; then
         warn "$open_lessons OPEN lesson(s) in docs/LESSONS.md - run the kit-retro skill (threshold: 5)"
