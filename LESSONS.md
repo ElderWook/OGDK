@@ -75,6 +75,12 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** tools/KIT-VERSION stamped by new-project + propagate-tools (printed by verify-path-health each session); propagate-tools -All/--all over gitignored tools/TARGETS.list.
 **Status:** CODIFIED 2026-06-12, propagate-tools.{ps1,sh} + new-project.{ps1,sh} + verify-path-health.{ps1,sh}.
 
+## 2026-06-12 Skills propagation crashed on a layout relic
+**What happened:** propagate -All maiden run aborted mid-target: one project's .claude/skills held the OLD flat layout (bare SKILL.md + leaf files named like skills), and the blind recursive Copy-Item could not copy a folder onto a leaf; ErrorActionPreference=Stop killed the run before the KIT-VERSION stamp.
+**Root cause:** propagation assumed the destination layout matched the kit's; nothing handled drift from older layouts, and one bad target could abort the fleet run.
+**Proposed fix:** per-skill replace (remove existing entry file-or-folder, copy fresh) + WARN on entries the kit does not recognize (never silently delete - could be a custom skill).
+**Status:** CODIFIED 2026-06-12, propagate-tools.{ps1,sh} skills block.
+
 ## 2026-06-11 Pre-commit hook for THE GATE considered, declined
 **What happened:** review flagged that the gate is honor-system — nothing mechanically stops an ungated commit.
 **Root cause:** by design; surfaced as a conscious decision rather than a defect.

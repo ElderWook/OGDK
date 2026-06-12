@@ -69,9 +69,22 @@ propagate_one() {
     done < "$LIST"
     if [ "$SKILLS" = 1 ]; then
         if [ -d "$KIT/skills" ]; then
-            mkdir -p "$target/.claude"
-            cp -r "$KIT/skills/." "$target/.claude/skills/"
-            echo "[OK]   skills/ -> .claude/skills/"
+            # Per-skill replace: remove the existing entry (file OR folder - old
+            # flat layouts left leaf files that break a blind recursive copy),
+            # then copy fresh. Entries the kit does not know are kept but flagged.
+            mkdir -p "$target/.claude/skills"
+            for sd in "$KIT/skills"/*/; do
+                [ -d "$sd" ] || continue
+                sname="$(basename "$sd")"
+                rm -rf "$target/.claude/skills/$sname"
+                cp -r "$sd" "$target/.claude/skills/$sname"
+            done
+            for e in "$target/.claude/skills"/* "$target/.claude/skills"/.[!.]*; do
+                [ -e "$e" ] || continue
+                ename="$(basename "$e")"
+                [ -d "$KIT/skills/$ename" ] || echo "[WARN] unknown entry in .claude/skills (not from kit - relic or custom? delete by hand if relic): $ename"
+            done
+            echo "[OK]   skills/ -> .claude/skills/ (per-skill replace)"
         else
             echo "[FAIL] kit skills/ missing"; failed=$((failed+1))
         fi
