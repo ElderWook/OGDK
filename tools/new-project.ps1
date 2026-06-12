@@ -39,10 +39,16 @@ foreach ($raw in (Get-Content (Join-Path $kit 'tools\PROPAGATE.list') -Encoding 
 }
 Copy-Item (Join-Path $kit 'tools\gate.template.ps1') (Join-Path $proj 'tools\gate.ps1')
 Copy-Item (Join-Path $kit 'tools\gate.template.sh')  (Join-Path $proj 'tools\gate.sh')
-# Provenance stamp: which kit commit these tools came from (drift visibility)
+# Provenance stamp: which kit version+commit these tools came from (drift visibility)
 $kitver = 'unknown'
 try { $v = git -C $kit rev-parse --short HEAD 2>$null; if ($LASTEXITCODE -eq 0 -and $v) { $kitver = $v.Trim() } } catch { }
-Set-Content -Path (Join-Path $proj 'tools\KIT-VERSION') -Value "$kitver $(Get-Date -Format yyyy-MM-dd) (kit commit + propagation date - written by propagate-tools/new-project; do not edit)" -Encoding ASCII
+$kitSemver = ''
+$verFile = Join-Path $kit 'VERSION'
+if (Test-Path $verFile) {
+    $sv = (Get-Content $verFile -Encoding UTF8 | Select-Object -First 1).Trim()
+    if ($sv -ne '') { $kitSemver = "v$sv " }
+}
+Set-Content -Path (Join-Path $proj 'tools\KIT-VERSION') -Value "$kitSemver$kitver $(Get-Date -Format yyyy-MM-dd) (kit version + commit + propagation date - written by propagate-tools/new-project; do not edit)" -Encoding ASCII
 
 # 4. Skills for Claude Code
 New-Item -ItemType Directory -Path (Join-Path $proj '.claude') | Out-Null
