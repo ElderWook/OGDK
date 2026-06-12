@@ -38,7 +38,13 @@ try {
     $v = git -C $kit rev-parse --short HEAD 2>$null
     if ($LASTEXITCODE -eq 0 -and $v) { $kitver = $v.Trim() }
 } catch { }
-$stamp = "$kitver $(Get-Date -Format yyyy-MM-dd) (kit commit + propagation date - written by propagate-tools/new-project; do not edit)"
+$kitSemver = ""
+$verFile = Join-Path $kit "VERSION"
+if (Test-Path $verFile) {
+    $sv = (Get-Content $verFile -Encoding UTF8 | Select-Object -First 1).Trim()
+    if ($sv -ne "") { $kitSemver = "v$sv " }
+}
+$stamp = "$kitSemver$kitver $(Get-Date -Format yyyy-MM-dd) (kit version + commit + propagation date - written by propagate-tools/new-project; do not edit)"
 
 $script:totalFailed = 0
 

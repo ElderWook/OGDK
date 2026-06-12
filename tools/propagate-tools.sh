@@ -47,7 +47,12 @@ kitver="unknown"
 if git -C "$KIT" rev-parse --short HEAD >/dev/null 2>&1; then
     kitver="$(git -C "$KIT" rev-parse --short HEAD)"
 fi
-stamp="$kitver $(date +%Y-%m-%d) (kit commit + propagation date - written by propagate-tools/new-project; do not edit)"
+kitsemver=""
+if [ -f "$KIT/VERSION" ]; then
+    sv="$(head -1 "$KIT/VERSION" | tr -d '[:space:]')"
+    [ -n "$sv" ] && kitsemver="v$sv "
+fi
+stamp="$kitsemver$kitver $(date +%Y-%m-%d) (kit version + commit + propagation date - written by propagate-tools/new-project; do not edit)"
 
 total_failed=0
 
