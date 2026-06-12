@@ -145,7 +145,7 @@ fi
 
 # 9. learning-loop nudge: OPEN lessons in the kit's LESSONS.md (kit-retro trigger)
 if [ -f "LESSONS.md" ]; then
-    open_lessons=$(grep -c 'OPEN' LESSONS.md 2>/dev/null || true)  # no '|| echo 0': grep -c prints 0 AND exits 1 on no match (2026-06-11 lesson)
+    open_lessons=$(grep -c 'Status:.*OPEN' LESSONS.md 2>/dev/null || true)  # no '|| echo 0': grep -c prints 0 AND exits 1 on no match (2026-06-11 lesson)
     open_lessons=${open_lessons:-0}
     if [ "$open_lessons" -ge 5 ]; then
         warn "$open_lessons OPEN lesson(s) in LESSONS.md - run the kit-retro skill (threshold: 5)"

@@ -75,7 +75,7 @@ if ($backlog -gt 0) {
 }
 # Learning-loop nudge: count OPEN lessons (the kit-retro trigger, now mechanical)
 if (Test-Path 'docs/LESSONS.md') {
-    $openLessons = @(Get-Content 'docs/LESSONS.md' -Encoding UTF8 | Where-Object { $_ -match 'OPEN' }).Count
+    $openLessons = @(Get-Content 'docs/LESSONS.md' -Encoding UTF8 | Where-Object { $_ -cmatch 'Status:.*OPEN' }).Count
     if ($openLessons -ge 5) {
         Write-Host "[WARN] $openLessons OPEN lesson(s) in docs/LESSONS.md - run the kit-retro skill (threshold: 5)" -ForegroundColor Yellow
     } elseif ($openLessons -gt 0) {
