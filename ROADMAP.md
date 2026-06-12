@@ -66,15 +66,15 @@ prose to a runnable command per project.
       CRLF-intolerant .sh list parsers (blocked scaffold on Windows checkouts) and
       the grep -c zero-count error spam (LESSONS 2026-06-11 entries).
       **Still missing from the stack, surfaced by that pass:**
-      - [ ] verify-file-integrity.{ps1,sh}: silently vacuous outside a git repo
+      - [x] verify-file-integrity.{ps1,sh}: silently vacuous outside a git repo
             (empty `git ls-files` → PASS over zero files) — add a "0 files
             checked" WARN or a `find` fallback
-      - [ ] Synced-mount verification protocol (AI-PARITY §4 extension): mount
+      - [x] Synced-mount verification protocol (AI-PARITY §4 extension): mount
             READS can serve stale/truncated views; in-sandbox gate runs must use
             file-tool-sourced copies — write the rule down
-      - [ ] .ps1 twins still never executed by an agent pass — stays with the
+      - [x] .ps1 twins still never executed by an agent pass — stays with the
             hostile-environment item above
-      - [ ] After re-propagation: fleet repos carry the fixed
+      - [x] After re-propagation: fleet repos carry the fixed
             check-reference-coverage.sh (it's in PROPAGATE.list)
 
 **Exit criteria:** "did I break it?" is one command, same on both OSes.
