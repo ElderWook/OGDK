@@ -13,16 +13,51 @@ or game is an art workload, not a stack-building workload.
 > Collaborators: contributions welcome, especially [LESSONS.md](./LESSONS.md)
 > entries — breaking this kit politely is how it gets stronger.
 
+## What makes this kit different
+
+Most starter kits are templates. This one is a **process organism** — built by
+rotating AI models and humans across machines and operating systems, and shaped
+by every failure that survived contact with that reality:
+
+- **Any session picks up cold.** The session chain (START-HERE → AGENTS →
+  STATUS → plan) is the entire memory — no chat history is ever load-bearing.
+  Proven across vendors: a different model reconstructed full project state
+  from the chain alone.
+- **"Did I break it?" is one command.** THE GATE chains integrity, doc
+  coverage, and the project's own tests/builds — exit 0 or no commit. The
+  integrity layer detects the corruption classes we've ACTUALLY been bitten by,
+  including truncation that hides inside a comment and passes syntax checks
+  (EOF sentinels), zero-filled tails, and stale-mount writes.
+- **The kit learns.** Friction gets captured (`LESSONS.md`), a retro skill
+  codifies it into rules/scripts/skills with human approval, and the gates
+  verify it never recurs. Decisions *declined* are recorded too, so they stay
+  declined instead of being re-litigated by the next session.
+- **Cross-platform is enforced, not aspirational.** Every tool ships as a
+  `.ps1`/`.sh` twin pair (same behavior, same commit), validated on Windows
+  PowerShell 5.1 and GNU/Linux both.
+- **Tools carry provenance.** Projects are stamped with the kit commit their
+  tools came from (`KIT-VERSION`, printed at session start); one command
+  updates the whole fleet, byte-verified.
+- **The boundary is mechanical.** What may enter the kit and what never does
+  (project IP, personal data, collaborator code) is policy ([BOUNDARY.md](./BOUNDARY.md))
+  backed by a gate check that scans for each owner's private markers — and
+  reports only indexes, never the markers themselves.
+- **Agent tooling is governed, not ad hoc.** MCP servers are sanctioned per
+  repo sensitivity tier (open / normal / restricted), with host-shell servers
+  as the audited escape hatch for sandboxed sessions
+  ([docs-template/workflow/MCP.md](./docs-template/workflow/MCP.md)).
+
 Two tracks on one shared process:
 
 ```
 OGDK/
 ├── docs-template/      # the session-chain process every project gets (model-agnostic)
-├── tools/              # PATH-health + clean-launch scripts, new-project scaffolder
-├── skills/             # agent skills: session-start, session-end, plan-writer
+├── tools/              # gates, scaffolder, fleet propagation — all .ps1/.sh twins
+├── templates/          # project-level config templates (mcp.json — grows by rule of two)
+├── skills/             # agent skills: session-start/end, plan-writer, kit-retro, repo-study
 ├── checklists/         # new-project + pre-commit gates
-├── app/                # APP track — web / local / mobile (Tauri + Svelte + relay)
-└── game/               # GAME track — Unreal Engine, modular & performance-first
+├── app/                # APP track — feature-driven skeletons (Tauri + Svelte preset proven)
+└── game/               # GAME track — Unreal Engine, modular, perf-first, port-aware
 ```
 
 ## Start a new project
