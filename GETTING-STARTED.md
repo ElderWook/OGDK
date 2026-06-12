@@ -59,6 +59,8 @@ git config --global user.email "you@example.com"
 No output = success. (That's a recurring theme: in terminals, silence usually
 means it worked.)
 
+> ⚠️ **Important:** The email address you use here **must be registered and verified** on your GitHub account (under **Settings → Emails** on github.com). If you want to keep your personal email private, you can use your GitHub-provided `noreply` email address.
+
 ### 0.4 Optional but recommended: Python
 
 Some of the kit's self-checks use Python. Without it they politely skip
@@ -93,6 +95,8 @@ Cloning = downloading the repository with its full history attached.
 We'll use `C:\Dev` — safe, simple, nothing syncs it. Type each line, Enter
 after each:
 
+> 💡 **Placeholder Alert:** In the commands below, replace `core-maintainer` with the actual GitHub organization or username hosting your repository (e.g., `ElderWook` or whoever invited you).
+
 ```powershell
 mkdir C:\Dev
 cd C:\Dev
@@ -102,7 +106,7 @@ git clone https://github.com/core-maintainer/OGDK.git
 What you'll see: `mkdir` prints a little table (or an error if C:\Dev exists —
 that's fine, keep going). `cd` is silent. `git clone` prints several lines
 ending in `done.` — if the repo is private, a browser window pops up first
-asking you to log in to GitHub; log in once and it remembers you.
+asking you to log in to GitHub; log in once and it remembers you. (If the repository is private, make sure you have accepted the GitHub invitation link first!)
 
 Now step inside:
 
@@ -112,7 +116,7 @@ cd C:\Dev\OGDK
 
 Your prompt should now read `PS C:\Dev\OGDK>`. You're standing in the kit.
 
-(Linux: `mkdir -p ~/dev && cd ~/dev && git clone https://github.com/core-maintainer/OGDK.git && cd OGDK && chmod +x tools/*.sh`)
+(Linux: `mkdir -p ~/dev && cd ~/dev && git clone https://github.com/core-maintainer/OGDK.git && cd OGDK && chmod +x tools/*.sh` — replacing `core-maintainer` with the actual owner/org name.)
 
 ---
 
