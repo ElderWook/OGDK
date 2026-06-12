@@ -28,7 +28,9 @@ both directions. It is enforced socially (PR review, this page) and mechanically
   in LESSONS, not in examples, not in commit messages. Project LESSONS stay in
   project repos; only the scrubbed generic form may graduate.
 - **Personal data**: usernames, emails, machine paths, local config. That lives
-  in your gitignored `user-notes.local.md`.
+  in your gitignored `user-notes.local.md`. Python compiled bytecode files
+  (`.pyc` / `__pycache__`) are also barred, as they can leak absolute directory
+  paths from the compilation machine; these are ignored in `.gitignore`.
 
 ## Outbound — what never leaves the kit toward a project
 
@@ -47,8 +49,8 @@ a fresh list shows the format); a missing list is a WARN, not a pass.
 
 ## History note (decision of record, 2026-06-12)
 
-Kit git history predating the privacy sweep contains early project context. While
-the kit remains private with trusted collaborators, this is accepted as-is.
-**If the kit ever goes public, a history rewrite (`git filter-repo`) against an
-ask-first marker list is REQUIRED before the visibility change** — flipping the
-repo public without it republishes the old history. This sentence is the tripwire.
+Kit git history predating the privacy sweep contains early project context. The
+repository was made public on 2026-06-12 with the historical commits accepted as-is
+under public visibility (private markers are fully scrubbed from the active working
+tree but remain in historical commit diffs). Any future commits must strictly adhere
+to the safety boundaries defined here.
