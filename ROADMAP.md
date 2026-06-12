@@ -61,6 +61,21 @@ prose to a runnable command per project.
       folder hazard, missing optional deps (lfs, node) — every .ps1 twin actually
       executed, not just its .sh sibling. Exit: a stranger scaffolds + gates green
       with only README instructions.
+- [x] Sandboxed .sh smoke pass — 2026-06-11 (Cowork/Linux, faithful copy): kit gate
+      green; App+Game scaffolds green after fixing two real finds, same day:
+      CRLF-intolerant .sh list parsers (blocked scaffold on Windows checkouts) and
+      the grep -c zero-count error spam (LESSONS 2026-06-11 entries).
+      **Still missing from the stack, surfaced by that pass:**
+      - [ ] verify-file-integrity.{ps1,sh}: silently vacuous outside a git repo
+            (empty `git ls-files` → PASS over zero files) — add a "0 files
+            checked" WARN or a `find` fallback
+      - [ ] Synced-mount verification protocol (AI-PARITY §4 extension): mount
+            READS can serve stale/truncated views; in-sandbox gate runs must use
+            file-tool-sourced copies — write the rule down
+      - [ ] .ps1 twins still never executed by an agent pass — stays with the
+            hostile-environment item above
+      - [ ] After re-propagation: fleet repos carry the fixed
+            check-reference-coverage.sh (it's in PROPAGATE.list)
 
 **Exit criteria:** "did I break it?" is one command, same on both OSes.
 

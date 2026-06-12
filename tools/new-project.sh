@@ -44,7 +44,7 @@ cp "$KIT/CLAUDE.template.md" "$PROJ/CLAUDE.md"
 # 3. Tools (both platforms' twins travel together; list lives in PROPAGATE.list)
 mkdir -p "$PROJ/tools"
 while IFS= read -r tname; do
-    tname="${tname%%#*}"; tname="$(echo "$tname" | xargs)"
+    tname="${tname%%#*}"; tname="${tname%$'\r'}"; tname="$(echo "$tname" | xargs)"  # strip CR: list may be a CRLF checkout (2026-06-11 lesson)
     [ -n "$tname" ] || continue
     cp "$KIT/tools/$tname.ps1" "$KIT/tools/$tname.sh" "$PROJ/tools/"
 done < "$KIT/tools/PROPAGATE.list"

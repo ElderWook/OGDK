@@ -81,6 +81,24 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** per-skill replace (remove existing entry file-or-folder, copy fresh) + WARN on entries the kit does not recognize (never silently delete - could be a custom skill).
 **Status:** CODIFIED 2026-06-12, propagate-tools.{ps1,sh} skills block.
 
+## 2026-06-11 PROPAGATE.list CRLF broke the .sh scaffolder on a Windows checkout
+**What happened:** during a sandboxed smoke test, new-project.sh died (`cannot stat '...\r.ps1'`): PROPAGATE.list checks out CRLF on Windows (`* text=auto`, no `*.list` rule) and the bash list parsers never strip `\r` (xargs trims blanks, not CR). The Arch clone checks out LF, so the prior cross-platform pass never saw it.
+**Root cause:** list files had no eol policy; .sh list parsers assumed LF input. The .ps1 twins are naturally CRLF/LF-tolerant, so the twins silently diverged in robustness.
+**Proposed fix:** strip trailing `\r` in every .sh list parser (new-project, propagate-tools); pin `*.list text eol=lf` in .gitattributes; rewrite PROPAGATE.list with LF endings.
+**Status:** CODIFIED 2026-06-11, new-project.sh + propagate-tools.sh + .gitattributes + PROPAGATE.list.
+
+## 2026-06-11 grep -c with "|| echo 0" emits two zeros when the count is zero
+**What happened:** with zero OPEN lessons, the learning-loop nudge printed `[: 0 0: integer expression expected` in check-kit-docs.sh (check 9) and check-reference-coverage.sh. Cosmetic (exit code unaffected) but it makes a green gate look broken.
+**Root cause:** `grep -c` prints `0` AND exits 1 on no match, so `|| echo 0` appends a second zero; the var becomes `0\n0`.
+**Proposed fix:** `|| true` plus a `${var:-0}` default instead of `|| echo 0`.
+**Status:** CODIFIED 2026-06-11, check-kit-docs.sh + check-reference-coverage.sh (coverage checker is in PROPAGATE.list — re-propagate to the fleet).
+
+## 2026-06-11 Synced-mount READS served truncated file views to a sandboxed session
+**What happened:** a Cowork sandbox's mount view showed ~29 kit files truncated mid-line (one with a NUL-filled tail) while every file on the host disk was intact and complete. An audit nearly misdiagnosed repo corruption; the smoke test had to rebuild a faithful working copy from direct file-tool reads before any shell verification was trustworthy. Separately: verify-file-integrity in a git-less copy "passed" while scanning ZERO files (`git ls-files` empty → every check vacuous).
+**Root cause:** AI-PARITY §4 bans git and shell WRITES through mounts; verification READS were assumed safe but stale views lie on read too. Integrity checks enumerate files via git only, with no signal when the enumeration is empty.
+**Proposed fix:** AI-PARITY §4 note — in-sandbox shell verification requires file-tool-sourced copies (mount reads are non-authoritative); verify-file-integrity.{ps1,sh} should WARN "0 files checked" (or fall back to `find`) when git enumeration returns nothing.
+**Status:** OPEN (logged 2026-06-11; parser fixes shipped same day, AI-PARITY note + integrity fallback not yet implemented).
+
 ## 2026-06-11 Pre-commit hook for THE GATE considered, declined
 **What happened:** review flagged that the gate is honor-system — nothing mechanically stops an ungated commit.
 **Root cause:** by design; surfaced as a conscious decision rather than a defect.
