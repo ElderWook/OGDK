@@ -116,3 +116,15 @@ Format: see docs-template/LESSONS.md.
 **Root cause:** by design; surfaced as a conscious decision rather than a defect.
 **Proposed fix:** evaluated a core.hooksPath pre-commit hook (full or cheap-checks-only).
 **Status:** CODIFIED 2026-06-11, declined — the checkpoint protocol depends on fast `wip:` emergency commits; a hook blocks them at the worst moment. Session-end skill + muscle memory carry it. Do not re-litigate unless an ungated commit actually ships breakage.
+
+## 2026-06-13 Pre-push hook for the identity guard (narrow scope) adopted
+**What happened:** check-git-identity (the history-scan author/committer guard) was chained into the gate, but the gate is honor-system — nothing mechanically stops an ungated push from leaking identity to a public remote. The 2026-06-11 entry above declined a pre-COMMIT hook because it blocks fast `wip:` checkpoint commits.
+**Root cause:** identity leak is a PUSH-time risk, not a commit-time one. The pre-commit objection (checkpoint speed) does not apply to a pre-PUSH hook — checkpoint's panic save is a local commit + push, and if the hook blocks a leaky push the local commit still saves; sync-repo untangles it next session.
+**Proposed fix:** a tracked `tools/hooks/pre-push` that runs ONLY check-git-identity (not the whole gate, to keep pushes fast), installed per-clone via `tools/install-hooks.{ps1,sh}` (`core.hooksPath=tools/hooks`). Single LF-pinned sh hook (git runs hooks through its own sh on both OSes); calls the read-only `.sh` checker so there is no NTFS-write hazard. Skips cleanly when the checker / bash / PRIVATE-MARKERS.list is absent, so contributors without a markers list are never blocked. `--no-verify` remains the deliberate override.
+**Status:** CODIFIED 2026-06-13, tools/hooks/pre-push + tools/install-hooks.{ps1,sh} + .gitattributes LF pin. Does NOT reopen the pre-commit decision (different trigger, different cost). Follow-up (not blocking): wire install-hooks into session-start/new-project and propagate the hook to projects via PROPAGATE.list.
+
+## 2026-06-13 sync-repo classifier shipped without smoke coverage
+**What happened:** the safe-arrival classifier (sync-repo, the multi-machine merge-conflict prevention net shipped 2026-06-12) had zero automated coverage; a regression in its state classification would silently reintroduce the exact novice merge conflict it exists to prevent. The stack audit flagged it as the highest-risk untested logic in tools/.
+**Root cause:** test-hostile-env covered path-health / gate / scaffold but not sync-repo's branch logic; the tool was added without a paired test.
+**Proposed fix:** tools/test-sync-repo.{ps1,sh} — exercises in-sync / behind-fast-forward / ahead / dirty+behind / diverged / merge-in-progress against a throwaway local bare remote and asserts each documented exit code (0 = safe, 2 = act).
+**Status:** CODIFIED 2026-06-13, tools/test-sync-repo.{ps1,sh}.

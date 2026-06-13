@@ -4,4 +4,5 @@
 *.ps1 text eol=crlf
 *.bat text eol=crlf
 *.list text eol=lf
+tools/hooks/* text eol=lf
 *.pdf binary
