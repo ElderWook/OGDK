@@ -134,3 +134,10 @@ Format: see docs-template/LESSONS.md.
 **Root cause:** a test capturing a kit tool's output for assertions must redirect stream 6 (or all streams). `2>&1` is the bash habit and silently under-captures in PowerShell; because exit codes still pass, a test that relied ONLY on output matching would be a false-green hazard (here it failed loud, which is the lucky direction).
 **Proposed fix:** PowerShell tests that assert on tool output use `*>&1` (capture all streams). The .sh twin uses echo->stdout so its `2>&1` is correct — documented platform difference. Codify as a test-authoring convention (tools/README.md) when kit-retro runs.
 **Status:** CODIFIED 2026-06-13, test-sync-repo.ps1 (`*>&1`); convention note deferred to kit-retro.
+
+## 2026-06-13 Kit docs path-check scanned gitignored target/marker lists
+**What happened:** check-kit-docs path check failed because tools/TARGETS.list and tools/PRIVATE-MARKERS.list contain local path markers and are gitignored, but the check scanned all files under tools/*.
+**Root cause:** check-kit-docs path scanner was blindly looping over all files in tools/ without excluding gitignored/local configuration lists.
+**Proposed fix:** exclude TARGETS.list and PRIVATE-MARKERS.list from the tools path check.
+**Status:** CODIFIED 2026-06-13, tools/check-kit-docs.sh + tools/check-kit-docs.ps1.
+
