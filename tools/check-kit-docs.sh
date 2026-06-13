@@ -90,6 +90,9 @@ hard_ok=1
 hardpat='C:\\Users\\[A-Za-z]|/home/[a-z]|/Users/[A-Za-z]'
 for f in tools/*; do
     [ -f "$f" ] || continue
+    case "$(basename "$f")" in
+        TARGETS.list|PRIVATE-MARKERS.list) continue ;;
+    esac
     hits="$(grep -nE "$hardpat" "$f" 2>/dev/null || true)"
     if [ -n "$hits" ]; then
         fail "hardcoded user path in $f:"
