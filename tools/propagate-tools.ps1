@@ -90,6 +90,24 @@ function Propagate-One([string]$t) {
             $copied++
         }
     }
+    # Copy pre-push hook (infrastructure)
+    $hookSrc = Join-Path $kit "tools\hooks\pre-push"
+    if (Test-Path $hookSrc) {
+        $hooksDst = Join-Path $t "tools\hooks"
+        New-Item -ItemType Directory -Force -Path $hooksDst | Out-Null
+        $hookDst = Join-Path $hooksDst "pre-push"
+        Copy-Item $hookSrc $hookDst -Force
+        $dstLen = (Get-Item $hookDst).Length
+        $srcHash = (Get-FileHash $hookSrc -Algorithm SHA256).Hash
+        $dstHash = (Get-FileHash $hookDst -Algorithm SHA256).Hash
+        if ($dstLen -eq 0 -or $srcHash -ne $dstHash) {
+            Write-Host "[FAIL] $hookDst does not match source after copy (truncation?) - investigate" -ForegroundColor Red
+            $failed++
+        } else {
+            Write-Host "[OK]   hooks/pre-push" -ForegroundColor Green
+            $copied++
+        }
+    }
     if ($Skills) {
         $skillsSrc = Join-Path $kit "skills"
         if (Test-Path $skillsSrc) {

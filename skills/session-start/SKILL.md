@@ -7,8 +7,7 @@ description: Run the OGDK session-start protocol — verify environment safety, 
 
 Follow in order. Do not edit any file until step 6.
 
-1. **Environment (Windows):** run `.\tools\verify-path-health.ps1`. If any FAIL, stop —
-   report it and do not write files until the PATH is fixed.
+1. **Environment:** run `.\tools\verify-path-health.ps1` (Linux: `bash ./tools/verify-path-health.sh`). If any FAIL, stop — report it and do not write files until the PATH is fixed. Also run `.\tools\install-hooks.ps1` (Linux: `bash ./tools/install-hooks.sh`) to ensure the pre-push guard is active.
 2. **Sync (multi-machine safety):** run `.\tools\sync-repo.ps1` (Linux:
    `./tools/sync-repo.sh`). Exit 0 = safe to work (it fast-forwards if simply
    behind). Exit 2 = STOP and follow its printed instructions — diverged/dirty/

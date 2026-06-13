@@ -8,6 +8,8 @@ sync-repo
 checkpoint
 launch-claude-clean
 verify-file-integrity
+check-git-identity
+install-hooks
 check-reference-coverage
 new-reference-page
 release-notes
