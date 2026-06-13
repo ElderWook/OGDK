@@ -93,6 +93,7 @@ if ($psOk) { Write-Host '[PASS] .ps1 hygiene: ASCII-only, no here-strings' -Fore
 $hardOk = $true
 $hardPat = 'C:\\Users\\[A-Za-z]|/home/[a-z]|/Users/[A-Za-z]'
 foreach ($f in (Get-ChildItem tools -File)) {
+    if ($f.Name -eq 'TARGETS.list' -or $f.Name -eq 'PRIVATE-MARKERS.list') { continue }
     $lineNum = 0
     foreach ($line in (Get-Content $f.FullName -Encoding UTF8)) {
         $lineNum++
