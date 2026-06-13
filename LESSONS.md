@@ -109,7 +109,7 @@ Format: see docs-template/LESSONS.md.
 **What happened:** pre-publication history rewrite anonymized 33/39 commits, but 5 newer commits carried the operator's real email in the author field — caught by the public-safety audit (fresh clone of the public repo), fixed by reset-author rebase + re-tag + force-push during the unlinked window.
 **Root cause:** nothing in the kit addresses git identity; all guards scan file CONTENT, while author metadata travels in every commit object.
 **Proposed fix:** GETTING-STARTED + verify-path-health identity check could recommend/verify a noreply email (`<id>+<user>@users.noreply.github.com`) before first commit in public-bound repos; at minimum a GETTING-STARTED line.
-**Status:** CODIFIED 2026-06-12, GETTING-STARTED.md warnings + verify-path-health.{ps1,sh} checks.
+**Status:** CODIFIED 2026-06-12 (interim: GETTING-STARTED.md warnings + verify-path-health.{ps1,sh}, but that only WARNs on today's *config* and cannot see commit objects already in history). HARDENED 2026-06-13, tools/check-git-identity.{ps1,sh}: scans author + committer name/email across ALL history against PRIVATE-MARKERS.list, FAILs the gate on any match (chained into gate.{ps1,sh}); hostile-env smoke test gains leak-detection + clean-pass cases. Follow-up (not blocking): propagate the checker to project gate.template + PROPAGATE.list so public-bound *projects* get the same guard.
 
 ## 2026-06-11 Pre-commit hook for THE GATE considered, declined
 **What happened:** review flagged that the gate is honor-system — nothing mechanically stops an ungated commit.

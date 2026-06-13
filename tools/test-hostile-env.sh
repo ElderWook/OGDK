@@ -70,6 +70,32 @@ export GIT_CONFIG_NOSYSTEM=1
     fi
 )
 
+# 3. Identity-leak guard: check-git-identity must FAIL on a leaked author identity
+#    in history and PASS when no marker matches. (Requires the new files to be
+#    committed first - the sandbox is a fresh clone, which only carries tracked files.)
+(
+    cd "$TEST_DIR/OGDK"
+    if [ -f ./tools/check-git-identity.sh ]; then
+        printf 'leaktoken9000\n' > tools/PRIVATE-MARKERS.list
+        git -c user.name=Leaker -c user.email=leaktoken9000@example.com \
+            commit --allow-empty -m "test: simulated identity leak" >/dev/null 2>&1 || true
+        if ./tools/check-git-identity.sh >/dev/null 2>&1; then
+            fail "check-git-identity passed despite a leaked author identity in history"
+        else
+            pass "check-git-identity correctly fails on a leaked author identity"
+        fi
+        printf 'zzz_absent_marker_xyz\n' > tools/PRIVATE-MARKERS.list
+        if ./tools/check-git-identity.sh >/dev/null 2>&1; then
+            pass "check-git-identity passes when no marker appears in history"
+        else
+            fail "check-git-identity failed on clean history"
+        fi
+        rm -f tools/PRIVATE-MARKERS.list
+    else
+        fail "check-git-identity.sh absent from clone - commit the new guard before smoke-testing"
+    fi
+)
+
 # Clean up
 rm -rf "$TEST_DIR"
 
