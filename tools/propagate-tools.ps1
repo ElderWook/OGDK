@@ -82,6 +82,13 @@ function Propagate-One([string]$t) {
             Write-Host "[OK]   $name.$ext" -ForegroundColor Green
             $copied++
         }
+        # Optional Windows double-click shim (e.g. checkpoint.bat) travels with its pair.
+        $batSrc = Join-Path $kit ("tools\" + $name + ".bat")
+        if (Test-Path $batSrc) {
+            Copy-Item $batSrc (Join-Path $t ("tools\" + $name + ".bat")) -Force
+            Write-Host "[OK]   $name.bat" -ForegroundColor Green
+            $copied++
+        }
     }
     if ($Skills) {
         $skillsSrc = Join-Path $kit "skills"

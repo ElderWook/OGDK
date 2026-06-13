@@ -47,17 +47,20 @@ while IFS= read -r tname; do
     tname="${tname%%#*}"; tname="${tname%$'\r'}"; tname="$(echo "$tname" | xargs)"  # strip CR: list may be a CRLF checkout (2026-06-11 lesson)
     [ -n "$tname" ] || continue
     cp "$KIT/tools/$tname.ps1" "$KIT/tools/$tname.sh" "$PROJ/tools/"
+    if [ -f "$KIT/tools/$tname.bat" ]; then cp "$KIT/tools/$tname.bat" "$PROJ/tools/"; fi
 done < "$KIT/tools/PROPAGATE.list"
 cp "$KIT/tools/gate.template.ps1" "$PROJ/tools/gate.ps1"
 cp "$KIT/tools/gate.template.sh"  "$PROJ/tools/gate.sh"
 chmod +x "$PROJ/tools/"*.sh
 # Provenance stamp: which kit version+commit these tools came from (drift visibility)
 kitver="unknown"
-git -C "$KIT" rev-parse --short HEAD >/dev/null 2>&1 && kitver="$(git -C "$KIT" rev-parse --short HEAD)"
+if git -C "$KIT" rev-parse --short HEAD >/dev/null 2>&1; then
+    kitver="$(git -C "$KIT" rev-parse --short HEAD)"
+fi
 kitsemver=""
 if [ -f "$KIT/VERSION" ]; then
     sv="$(head -1 "$KIT/VERSION" | tr -d '[:space:]')"
-    [ -n "$sv" ] && kitsemver="v$sv "
+    if [ -n "$sv" ]; then kitsemver="v$sv "; fi
 fi
 printf '%s\n' "$kitsemver$kitver $(date +%Y-%m-%d) (kit version + commit + propagation date - written by propagate-tools/new-project; do not edit)" > "$PROJ/tools/KIT-VERSION"
 

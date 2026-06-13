@@ -36,6 +36,8 @@ foreach ($raw in (Get-Content (Join-Path $kit 'tools\PROPAGATE.list') -Encoding 
     $tname = ($raw -split '#')[0].Trim()
     if ($tname -eq '') { continue }
     Copy-Item (Join-Path $kit ('tools\' + $tname + '.ps1')),(Join-Path $kit ('tools\' + $tname + '.sh')) (Join-Path $proj 'tools')
+    $tbat = Join-Path $kit ('tools\' + $tname + '.bat')
+    if (Test-Path $tbat) { Copy-Item $tbat (Join-Path $proj 'tools') }
 }
 Copy-Item (Join-Path $kit 'tools\gate.template.ps1') (Join-Path $proj 'tools\gate.ps1')
 Copy-Item (Join-Path $kit 'tools\gate.template.sh')  (Join-Path $proj 'tools\gate.sh')

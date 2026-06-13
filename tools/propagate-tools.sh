@@ -81,6 +81,12 @@ propagate_one() {
             echo "[OK]   $name.$ext"
             copied=$((copied+1))
         done
+        # Optional Windows double-click shim (e.g. checkpoint.bat) travels with its pair.
+        if [ -f "$KIT/tools/$name.bat" ]; then
+            cp "$KIT/tools/$name.bat" "$target/tools/$name.bat"
+            echo "[OK]   $name.bat"
+            copied=$((copied+1))
+        fi
     done < "$LIST"
     if [ "$SKILLS" = 1 ]; then
         if [ -d "$KIT/skills" ]; then
