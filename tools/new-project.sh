@@ -51,7 +51,12 @@ while IFS= read -r tname; do
 done < "$KIT/tools/PROPAGATE.list"
 cp "$KIT/tools/gate.template.ps1" "$PROJ/tools/gate.ps1"
 cp "$KIT/tools/gate.template.sh"  "$PROJ/tools/gate.sh"
-chmod +x "$PROJ/tools/"*.sh
+# 3b. Git hooks (pre-push guard)
+mkdir -p "$PROJ/tools/hooks"
+if [ -f "$KIT/tools/hooks/pre-push" ]; then
+    cp "$KIT/tools/hooks/pre-push" "$PROJ/tools/hooks/"
+fi
+chmod +x "$PROJ/tools/"*.sh "$PROJ/tools/hooks/"* 2>/dev/null || true
 # Provenance stamp: which kit version+commit these tools came from (drift visibility)
 kitver="unknown"
 if git -C "$KIT" rev-parse --short HEAD >/dev/null 2>&1; then
@@ -108,6 +113,9 @@ if [ "$NOGIT" -eq 0 ]; then
             fi
             git add -A
             git commit -m "chore: scaffold $NAME from OGDK ($TYPE track)" >/dev/null
+            if [ -f tools/install-hooks.sh ]; then
+                bash tools/install-hooks.sh >/dev/null 2>&1 || true
+            fi
         )
     fi
 fi

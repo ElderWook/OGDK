@@ -23,6 +23,9 @@ bash "$DIR/verify-file-integrity.sh" || total=$((total+$?))
 step "reference coverage"
 bash "$DIR/check-reference-coverage.sh" || total=$((total+$?))
 
+step "git identity"
+bash "$DIR/check-git-identity.sh" || total=$((total+$?))
+
 step "project checks"
 # FILL IN: this project's tests + builds, each followed by:  || total=$((total+1))
 # App example:   npm test || total=$((total+1))

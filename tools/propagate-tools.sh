@@ -88,6 +88,19 @@ propagate_one() {
             copied=$((copied+1))
         fi
     done < "$LIST"
+    # Copy pre-push hook (infrastructure)
+    if [ -f "$KIT/tools/hooks/pre-push" ]; then
+        mkdir -p "$target/tools/hooks"
+        cp "$KIT/tools/hooks/pre-push" "$target/tools/hooks/pre-push"
+        if [ ! -s "$target/tools/hooks/pre-push" ] || ! cmp -s "$KIT/tools/hooks/pre-push" "$target/tools/hooks/pre-push"; then
+            echo "[FAIL] tools/hooks/pre-push does not match source after copy (truncation?) - investigate"
+            failed=$((failed+1))
+        else
+            chmod +x "$target/tools/hooks/pre-push" 2>/dev/null || true
+            echo "[OK]   hooks/pre-push"
+            copied=$((copied+1))
+        fi
+    fi
     if [ "$SKILLS" = 1 ]; then
         if [ -d "$KIT/skills" ]; then
             # Per-skill replace: remove the existing entry (file OR folder - old

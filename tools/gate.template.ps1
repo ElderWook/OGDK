@@ -20,6 +20,9 @@ Step 'file integrity'
 Step 'reference coverage'
 & "$dir\check-reference-coverage.ps1"; $total += $LASTEXITCODE
 
+Step 'git identity'
+& "$dir\check-git-identity.ps1"; $total += $LASTEXITCODE
+
 Step 'project checks'
 # FILL IN: this project's tests + builds, each followed by:  $total += $LASTEXITCODE
 # App example:   npm test; $total += $LASTEXITCODE

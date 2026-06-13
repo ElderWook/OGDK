@@ -40,7 +40,9 @@ exit), so a gate run shows ONE banner, not one per chained tool. Exceptions:
    top of both files.
 2. **.ps1 constraints:** Windows PowerShell 5.1 compatible — ASCII only, no
    here-strings (they break with LF line endings), CRLF-agnostic constructs only.
-   Read text files with `-Encoding UTF8` explicitly.
+   Read text files with `-Encoding UTF8` explicitly. PowerShell tests that assert on
+   tool output must use `*>&1` (rather than `2>&1`) to redirect and capture the
+   `Write-Host` info stream (stream 6).
 3. **.sh constraints:** bash, `set -u` minimum, POSIX-leaning; `chmod +x` after
    fresh checkout on Linux if the executable bit was lost
    (`chmod +x tools/*.sh`).
