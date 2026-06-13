@@ -78,6 +78,19 @@ else
     fi
 fi
 
+# Check 2b: privacy guard - hooks installed + markers present (the leak backstop)
+hookspath="$(git config core.hooksPath 2>/dev/null || true)"
+if [ "$hookspath" = "tools/hooks" ]; then
+    pass "git hooks active (core.hooksPath -> tools/hooks: pre-commit + pre-push)"
+else
+    warn "git hooks not installed - run ./tools/install-hooks.sh to arm the pre-commit/pre-push privacy guard"
+fi
+if [ -f "$REPO_ROOT/tools/PRIVATE-MARKERS.list" ]; then
+    pass "PRIVATE-MARKERS.list present (privacy scan armed)"
+else
+    warn "tools/PRIVATE-MARKERS.list missing - seed it (see tools/README.md) so the guards can catch leaks"
+fi
+
 # Check 3: git-lfs (required for game-track repos)
 if command -v git-lfs >/dev/null; then
     pass "git-lfs -> $(command -v git-lfs)"

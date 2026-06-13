@@ -87,6 +87,19 @@ if (-not $gitPath) {
     }
 }
 
+# Check 2b: privacy guard - hooks installed + markers present (the leak backstop)
+$hooksPath = (git config core.hooksPath 2>$null)
+if ($hooksPath -eq 'tools/hooks') {
+    Write-Host "[PASS] git hooks active (core.hooksPath -> tools/hooks: pre-commit + pre-push)" -ForegroundColor Green
+} else {
+    Write-Host "[WARN] git hooks not installed - run .\tools\install-hooks.ps1 to arm the pre-commit/pre-push privacy guard" -ForegroundColor Yellow
+}
+if (Test-Path (Join-Path $repoRoot 'tools/PRIVATE-MARKERS.list')) {
+    Write-Host "[PASS] PRIVATE-MARKERS.list present (privacy scan armed)" -ForegroundColor Green
+} else {
+    Write-Host "[WARN] tools/PRIVATE-MARKERS.list missing - seed it (see tools/README.md) so the guards can catch leaks" -ForegroundColor Yellow
+}
+
 # Check 3: sed -- warn if it is MSYS2 sed
 $sedPath = (Get-Command sed -ErrorAction SilentlyContinue).Source
 if ($sedPath -and $sedPath -match 'msys|ucrt|mingw') {
