@@ -324,6 +324,111 @@ machine, **you are the most valuable test the kit has ever had.**
   BOUNDARY.md) so the gate mechanically blocks your private markers from ever
   being committed.
 
+## Stage 6 — Onboarding Scenario: Git Safeguards & Stack Lore
+
+If you are new to programming or Git, it is easy to feel overwhelmed. To help you get comfortable, this section is a **hands-on roleplay training scenario** to simulate typical Git friction, show how the dev kit shields you from breaking code, and explain the "lore" behind why these protections exist.
+
+### Act 1: The "Safe Arrival" Sync Shock
+*In which you boot up, forget what you did last session, and try to start editing files directly.*
+
+**The Scenario:**
+You have local, uncommitted experimental edits on your machine, but the remote repository has moved ahead with new tools. Under normal Git, a `git pull` here would either error out, try to auto-merge, or create a messy merge commit.
+
+**What to run:**
+```powershell
+.\tools\sync-repo.ps1
+```
+
+**The Guard in Action:**
+The script will fetch the remote, detect that your local tree is dirty while the remote is ahead, and issue a **STOP** warning:
+> **`[STOP] uncommitted changes AND the remote is ahead. Pulling now risks tangling them.`**
+
+**📚 Stack Lore — The Ghost of the Synced Mount:**
+> Why are we so paranoid about pulling while dirty or working on synced paths? 
+> Early in development, developers used cloud-synced folders (OneDrive/Dropbox) to share active work. If an agent or developer made changes, the cloud sync engine would lock files or sync stale index offsets. Normal Git would get confused, write garbage, and corrupt the index. 
+>
+> We codified the **Safe Arrival** protocol (`sync-repo`) to be *completely conflict-impossible*. It fetches purely to check the layout, and if it sees any risk of a tangle, it immediately pulls the emergency brake.
+
+---
+
+### Act 2: The Kit-Files Merge Battle
+*In which you pull anyway, hit a conflict in `tools/`, and learn the "Magic Spell".*
+
+**The Scenario:**
+To resolve the block, you commit your work locally and run `git pull --no-rebase`. Because a tool script was updated on the remote, you hit a scary conflict:
+```
+CONFLICT (content): Merge conflict in tools/KIT-VERSION
+Automatic merge failed; fix conflicts and then commit the result.
+```
+For a beginner, seeing `CONFLICT` is the ultimate panic moment. You expect you have ruined your project.
+
+**The Guard in Action:**
+The **Kit-Files Rule** printed by `sync-repo` tells you exactly how to handle this. Since the kit is the source of truth, you do not need to read the `<<<<<<< HEAD` diff markers in tool scripts. You just tell Git to prefer the local version of the tools to finish the merge, and then re-propagate:
+
+```powershell
+# 1. Cast the "Prefer Ours" spell
+git checkout --ours tools/KIT-VERSION
+git checkout --ours tools/test-hostile-env.ps1
+
+# 2. Add and commit to finish the merge
+git add -A
+git commit -m "chore: merge conflicts resolved via kit-files rule"
+```
+
+**📚 Stack Lore — The Twin Rule & Propagated Truth:**
+> Why do we override tool conflicts instead of merging them?
+> Every script under `tools/` is a matched **cross-platform pair** (e.g., `.ps1` for Windows, `.sh` for Linux). If a developer tries to edit one of these directly to resolve a conflict, they break the **Twin Rule** (which demands both scripts behave identically). 
+> 
+> To protect developers, the rule is simple: tell Git to ignore the remote conflict, finish the merge using local files, and then run `propagate-tools.ps1` from the kit to automatically lay down a clean, verified set of twins.
+
+---
+
+### Act 3: The Path Health Check (NTFS Scars)
+*In which you learn why POSIX terminals and Windows filesystems must never mix.*
+
+**The Scenario:**
+On a Windows machine, a developer might launch their AI coding assistant from a Git Bash, MSYS2, or WSL terminal because they are used to Linux-style commands.
+
+**What to run:**
+```powershell
+.\tools\verify-path-health.ps1
+```
+
+**The Guard in Action:**
+If launched from an MSYS2-emulated terminal, the script immediately triggers a **FAIL**:
+> **`[FAIL] Linux-emulation paths found in PATH`**
+
+**📚 Stack Lore — The MSYS2/NTFS Truncation Hazard:**
+> This check exists because of a dark chapter in dev history. 
+> When running AI agents on Windows from POSIX-emulated terminals, the agent tries to write files using the Linux API, which maps onto the Windows NTFS file allocation tables. 
+> 
+> Because of differences in file locks and handles, this mapping would silently write **zero-filled tails** and truncate files. Code files would look normal in the editor but would be half-full of `NUL` bytes underneath, corrupting git commits. 
+> 
+> The path health script was written to enforce a hard boundary: **Windows files stay on native NTFS with native shells; Linux files stay on native ext4/XFS.** No crossing the streams.
+
+---
+
+### Act 4: The Panic Save (The Checkpoint)
+*In which you learn how to save your skin when your AI assistant is about to crash.*
+
+**The Scenario:**
+You are working on a feature, and your AI assistant is running low on message limits, or you need to step away from your PC immediately.
+
+**What to run:**
+```powershell
+.\tools\checkpoint.ps1 "wip: halfway through updating layouts"
+```
+*(Or simply double-click `tools/checkpoint.bat` from File Explorer!)*
+
+**The Guard in Action:**
+The script stages your workspace, commits it as a `wip:` save point, and attempts to push to GitHub. Even if you are offline, the script outputs:
+> **`[PASS] committed locally: wip: checkpoint... YOUR WORK IS SAFE.`**
+
+**📚 Stack Lore — The Interrupted Session Handoff:**
+> AI models are fragile—they hit context windows, rate limits, or crash mid-write. If an agent dies mid-task, it leaves the directory in a half-written "dirty" state.
+> 
+> By running a **Checkpoint**, the agent or developer leaves a clear trail. The next time anyone runs `sync-repo`, it sees the `wip:` commit at the top of the history, warns the user that the last session was interrupted mid-task, and tells them: *"Reconstruct from: git show HEAD. Do not start new work until this is finished or reverted."* It acts as a black box flight recorder for the codebase.
+
 ---
 
 *Stuck anywhere? Copy the full error text and send it over — that message IS
