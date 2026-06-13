@@ -33,6 +33,8 @@ function Setup-Clone($dir) {
     $null = New-Item -ItemType Directory -Force -Path (Join-Path $dir 'tools')
     Copy-Item (Join-Path $kit 'tools\sync-repo.ps1') (Join-Path $dir 'tools\')
     Copy-Item (Join-Path $kit 'tools\sync-repo.sh') (Join-Path $dir 'tools\')
+    Copy-Item (Join-Path $kit 'tools\checkpoint.ps1') (Join-Path $dir 'tools\')
+    Copy-Item (Join-Path $kit 'tools\checkpoint.sh') (Join-Path $dir 'tools\')
 }
 
 function Assert-Sync($dir, $expected, $label, $keyword) {
@@ -116,6 +118,94 @@ $gd = (git rev-parse --git-dir)
 $null = New-Item -ItemType File -Force -Path (Join-Path $gd 'MERGE_HEAD')
 Pop-Location
 Assert-Sync $D 2 "merge in progress -> exit 2 (STOP)" "MERGE is in progress"
+
+# 7. COLLABORATOR CATCHUP (clean merge) -> exit 0.
+$E = Join-Path $testDir 'E'
+Setup-Clone $E
+# Make dirty
+Set-Content -Path (Join-Path $E 'newfile.txt') -Value 'local edit'
+# Advance remote in B
+Push-Location $B
+git pull -q --ff-only
+Add-Content -Path 'file.txt' -Value 'from B for E'
+git commit -q -am "b-commit-for-e"
+git push -q origin HEAD
+Pop-Location
+# E runs checkpoint
+Push-Location $E
+$outCheckpoint = (& '.\tools\checkpoint.ps1' *>&1 | Out-String)
+$checkpointCode = $LASTEXITCODE
+Pop-Location
+if ($checkpointCode -ne 0) {
+    Fail-Test "collaborator catchup checkpoint (expected exit 0, got $checkpointCode)"
+} elseif ($outCheckpoint -notmatch 'committed locally' -or $outCheckpoint -notmatch 'push did not go through') {
+    Fail-Test "collaborator catchup checkpoint (output missing expected messages)"
+} else {
+    Pass-Test "collaborator catchup checkpoint saves local work and warns on push failure"
+}
+# E runs sync-repo -> diverged -> exit 2
+Assert-Sync $E 2 "collaborator catchup sync-repo detects diverged state" "DIVERGED"
+# E runs git pull --no-rebase
+Push-Location $E
+git pull -q --no-rebase 2>$null
+$pullCode = $LASTEXITCODE
+Pop-Location
+if ($pullCode -ne 0) {
+    Fail-Test "collaborator catchup git pull --no-rebase (expected exit 0, got $pullCode)"
+} else {
+    Pass-Test "collaborator catchup git pull --no-rebase completes clean merge"
+}
+# E runs sync-repo again -> in-sync -> exit 0
+Assert-Sync $E 0 "collaborator catchup sync-repo passes after clean merge" "SAFE TO WORK"
+
+# 8. COLLABORATOR CATCHUP WITH CONFLICT -> exit 0 after resolution.
+$F = Join-Path $testDir 'F'
+Setup-Clone $F
+# Advance remote with a conflicting change to file.txt
+Push-Location $B
+git pull -q --ff-only
+Add-Content -Path 'file.txt' -Value 'B conflicting change'
+git commit -q -am "b-conflicting-change"
+git push -q origin HEAD
+Pop-Location
+# F makes conflicting change to file.txt
+Push-Location $F
+Add-Content -Path 'file.txt' -Value 'F conflicting change'
+Pop-Location
+# F runs checkpoint
+Push-Location $F
+$outCheckpointF = (& '.\tools\checkpoint.ps1' *>&1 | Out-String)
+$checkpointCodeF = $LASTEXITCODE
+Pop-Location
+if ($checkpointCodeF -ne 0) {
+    Fail-Test "conflict catchup checkpoint (expected exit 0, got $checkpointCodeF)"
+} elseif ($outCheckpointF -notmatch 'committed locally' -or $outCheckpointF -notmatch 'push did not go through') {
+    Fail-Test "conflict catchup checkpoint (output missing expected messages)"
+} else {
+    Pass-Test "conflict catchup checkpoint saves conflicting work locally"
+}
+# F runs sync-repo -> diverged -> exit 2
+Assert-Sync $F 2 "conflict catchup sync-repo detects diverged state" "DIVERGED"
+# F runs git pull --no-rebase -> fails with conflict
+Push-Location $F
+git pull -q --no-rebase 2>$null
+$pullCodeF = $LASTEXITCODE
+Pop-Location
+if ($pullCodeF -eq 0) {
+    Fail-Test "conflict catchup git pull --no-rebase should have failed with conflict"
+} else {
+    Pass-Test "conflict catchup git pull --no-rebase fails as expected"
+}
+# F runs sync-repo -> merge in progress -> exit 2
+Assert-Sync $F 2 "conflict catchup sync-repo detects merge in progress" "MERGE is in progress"
+# Resolve conflict and commit
+Push-Location $F
+git checkout -q --ours file.txt
+git add file.txt
+git commit -q -m "resolved conflict"
+Pop-Location
+# F runs sync-repo again -> exit 0
+Assert-Sync $F 0 "conflict catchup sync-repo passes after conflict resolution" "SAFE TO WORK"
 
 # Restore environment + clean up.
 $env:GIT_CONFIG_GLOBAL = $oldGlobal

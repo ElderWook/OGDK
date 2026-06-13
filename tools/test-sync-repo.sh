@@ -31,7 +31,7 @@ git init -q --bare "$REMOTE"
 setup_clone() {  # $1 = target dir
     git clone -q "$REMOTE" "$1"
     mkdir -p "$1/tools"
-    cp "$KIT/tools/sync-repo.ps1" "$KIT/tools/sync-repo.sh" "$1/tools/"
+    cp "$KIT/tools/sync-repo.ps1" "$KIT/tools/sync-repo.sh" "$KIT/tools/checkpoint.ps1" "$KIT/tools/checkpoint.sh" "$1/tools/"
 }
 
 assert_sync() {  # $1 dir, $2 expected_code, $3 label, $4 keyword(optional)
@@ -111,6 +111,91 @@ setup_clone "$TEST_DIR/D"
     : > "$(git rev-parse --git-dir)/MERGE_HEAD"
 )
 assert_sync "$TEST_DIR/D" 2 "merge in progress -> exit 2 (STOP)" "MERGE is in progress"
+
+# 7. COLLABORATOR CATCHUP (clean merge) -> exit 0.
+setup_clone "$TEST_DIR/E"
+# Make dirty
+echo "local edit" > "$TEST_DIR/E/newfile.txt"
+# Advance remote in B
+(
+    cd "$TEST_DIR/B"
+    git pull -q --ff-only
+    echo "from B for E" >> file.txt
+    git commit -q -am "b-commit-for-e"
+    git push -q origin HEAD
+)
+# E runs checkpoint
+outCheckpoint=$(cd "$TEST_DIR/E" && bash tools/checkpoint.sh 2>&1)
+checkpointCode=$?
+if [ "$checkpointCode" -ne 0 ]; then
+    fail "collaborator catchup checkpoint (expected exit 0, got $checkpointCode)"
+elif ! printf '%s' "$outCheckpoint" | grep -qi "committed locally" || ! printf '%s' "$outCheckpoint" | grep -qi "push did not go through"; then
+    fail "collaborator catchup checkpoint (output missing expected messages)"
+else
+    pass "collaborator catchup checkpoint saves local work and warns on push failure"
+fi
+# E runs sync-repo -> diverged -> exit 2
+assert_sync "$TEST_DIR/E" 2 "collaborator catchup sync-repo detects diverged state" "DIVERGED"
+# E runs git pull --no-rebase
+(
+    cd "$TEST_DIR/E"
+    git pull -q --no-rebase >/dev/null 2>&1
+)
+pullCode=$?
+if [ "$pullCode" -ne 0 ]; then
+    fail "collaborator catchup git pull --no-rebase (expected exit 0, got $pullCode)"
+else
+    pass "collaborator catchup git pull --no-rebase completes clean merge"
+fi
+# E runs sync-repo again -> in-sync -> exit 0
+assert_sync "$TEST_DIR/E" 0 "collaborator catchup sync-repo passes after clean merge" "SAFE TO WORK"
+
+# 8. COLLABORATOR CATCHUP WITH CONFLICT -> exit 0 after resolution.
+setup_clone "$TEST_DIR/F"
+# Advance remote with a conflicting change to file.txt
+(
+    cd "$TEST_DIR/B"
+    git pull -q --ff-only
+    echo "B conflicting change" >> file.txt
+    git commit -q -am "b-conflicting-change"
+    git push -q origin HEAD
+)
+# F makes conflicting change to file.txt
+echo "F conflicting change" >> "$TEST_DIR/F/file.txt"
+# F runs checkpoint
+outCheckpointF=$(cd "$TEST_DIR/F" && bash tools/checkpoint.sh 2>&1)
+checkpointCodeF=$?
+if [ "$checkpointCodeF" -ne 0 ]; then
+    fail "conflict catchup checkpoint (expected exit 0, got $checkpointCodeF)"
+elif ! printf '%s' "$outCheckpointF" | grep -qi "committed locally" || ! printf '%s' "$outCheckpointF" | grep -qi "push did not go through"; then
+    fail "conflict catchup checkpoint (output missing expected messages)"
+else
+    pass "conflict catchup checkpoint saves conflicting work locally"
+fi
+# F runs sync-repo -> diverged -> exit 2
+assert_sync "$TEST_DIR/F" 2 "conflict catchup sync-repo detects diverged state" "DIVERGED"
+# F runs git pull --no-rebase -> fails with conflict
+(
+    cd "$TEST_DIR/F"
+    git pull -q --no-rebase >/dev/null 2>&1
+)
+pullCodeF=$?
+if [ "$pullCodeF" -eq 0 ]; then
+    fail "conflict catchup git pull --no-rebase should have failed with conflict"
+else
+    pass "conflict catchup git pull --no-rebase fails as expected"
+fi
+# F runs sync-repo -> merge in progress -> exit 2
+assert_sync "$TEST_DIR/F" 2 "conflict catchup sync-repo detects merge in progress" "MERGE is in progress"
+# Resolve conflict and commit
+(
+    cd "$TEST_DIR/F"
+    git checkout -q --ours file.txt
+    git add file.txt
+    git commit -q -m "resolved conflict"
+)
+# F runs sync-repo again -> exit 0
+assert_sync "$TEST_DIR/F" 0 "conflict catchup sync-repo passes after conflict resolution" "SAFE TO WORK"
 
 rm -rf "$TEST_DIR"
 
