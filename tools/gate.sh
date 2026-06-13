@@ -18,6 +18,8 @@ echo "=== GATE: kit docs ==="
 bash "$DIR/check-kit-docs.sh" || total=$((total+$?))
 echo; echo "=== GATE: file integrity ==="
 bash "$DIR/verify-file-integrity.sh" || total=$((total+$?))
+echo; echo "=== GATE: git identity ==="
+bash "$DIR/check-git-identity.sh" || total=$((total+$?))
 echo; echo "======================================"
 if [ "$total" -eq 0 ]; then echo "  GATE PASSED - safe to commit"; else echo "  GATE FAILED ($total) - do not commit"; fi
 exit "$total"
