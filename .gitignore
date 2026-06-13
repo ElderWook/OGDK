@@ -3,6 +3,9 @@ user-notes.local.md
 tools/PRIVATE-MARKERS.list
 tools/TARGETS.list
 
+# Throwaway sandboxes created by the smoke tests (test-hostile-env, test-sync-repo)
+sandbox*/
+
 # OS junk
 .DS_Store
 Thumbs.db
