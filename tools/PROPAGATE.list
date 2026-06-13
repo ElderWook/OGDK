@@ -4,6 +4,8 @@
 # and gate.template.* (copied as gate.* by the scaffolder) are NOT listed.
 # One base name per line; '#' starts a comment.
 verify-path-health
+sync-repo
+checkpoint
 launch-claude-clean
 verify-file-integrity
 check-reference-coverage

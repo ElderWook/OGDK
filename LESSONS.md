@@ -57,6 +57,12 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** single manifest (Index deleted); guide rewritten generic with ONE lifecycle (Proposed→Active→Completed→Archived); honest Linux-only claim; sed-escape hardening; explicit skip WARN; PROPAGATE.list + propagate-tools.{ps1,sh} consumed by both scaffolders.
 **Status:** CODIFIED 2026-06-11, this commit set.
 
+## 2026-06-12 Multi-machine drift produced a novice merge conflict
+**What happened:** the operator committed on machine A from a kit working copy that was behind origin (machine B had pushed newer commits), then hit a push rejection and an add/add merge conflict on a kit-propagated tool file — exactly the git rabbit hole the kit exists to prevent. The stale propagation source was only spotted because KIT-VERSION stamped an old hash.
+**Root cause:** nothing checked remote-vs-local state at session start; git's default pull happily creates conflict states a novice then has to dig out of; conflicts on kit-propagated files LOOK like real merges but never are.
+**Proposed fix:** sync-repo.{ps1,sh} safe-arrival classifier (fetch-first; ff-only is the only auto-action; DIVERGED/dirty/mid-merge = STOP with plain-language instructions + the kit-files rule) as session-start step 2; checkpoint.{ps1,sh}+(.bat) panic save so interrupted sessions always leave a wip: commit instead of a dirty tree.
+**Status:** CODIFIED 2026-06-12, tools/sync-repo.{ps1,sh} + tools/checkpoint.{ps1,sh,bat} + session-start/session-end skills + PROPAGATE.list.
+
 ## 2026-06-12 Truncated .ps1 sat committed and undetected for a day
 **What happened:** a project's verify-path-health.ps1 was truncated mid-string at its final line (corruption-era propagation, pre propagate-tools) and lived in git unnoticed until the operator ran it after the Linux trip — first parse error on invocation.
 **Root cause:** detection gap — integrity checks compiled .py but never parsed .ps1/.sh; the gate doesn't invoke path-health; propagation predated byte-verification.

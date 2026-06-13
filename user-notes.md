@@ -108,6 +108,8 @@ Your SSH/GPG/auth specifics: `user-notes.local.md`.
 |--------|------|
 | `gate.ps1/.sh` | **THE GATE — the only pre-commit command to remember.** Chains integrity + coverage + that repo's tests/builds. Exit 0 = commit. (gate.template.* = scaffolder source) |
 | `verify-path-health.ps1/.sh` | session-start env gate (MSYS2 poison / NTFS mount / identity / LFS); prints tools/KIT-VERSION provenance in project repos |
+| `sync-repo.ps1/.sh` | **safe arrival** — session start, after path-health: fetch + classify (ff-only auto; DIVERGED/dirty/merging = STOP with instructions; never auto-merges). Exit 0 = work, 2 = act first |
+| `checkpoint.ps1/.sh` (+`checkpoint.bat` double-click) | **panic save** — stage + `wip:` commit + push, zero questions; failed push still = saved (local commit). Optional arg: what you were doing |
 | `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, .py compile, script-syntax parse, EOF sentinel on tools scripts, git fsck) — run after heavy AI writes |
 | `test-hostile-env.ps1/.sh` | hostile-environment smoke test suite (simulates space-in-path, clean git config setup, and verifies health/gate/scaffolding) |
 | `check-reference-coverage.ps1/.sh` | docs gate: every component tracked to a reference page; flags STALE/MISSING; nudges on OPEN lessons (kit-retro at 5) and stale STATUS.md handoff |

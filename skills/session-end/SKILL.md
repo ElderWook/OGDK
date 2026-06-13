@@ -7,9 +7,12 @@ description: Run the OGDK session-end protocol — verification gate, docs-with-
 
 > **Emergency handoff (low usage / time pressure):** if there isn't capacity for the
 > full protocol, do ONLY this, immediately: add `## In-flight` to docs/STATUS.md
-> (what's half-done, which files, exact next step), `git add -A`,
-> `git commit -m "wip: <plan> — <state>"`, push. Everything else can wait; stranded
-> context cannot be recovered.
+> (what's half-done, which files, exact next step), then run
+> `.\tools\checkpoint.ps1 "<what was in flight>"` (Linux: `./tools/checkpoint.sh`;
+> humans can double-click `tools\checkpoint.bat`) — it stages, wip-commits, and
+> pushes in one shot, and a failed push still leaves the work safe locally.
+> Everything else can wait; stranded context cannot be recovered.
+> sync-repo detects the wip: checkpoint at next session start automatically.
 
 1. **THE GATE:** run `.\tools\gate.ps1` (Linux: `./tools/gate.sh`). One command — it
    chains file integrity, reference coverage, and the project's tests/builds. Exit 0
