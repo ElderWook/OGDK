@@ -251,6 +251,53 @@ ever entering version control. Tracked notes = everyone's; `.local` = yours alon
   `git push` uploads. Never run anything containing `--force`, `--hard`, or
   `clean` without asking a human first.
 
+### 4.1 Daily Session Lifecycle
+
+To keep multi-machine environments in lockstep and prevent work loss due to AI agent crashes or limits, we use the following strict pipeline:
+
+1. **Session Start (Safe Arrival):**
+   Run the sync check before touching any code:
+   ```powershell
+   .\tools\sync-repo.ps1
+   ```
+   * **What it does:** Fetches updates, fast-forwards if safely behind, and **stops** with instructions if there are conflicting commits or uncommitted/in-flight files from another machine.
+   
+2. **Panic Saves (Checkpoints):**
+   If you need to step away, or if your AI agent is running low on message limits, save your progress:
+   ```powershell
+   .\tools\checkpoint.ps1 "wip: briefly describe what you did"
+   ```
+   * **What it does:** Stages all files, commits a local backup as `wip: ...`, and attempts to push. Even if push fails (e.g. offline), your local history is completely safe.
+   * **Shortcut:** You can double-click `tools/checkpoint.bat` from File Explorer to trigger a panic save without using PowerShell.
+
+3. **Session End (Pre-Commit Gate):**
+   Before you commit any milestone:
+   ```powershell
+   .\tools\gate.ps1
+   ```
+   * **What it does:** Chains file integrity, reference documentation coverage, tests, and builds. **You must get a `GATE PASSED` to commit or push.**
+
+### 4.2 Handling Git Conflicts on Kit Tools (The "Kit-Files Rule")
+
+Since tool scripts (like `verify-path-health.ps1`, `gate.ps1`, `sync-repo.ps1`) are propagated from the central kit, they are not standard application code. If you encounter conflicts in `tools/*` when pulling:
+1. Prefer the local version to finish the merge:
+   ```powershell
+   git checkout --ours tools/KIT-VERSION
+   git checkout --ours tools/test-hostile-env.sh
+   # (Do the same for other conflicting files under tools/*)
+   git add -A
+   git commit -m "chore: resolve tools propagation conflict"
+   ```
+2. Re-run `propagate-tools.ps1` from the kit to overwrite and update the tools files to the newest correct version.
+
+### 4.3 Recovery from Interrupted Sessions
+
+If you return to a repo and find uncommitted files, or the last commit message begins with `wip:`, a previous session was interrupted:
+* **Do NOT start new work.**
+* Reconstruct the in-flight state by running `git status`, `git diff`, and checking the active design plan.
+* Re-verify path health and run `.\tools\sync-repo.ps1` to ensure you are safe to proceed.
+
+
 ## Stage 5 — Contributing (the part we actually want from you)
 
 This kit has a **learning loop**: when reality beats the system, the wound gets
