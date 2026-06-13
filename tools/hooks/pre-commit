@@ -1,0 +1,75 @@
+#!/usr/bin/env sh
+# OGDK pre-commit hook - block a commit that would leak a private marker, either in
+# the CONTENT being committed or in the CURRENT git identity that will author it.
+# Lean by design (mirrors tools/hooks/pre-push): runs ONLY the privacy scans, never
+# the full gate, so ordinary work - including wip: checkpoints - is never blocked for
+# hygiene reasons (twin rule, links). Run `gate` manually for those at session end.
+#
+# Why pre-commit AND pre-push: a sandboxed agent (e.g. Cowork) commits but cannot
+# push, so the pre-push guard never fires for it. The commit is the one git event
+# every environment reaches, so the leak block must live here too.
+#
+# Cross-platform: git runs hooks through its bundled sh on Windows too, so this one
+# sh hook serves both OSes. Read-only (reads git config, the staged file list, and
+# the markers file; writes nothing). Skips cleanly (exit 0) when the markers file or
+# grep is absent, so a fresh clone is never blocked. Output reports the marker INDEX
+# only, never its text, so it stays shareable. The authoritative full scans live in
+# check-kit-docs (check 8, content) and check-git-identity (history); this is their
+# fast pre-commit subset. Override only when certain: git commit --no-verify
+repo="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+[ -n "$repo" ] && cd "$repo" || exit 0
+
+markfile="tools/PRIVATE-MARKERS.list"
+[ -f "$markfile" ] || exit 0
+command -v grep >/dev/null 2>&1 || exit 0
+
+# Identity that will author this commit (fail fast before a bad author is baked in).
+identity="$(printf '%s %s' "$(git config user.name 2>/dev/null)" "$(git config user.email 2>/dev/null)" | tr '[:upper:]' '[:lower:]')"
+
+# Staged content (added/copied/modified only). The gitignored private lists are
+# excluded - they legitimately contain the markers we scan FOR.
+staged="$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null \
+            | grep -Ev '(^|/)(PRIVATE-MARKERS\.list|TARGETS\.list|user-notes\.local\.md)$' || true)"
+
+issues=0
+midx=0
+while IFS= read -r raw || [ -n "$raw" ]; do
+    m="$(printf '%s' "$raw" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    case "$m" in ''|'#'*) continue ;; esac
+    midx=$((midx + 1))
+    ml="$(printf '%s' "$m" | tr '[:upper:]' '[:lower:]')"
+
+    # 1. current git identity
+    case "$identity" in
+        *"$ml"*)
+            echo "pre-commit BLOCKED: git identity matches private marker #$midx (text withheld)." 1>&2
+            echo "  Set a noreply identity first: git config user.email <id>+<name>@users.noreply.github.com" 1>&2
+            issues=$((issues + 1)) ;;
+    esac
+
+    # 2. staged file content
+    if [ -n "$staged" ]; then
+        hits=""
+        oldifs="$IFS"; IFS='
+'
+        for f in $staged; do
+            [ -f "$f" ] || continue
+            if grep -liIF -- "$m" "$f" >/dev/null 2>&1; then
+                hits="$hits  $f
+"
+            fi
+        done
+        IFS="$oldifs"
+        if [ -n "$hits" ]; then
+            echo "pre-commit BLOCKED: private marker #$midx (text withheld) in staged file(s):" 1>&2
+            printf '%s' "$hits" 1>&2
+            issues=$((issues + 1))
+        fi
+    fi
+done < "$markfile"
+
+if [ "$issues" -ne 0 ]; then
+    echo "Scrub the leak, then re-commit. Override only if certain: git commit --no-verify" 1>&2
+    exit 1
+fi
+exit 0

@@ -8,6 +8,37 @@ than in a project repo.
 Same as every Oasis repo: never launch agents from MSYS2 / Git Bash / WSL.
 Run `.\tools\verify-path-health.ps1` before any file writes.
 
+## Working here as an AI agent
+
+These rules bind any AI agent (Claude Code, Cowork, agy, ...) working in this repo, on
+top of the rules below. The session lifecycle they hook into is in
+[GETTING-STARTED.md](./GETTING-STARTED.md) §4.1.
+
+1. **Start every session read-first.** Run `verify-path-health`, then `sync-repo`,
+   before any file write. If path-health FAILs (NTFS mount, unset/public identity,
+   hooks not installed), surface it and stay read-only until it's resolved — never
+   write or commit through a flagged environment.
+2. **Never run git through a Cowork mount or cloud-synced folder.** Even `git status`
+   can rewrite the index from stale data, and partial writes via the mount shell land
+   at stale offsets and corrupt files. Make whole-file edits with your direct file
+   tools only, and let the human run git on a native clone. (Hazard map:
+   [tools/README.md](./tools/README.md).)
+3. **Never push, force-push, or auto-merge from a sandbox or non-interactive session.**
+   No `git push`, no `git merge`, no history rewrite, no `--no-verify`. `sync-repo`
+   stops on divergence by design — if it says STOP, hand back to the human rather than
+   untangle it yourself.
+4. **Identity is private.** Commits must be authored by a GitHub noreply email; verify
+   it with `verify-path-health`. Never set or edit the human's global git config for
+   them, and never commit with an unset or personal identity.
+5. **Route personal data to `user-notes.local.md`** (gitignored), never into tracked
+   files — repo paths, usernames, machine specifics, project codenames, collaborator
+   names. The membrane is [BOUNDARY.md](./BOUNDARY.md).
+6. **Trust the mechanical backstop.** `install-hooks` arms a `pre-commit` guard (blocks
+   a commit whose staged content or authoring identity matches a private marker) and a
+   `pre-push` guard (rescans commit-history identity). Both read your gitignored
+   `tools/PRIVATE-MARKERS.list` and skip cleanly when it's absent — so seed it first.
+   Run `gate` before any commit for the full check.
+
 ## Rules of the kit (non-negotiable)
 
 1. **Process + proven patterns only.** No app/game domain logic ever lives here.
