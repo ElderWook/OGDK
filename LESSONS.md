@@ -128,3 +128,9 @@ Format: see docs-template/LESSONS.md.
 **Root cause:** test-hostile-env covered path-health / gate / scaffold but not sync-repo's branch logic; the tool was added without a paired test.
 **Proposed fix:** tools/test-sync-repo.{ps1,sh} — exercises in-sync / behind-fast-forward / ahead / dirty+behind / diverged / merge-in-progress against a throwaway local bare remote and asserts each documented exit code (0 = safe, 2 = act).
 **Status:** CODIFIED 2026-06-13, tools/test-sync-repo.{ps1,sh}.
+
+## 2026-06-13 PowerShell test captured nothing via 2>&1 (Write-Host is the info stream)
+**What happened:** test-sync-repo.ps1 asserted on sync-repo's output with `& script 2>&1 | Out-String`; all six keyword checks FAILed on first run even though the text was plainly on screen and every exit code was correct. Kit tools print via Write-Host, which writes to PowerShell's information stream (6), not stdout — `2>&1` (error stream) captured nothing, so `$out` was empty and every keyword match missed.
+**Root cause:** a test capturing a kit tool's output for assertions must redirect stream 6 (or all streams). `2>&1` is the bash habit and silently under-captures in PowerShell; because exit codes still pass, a test that relied ONLY on output matching would be a false-green hazard (here it failed loud, which is the lucky direction).
+**Proposed fix:** PowerShell tests that assert on tool output use `*>&1` (capture all streams). The .sh twin uses echo->stdout so its `2>&1` is correct — documented platform difference. Codify as a test-authoring convention (tools/README.md) when kit-retro runs.
+**Status:** CODIFIED 2026-06-13, test-sync-repo.ps1 (`*>&1`); convention note deferred to kit-retro.
