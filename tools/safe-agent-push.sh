@@ -25,4 +25,4 @@ git add .
 git commit -m "$msg"
 git push origin main
 echo "=== PUSH SUCCESSFUL ==="
-# EOF sentinel
+# EOF

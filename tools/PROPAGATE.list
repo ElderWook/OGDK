@@ -16,3 +16,4 @@ check-reference-coverage
 new-reference-page
 release-notes
 test-hostile-env
+safe-agent-push
