@@ -5,6 +5,23 @@ scaffold a project, work in it for weeks, and never think about the kit except w
 deliberately flowing an improvement back. The base is done when it stops generating
 its own work.
 
+## Status (2026-06-13): structurally finished; what's left is validation + use
+
+The base is built. Architecture, gates, the learning loop, cross-platform twins, the
+privacy boundary, and now a beginner on-ramp all exist, and the kit gate is green. What
+remains is **not new construction** - it is proving the kit under real conditions and
+then using it:
+
+- the hostile-environment pass on a real fresh Windows box (Phase 3, still open) -
+  now higher-stakes because the audit added new `.ps1` tools (pwsh-parse-verified, but
+  not yet executed on real PowerShell 5.1 hardware);
+- a real first-timer running the beginner track end to end (WS4, still open) - the
+  persona the on-ramp was built for has not met it yet.
+
+Per the anti-goals below, the surest sign the kit is finished is to **stop adding to it
+and ship a real project**. After the current to-do list clears, kit time is polishing,
+and polishing is allowed only against a concrete need (rule of two).
+
 ## Phase 1 — Anchor (do before any real project work)
 
 Everything currently lives on one machine. One disk failure erases the LLC.
@@ -177,6 +194,36 @@ design DO — maximize the share that ports.
       (conventions + gamefeature-pattern reference updated)
 - [x] GDD discipline made explicit — DONE 2026-06-12 (design layer of the
       three-layer model: mechanics in design terms, never engine terms)
+
+### WS4 — Beginner on-ramp + audit hardening (2026-06-13)
+
+External audit against a new goal: the kit should be giftable to someone with ideas and
+little coding experience, who learns how software works *by building*. Outcome: the
+beginner layer now exists, and the kit's cross-platform discipline got five real drift
+fixes the twin rule had not been catching.
+
+- [x] Twin-drift fixes: sync-repo.ps1 synced-mount guard; verify-file-integrity.sh
+      python probe; check-reference-coverage parity; launch-claude-clean.ps1 health gate;
+      check-kit-docs.sh marker scan. Gate green; all `.ps1` pwsh-parse-clean.
+- [x] Two front doors (README) + `START-BUILDING.md` (the six-word loop, maintainer
+      machinery hidden behind progressive disclosure)
+- [x] `bootstrap.{ps1,sh}` (one-command setup) + `rescue.{ps1,sh}` (checkpoint's
+      opposite - the undo-the-mess button) + `report-snag.{ps1,sh}` (frictionless
+      LESSONS capture)
+- [x] `explain-mode` + `project-retro` skills (agent-as-tutor while building + the
+      learner's capstone recap - the "understand how code works" payoff)
+- [x] `new-project -Features/-Preset` wizard + annotated module placeholders (language
+      code stays agent-generated per CODE-CONVENTIONS - no stored boilerplate)
+- [ ] Propagate `rescue` + `report-snag` to existing project repos (`propagate-tools --all`)
+- [ ] Behavioral twin-parity check - the twin rule verifies the pair EXISTS, not that
+      both halves behave the same (five silent drifts proved the gap); model on test-sync-repo
+- [ ] Decide the wip-exempt cheap pre-commit gate (new option; does NOT reopen the
+      declined full-gate hook)
+- [ ] **Validate with an ACTUAL first-timer** - the on-ramp is unproven until someone new
+      scaffolds, builds a small real thing with the agent, gates green, and can explain it
+
+**Exit criteria:** a non-programmer goes from clone to a running, gate-green project and
+can describe what each part does - without ever opening a maintainer doc.
 
 ## Future tracks (recorded intent — NOT started; rule of two governs)
 
