@@ -31,7 +31,9 @@ else
     subject="wip: checkpoint $stamp"
     [ -n "$MSG" ] && subject="$subject - $MSG"
     git add -A
-    if git commit -m "$subject" >/dev/null 2>&1; then
+    # Panic save: bypass the pre-commit cheap-integrity gate (a half-broken tree
+    # must still be savable). The privacy scan in the hook always runs regardless.
+    if OGDK_SKIP_INTEGRITY=1 git commit -m "$subject" >/dev/null 2>&1; then
         echo "[PASS] committed locally: $subject"
     else
         echo "[FAIL] commit failed - run 'git status' and read it"; exit 1
