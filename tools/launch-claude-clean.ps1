@@ -47,6 +47,19 @@ if ($gitPath -and $gitPath -notmatch 'Program Files\\Git') {
     Write-Warning 'git not found on the clean PATH'
 }
 
+# -- 3b. Health gate on the CLEANED PATH (twin parity: the .sh runs the gate before
+#        launch). Running it here, after the PATH surgery above, is the Windows
+#        equivalent - the ambient PATH may have been poisoned, which is why you are
+#        using this launcher; the rebuilt PATH is what we verify. ----------------------
+$health = Join-Path $PSScriptRoot 'verify-path-health.ps1'
+if (Test-Path $health) {
+    & $health
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning 'verify-path-health reported issues even after PATH cleanup - aborting launch. Fix the issues above, then retry.'
+        exit 1
+    }
+}
+
 # -- 4. Locate claude -------------------------------------------------------------------
 $claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
 if (-not $claude) {

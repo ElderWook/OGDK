@@ -73,28 +73,37 @@ else
     pass "no NUL bytes in tracked text files"
 fi
 
-# Check 3: Python files compile (catches mid-file truncation of .py)
+# Check 3: Python files compile (catches mid-file truncation of .py).
+# Find a python that ACTUALLY LAUNCHES - mirror the .ps1 twin, which probes
+# python/py/python3 and confirms --version runs. Some systems have 'python' but
+# no 'python3' (the old twin checked only python3 and silently skipped the gate).
+PYCMD=""
+for cand in python3 python py; do
+    if command -v "$cand" >/dev/null 2>&1 && "$cand" --version >/dev/null 2>&1; then
+        PYCMD="$cand"; break
+    fi
+done
 py_bad=""
-if command -v python3 >/dev/null; then
-    py_files=$(git ls-files '*.py' 2>/dev/null || true)
-    if [ -z "$py_files" ] && [ -n "$tracked_files" ]; then
-        py_files=$(echo "$tracked_files" | grep -E '\.py$' || true)
-    fi
-    if [ -n "$py_files" ]; then
-        while IFS= read -r f; do
-            [ -z "$f" ] && continue
-            [ -f "$f" ] || continue
-            python3 -m py_compile "$f" 2>/dev/null || py_bad="$py_bad  $f"$'\n'
-        done <<< "$py_files"
-    fi
+py_files=$(git ls-files '*.py' 2>/dev/null || true)
+if [ -z "$py_files" ] && [ -n "$tracked_files" ]; then
+    py_files=$(echo "$tracked_files" | grep -E '\.py$' || true)
+fi
+if [ -z "$py_files" ]; then
+    pass "no tracked .py files (compile check not applicable)"
+elif [ -z "$PYCMD" ]; then
+    warn "no WORKING python found - .py truncation check SKIPPED (install python3 to restore this gate)"
+else
+    while IFS= read -r f; do
+        [ -z "$f" ] && continue
+        [ -f "$f" ] || continue
+        "$PYCMD" -m py_compile "$f" 2>/dev/null || py_bad="$py_bad  $f"$'\n'
+    done <<< "$py_files"
     if [ -n "$py_bad" ]; then
         fail "Python files do not compile (possible truncation):"
         printf '%s' "$py_bad"
     else
-        pass "all tracked .py files compile"
+        pass "all tracked .py files compile ($PYCMD)"
     fi
-else
-    warn "python3 not found - .py truncation check SKIPPED (install python3 to restore this gate)"
 fi
 
 # Check 3b: shell scripts parse via bash -n (catches mid-file truncation of .sh).

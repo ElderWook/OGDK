@@ -97,7 +97,9 @@ if ($haveGit -and (Test-Path 'docs/STATUS.md')) {
 Write-Host '--------------------------------------' -ForegroundColor Cyan
 Write-Host "  backlog (missing pages): $backlog   stale: $stale   hard issues: $issues"
 if ($issues -eq 0) {
-    Write-Host '  COVERAGE OK' -ForegroundColor Green
+    $suffix = ''
+    if (($backlog + $stale) -gt 0) { $suffix = ' (with warnings - see above)' }
+    Write-Host "  COVERAGE OK$suffix" -ForegroundColor Green
 } else {
     Write-Host '  FIX COVERAGE before archiving any plan' -ForegroundColor Red
 }

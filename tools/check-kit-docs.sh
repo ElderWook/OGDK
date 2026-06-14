@@ -131,7 +131,11 @@ if [ -f "$markfile" ]; then
         m="$(printf '%s' "$m" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
         case "$m" in ''|'#'*) continue ;; esac
         midx=$((midx+1))
-        hits="$(grep -rliIF --exclude-dir=.git \
+        # -i (case-insensitive) + no -I: scan ALL files including binaries, matching
+        # the .ps1 twin (which scans every file < 1 MB regardless of type). Dropping
+        # -I closes the only real twin drift here - a marker embedded in a non-text
+        # file was caught on Windows but skipped on Linux.
+        hits="$(grep -rliF --exclude-dir=.git \
                   --exclude='user-notes.local.md' --exclude='PRIVATE-MARKERS.list' \
                   --exclude='TARGETS.list' \
                   -- "$m" . 2>/dev/null || true)"
