@@ -214,7 +214,7 @@ fixes the twin rule had not been catching.
       learner's capstone recap - the "understand how code works" payoff)
 - [x] `new-project -Features/-Preset` wizard + annotated module placeholders (language
       code stays agent-generated per CODE-CONVENTIONS - no stored boilerplate)
-- [ ] Propagate `rescue` + `report-snag` to existing project repos (`propagate-tools --all`)
+- [x] Propagate `rescue` + `report-snag` to existing project repos (`propagate-tools --all`) — DONE 2026-06-14
 - [ ] Behavioral twin-parity check - the twin rule verifies the pair EXISTS, not that
       both halves behave the same (five silent drifts proved the gap); model on test-sync-repo
 - [ ] Decide the wip-exempt cheap pre-commit gate (new option; does NOT reopen the
