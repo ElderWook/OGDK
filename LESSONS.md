@@ -159,3 +159,10 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** evaluate extending tools/hooks/pre-commit to optionally run the cheap integrity subset, skipping any commit whose subject starts with 'wip:'. Decide on its own merits.
 **Status:** OPEN - new option for kit-retro to weigh; does NOT reopen the full-gate decline (different trigger, different cost).
 
+## 2026-06-13 Study of Vercel Labs' opensrc dependency source context caching
+**What happened:** studied vercel-labs/opensrc to evaluate AI-agent dependency context enrichment, release pipelines, and monorepo structure.
+**Root cause:** AI agents often lack implementation visibility into third-party dependencies (relying on type stubs or docs), leading to integration bugs.
+**Proposed fix:** ADAPT opensrc into user-notes.md and create a skills/inspect-dependency skill template for projects, enabling on-demand shallow cloning and caching of package source code under ~/.opensrc/.
+**Status:** OPEN (study artifact created, pending human review of the proposal).
+
+
