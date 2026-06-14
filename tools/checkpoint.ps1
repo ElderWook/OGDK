@@ -34,8 +34,13 @@ if (-not $dirty) {
     $subject = "wip: checkpoint $stamp"
     if ($Message -ne '') { $subject = "$subject - $Message" }
     git add -A
+    # Panic save: bypass the pre-commit cheap-integrity gate (a half-broken tree
+    # must still be savable). The privacy scan in the hook always runs regardless.
+    $env:OGDK_SKIP_INTEGRITY = '1'
     git commit -m $subject 2>$null | Out-Null
-    if ($LASTEXITCODE -eq 0) {
+    $commitCode = $LASTEXITCODE
+    Remove-Item Env:\OGDK_SKIP_INTEGRITY -ErrorAction SilentlyContinue
+    if ($commitCode -eq 0) {
         Write-Host "[PASS] committed locally: $subject" -ForegroundColor Green
     } else {
         Write-Host "[FAIL] commit failed - run 'git status' and read it" -ForegroundColor Red; exit 1
