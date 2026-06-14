@@ -83,12 +83,12 @@ hookspath="$(git config core.hooksPath 2>/dev/null || true)"
 if [ "$hookspath" = "tools/hooks" ]; then
     pass "git hooks active (core.hooksPath -> tools/hooks: pre-commit + pre-push)"
 else
-    warn "git hooks not installed - run ./tools/install-hooks.sh to arm the pre-commit/pre-push privacy guard"
+    warn "git hooks not installed (optional - the privacy guard for repos you will share publicly). Arm any time: ./tools/install-hooks.sh"
 fi
 if [ -f "$REPO_ROOT/tools/PRIVATE-MARKERS.list" ]; then
     pass "PRIVATE-MARKERS.list present (privacy scan armed)"
 else
-    warn "tools/PRIVATE-MARKERS.list missing - seed it (see tools/README.md) so the guards can catch leaks"
+    warn "tools/PRIVATE-MARKERS.list not set up (optional - only needed before you make a repo public; see tools/README.md)"
 fi
 
 # Check 3: git-lfs (required for game-track repos)
