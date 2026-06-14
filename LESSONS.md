@@ -195,4 +195,17 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** guard the test run behind "do tests exist yet" — `find src -name 'test_*.py'` (sh) / `Get-ChildItem -Recurse -Filter test_*.py` (ps1) — and only invoke unittest when at least one test file is present; otherwise print "(no tests yet)" and pass cleanly. Proven in `an embedded project/tools/gate.{sh,ps1}`; graduate the guard into `tools/gate.template.{ps1,sh}` and fix the `user-notes.md` App line.
 **Status:** OPEN — flow-back from an embedded project (rule 7); fix proven there but NOT yet in the kit template. Also still OPEN: propagate the **pre-commit** hook to projects (only pre-push propagates today).
 
+## 2026-06-14 study of actualbudget/actual local-first synchronization and HLC
+**What happened:** studied actualbudget/actual to evaluate its offline-first SQLite synchronization, Hybrid Logical Clock (HLC), and Merkle trie diffing logic for App-track local-first syncing.
+**Root cause:** App track lacked a standardized local-first synchronization protocol, requiring developers to reinvent state replication and conflict resolution.
+**Proposed fix:** ADAPT actual's HLC (`timestamp.ts`) and Merkle radix trie (`merkle.ts`) logic into a shared `@oasis/local-first-sync` library or generic skill in `app/packages/` for App-track projects.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of actualbudget/actual core business logic separation
+**What happened:** studied actual's monorepo code isolation (`loot-core`), which isolates SQL queries, preference engines, and business rules from the Svelte/Electron/Tauri UI wrapper.
+**Root cause:** app templates have soft boundaries between Svelte UI code and Rust backend commands, making query/state logic leak.
+**Proposed fix:** ADAPT the `#platform` and `#server` abstraction pattern into App-track architecture templates (`docs-template/core/app-architecture.md`) to enforce clean backend/worker layer isolation.
+**Status:** OPEN (study artifact created).
+
+
 
