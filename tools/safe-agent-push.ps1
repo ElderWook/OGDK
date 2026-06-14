@@ -36,4 +36,4 @@ git add .
 git commit -m $msg
 git push origin main
 Write-Host "=== PUSH SUCCESSFUL ===" -ForegroundColor Green
-# EOF sentinel
+# EOF
