@@ -74,7 +74,7 @@ if ($gateExitCode -eq 0) {
 
 # Scaffold a new project
 $projDir = Join-Path $testDir "TestProj"
-$null = .\tools\new-project.ps1 -Name "TestProj" -Type "App" -Dest $testDir 2>&1
+$null = .\tools\new-project.ps1 -Name "TestProj" -Type "App" -Dest $testDir -Preset "E" 2>&1
 $scaffoldExitCode = $LASTEXITCODE
 
 if ($scaffoldExitCode -eq 0) {

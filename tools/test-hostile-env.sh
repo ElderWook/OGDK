@@ -55,7 +55,7 @@ export GIT_CONFIG_NOSYSTEM=1
     fi
     
     # Scaffold a new project
-    if ./tools/new-project.sh -n TestProj -t App -d "$TEST_DIR" >/dev/null 2>&1; then
+    if ./tools/new-project.sh -n TestProj -t App -d "$TEST_DIR" -p E >/dev/null 2>&1; then
         pass "new-project.sh successfully scaffolds App in spaces-in-path directory"
     else
         fail "new-project.sh fails scaffolding in spaces-in-path directory"
