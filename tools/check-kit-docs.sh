@@ -161,6 +161,23 @@ if [ -f "LESSONS.md" ]; then
     fi
 fi
 
+# 10. tools/*.sh must be tracked executable (100755). A non-exec .sh propagates (cp +
+#     git) as 100644, and every target then needs a manual chmod+commit - the recurring
+#     annoyance behind the 2026-06-14 exec-bit lesson. Guards the SOURCE so it can't
+#     regress (this is how fleet-status.sh / safe-agent-push.sh slipped through). Reads
+#     the INDEX mode via git ls-files -s - the mode that actually travels on propagation.
+if command -v git >/dev/null 2>&1 && git rev-parse --git-dir >/dev/null 2>&1; then
+    exec_bad="$(git ls-files -s 'tools/*.sh' 2>/dev/null | awk '$1!="100755"{print $4}')"
+    if [ -n "$exec_bad" ]; then
+        fail "tools/*.sh not tracked executable (100755) - fix: git update-index --chmod=+x <file>"
+        printf '%s\n' "$exec_bad" | sed 's/^/  /'
+    else
+        pass "all tracked tools/*.sh are executable (100755)"
+    fi
+else
+    warn "git unavailable - tools/*.sh exec-bit check skipped"
+fi
+
 echo "--------------------------------------"
 if [ "$issues" -eq 0 ]; then
     echo "  KIT DOCS OK"

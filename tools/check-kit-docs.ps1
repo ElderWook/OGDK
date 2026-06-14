@@ -180,6 +180,28 @@ if (Test-Path 'LESSONS.md') {
     }
 }
 
+# 10. tools/*.sh must be tracked executable (100755). A non-exec .sh propagates (cp +
+#     git) as 100644, and every target then needs a manual chmod+commit - the recurring
+#     annoyance behind the 2026-06-14 exec-bit lesson. Guards the SOURCE so it can't
+#     regress. Reads the INDEX mode via git ls-files -s - the mode that travels.
+$null = git rev-parse --git-dir 2>$null
+if ($LASTEXITCODE -eq 0) {
+    $execBad = @()
+    foreach ($entry in (git ls-files -s 'tools/*.sh' 2>$null)) {
+        $parts = $entry -split '\s+'
+        if ($parts[0] -ne '100755') { $execBad += ($entry -replace '^\d+\s+\w+\s+\d+\s+', '') }
+    }
+    if ($execBad.Count -gt 0) {
+        Write-Host '[FAIL] tools/*.sh not tracked executable (100755) - fix: git update-index --chmod=+x <file>:' -ForegroundColor Red
+        $execBad | ForEach-Object { Write-Host "  $_" }
+        $issues++
+    } else {
+        Write-Host '[PASS] all tracked tools/*.sh are executable (100755)' -ForegroundColor Green
+    }
+} else {
+    Write-Host '[WARN] git unavailable - tools/*.sh exec-bit check skipped' -ForegroundColor Yellow
+}
+
 Write-Host '--------------------------------------' -ForegroundColor Cyan
 if ($issues -eq 0) {
     Write-Host '  KIT DOCS OK' -ForegroundColor Green
