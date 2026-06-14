@@ -205,6 +205,21 @@ if (-not $NoGit) {
     }
 }
 
+# 8. Register this project in the kit's fleet list (gitignored tools\TARGETS.list, per-machine)
+#    so fleet-status and propagate-tools -All pick it up automatically. Idempotent.
+$targetsList = Join-Path $kit 'tools\TARGETS.list'
+$projAbs = (Resolve-Path $proj).Path
+$already = $false
+if (Test-Path $targetsList) {
+    foreach ($l in (Get-Content $targetsList -Encoding UTF8)) {
+        if ($l.Trim() -eq $projAbs) { $already = $true; break }
+    }
+}
+if (-not $already) {
+    Add-Content -Path $targetsList -Value $projAbs -Encoding ASCII
+    Write-Host "[INFO] registered in tools\TARGETS.list (fleet tracking): $projAbs"
+}
+
 Write-Host ''
 Write-Host 'Done. Next steps:' -ForegroundColor Green
 Write-Host '  1. Fill in AGENTS.md (architecture, invariants, verification gate)'

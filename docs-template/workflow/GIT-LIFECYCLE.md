@@ -91,6 +91,11 @@ Good: gate green, work pushed, STATUS.md updated for the next session.
 git pull --ff-only             # in every repo you'll touch this session
 ```
 Good: clean fast-forward. If it refuses, you have local state to deal with first (S1–S5).
+**Fresh clones on this machine?** `tools/TARGETS.list` is per-machine and gitignored, so a newly
+cloned project is invisible to the fleet tooling until you register it. Run it once:
+`.\tools\track-projects.ps1` (`./tools/track-projects.sh`) auto-discovers every OGDK project
+under the kit's parent dir (a git repo carrying `tools/KIT-VERSION`) and adds the missing ones.
+(`new-project` already auto-registers projects on the machine that scaffolds them.)
 
 ## Resolve sub-flows (when a checkpoint says STOP)
 

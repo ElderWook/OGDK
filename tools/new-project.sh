@@ -203,6 +203,17 @@ if [ "$NOGIT" -eq 0 ]; then
     fi
 fi
 
+# 8. Register this project in the kit's fleet list (gitignored tools/TARGETS.list, per-machine)
+#    so fleet-status and propagate-tools --all pick it up automatically. Idempotent.
+TARGETS_LIST="$KIT/tools/TARGETS.list"
+proj_abs="$(cd "$PROJ" 2>/dev/null && pwd || printf '%s' "$PROJ")"
+if [ -f "$TARGETS_LIST" ] && grep -Fxq "$proj_abs" "$TARGETS_LIST"; then
+    :
+else
+    printf '%s\n' "$proj_abs" >> "$TARGETS_LIST"
+    echo "[INFO] registered in tools/TARGETS.list (fleet tracking): $proj_abs"
+fi
+
 echo
 echo "Done. Next steps:"
 echo "  1. Fill in AGENTS.md (architecture, invariants) + tools/gate §project checks"

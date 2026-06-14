@@ -53,6 +53,7 @@ function Report-Repo($d, $label) {
     elseif ((Test-Path (Join-Path $gd 'rebase-merge')) -or (Test-Path (Join-Path $gd 'rebase-apply'))) { $state = 'REBASING' }
     $kv = '-'
     if (Test-Path 'tools/KIT-VERSION') { $kv = (Get-Content 'tools/KIT-VERSION' -TotalCount 1) }
+    $kv = $kv -replace ' \(.*$', ''   # drop the "(kit version + commit ...; do not edit)" annotation
 
     $att = $false
     if ($state -ne 'ok') { $att = $true }

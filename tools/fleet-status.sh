@@ -55,6 +55,7 @@ report_repo() { # $1 = repo dir, $2 = label
         [ -f "$gd/MERGE_HEAD" ] && state='MERGING'
         { [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; } && state='REBASING'
         kv="$(head -1 tools/KIT-VERSION 2>/dev/null || echo '-')"
+        kv="${kv%% (*}"   # drop the "(kit version + commit ...; do not edit)" annotation
 
         att=0
         [ "$state" != ok ] && att=1
