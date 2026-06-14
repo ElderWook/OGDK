@@ -37,7 +37,7 @@ git rev-parse --git-dir >/dev/null 2>&1 && HAVE_GIT=1 || HAVE_GIT=0
 while IFS='|' read -r _ comp src page status _; do
     comp="$(echo "$comp" | xargs)"; src="$(echo "$src" | xargs)"
     page="$(echo "$page" | xargs)"; status="$(echo "$status" | xargs | tr 'A-Z' 'a-z')"
-    case "$comp" in ""|Component|_none*|----*|:---*) continue ;; esac
+    case "$comp" in ""|Component|_none*|---*|:---*) continue ;; esac
     case "$status" in
         planned) continue ;;
         missing) backlog=$((backlog+1)); continue ;;

@@ -26,6 +26,21 @@ Write-Host '======================================' -ForegroundColor Cyan
 Write-Host '  Sync Check - safe arrival (OGDK)    ' -ForegroundColor Cyan
 Write-Host '======================================' -ForegroundColor Cyan
 
+# Guard: never run git through a synced/cloud folder (AI-PARITY SS4). The .sh twin
+# refuses on a sandbox/WSL mount path; the Windows hazard is a OneDrive/Dropbox/
+# Google Drive folder, a mapped network drive, or a UNC path - git there can rewrite
+# the index from a stale, eventually-consistent view. Work from a native local clone.
+$mountHazard = ''
+if ($repoRoot -match '^\\\\') {
+    $mountHazard = "a UNC network path ($repoRoot)"
+} elseif ($repoRoot -match '(?i)[\\/](OneDrive|Dropbox|Google Drive|My Drive)([\\/]|$)') {
+    $mountHazard = "a cloud-synced folder ($repoRoot)"
+}
+if ($mountHazard) {
+    Stop2 "this repo is in $mountHazard - git must run from a NATIVE local clone only (e.g. C:\Dev\OGDK), never a synced/cloud folder. Move the clone to a normal disk path, or hand this to a human."
+    exit 2
+}
+
 $gitDir = git rev-parse --git-dir 2>$null
 if ($LASTEXITCODE -ne 0 -or -not $gitDir) { Stop2 'not a git repository'; exit 2 }
 
