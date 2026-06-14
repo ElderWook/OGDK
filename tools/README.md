@@ -2,10 +2,7 @@
 
 Every script ships as a **twin pair**: `.ps1` (Windows PowerShell 5.1+) and `.sh`
 (bash, Linux with GNU userland). Same name, same behavior, same exit semantics.
-macOS is **experimental**: the `.sh` scripts assume GNU userland (`sed -i`, `grep -P`),
-so install it first (`brew install coreutils gnu-sed grep`) and expect rough edges -
-`bootstrap` prints this reminder when it detects a Mac. First-class macOS support is a
-deliberate porting task (rule of two: it lands when a second Mac actually needs it).
+macOS is experimentally supported: the native BSD tools on macOS break on GNU flags used in these scripts. To run on macOS, you must install the GNU userland utilities (via Homebrew: `brew install coreutils gnu-sed grep`). If a Mac ever joins the fleet, that's a deliberate porting task.
 
 | Pair | Purpose |
 |------|---------|
