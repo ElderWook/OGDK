@@ -266,6 +266,20 @@ Format: see docs-template/LESSONS.md.
 **Root cause:** Python simulation solvers suffer from single-threaded speed limits, making Monte Carlo sweeps slow.
 **Proposed fix:** ADOPT PyO3 native Rust modules for performance-critical simulation logic, and release the GIL via `allow_threads` to execute parallel loops.
 **Status:** OPEN (study artifact created).
+## 2026-06-14 study of nortikin/sverchok parametric geometry generation and ezdxf translation
+**What happened:** studied nortikin/sverchok to analyze parametric 2D/3D geometry processing in Python (for Blender automation) and standard CAD (DXF) layout mapping using ezdxf.
+**Root cause:** CAD/CAM nesting routines lack dynamic layout parsing and standard CAD export/metadata mapping capabilities.
+**Proposed fix:** ADOPT `ezdxf` with layer assignments, geometry blocks, and XDATA metadata attributes to compile production-ready layouts; ADAPT nested-list level enforcement utilities (`nesting_utils.py`) to unify multi-sheet part coordinate logic.
+**Status:** OPEN (study artifact created).
 
+## 2026-06-14 study of cantools/cantools DBC database parsing and signal packing codecs
+**What happened:** studied cantools/cantools to analyze DBC database parsing, recursive multiplexed message signal codecs, byte-packing, range checks, and scaling math.
+**Root cause:** CAN/bus communication layers rely on hardcoded packet definitions and manual bitwise manipulation, which is error-prone.
+**Proposed fix:** ADOPT schema-driven signal definitions (JSON/DBC) with generic bit-mask encoding/decoding math (Intel/Motorola byte-ordering, scaling rules, limits validation); ADAPT dynamic multiplexer routing into communication codecs.
+**Status:** OPEN (study artifact created).
 
-
+## 2026-06-14 study of influxdata/telegraf write-ahead-log local buffering and transactional batching
+**What happened:** studied influxdata/telegraf to analyze local-first store-and-forward write-ahead logs (`github.com/tidwall/wal`), transactional batching (`BeginTransaction`/`EndTransaction`), and front-truncation file reclamation.
+**Root cause:** edge sensor gateways lack highly performant, crash-resilient local buffering that guarantees zero telemetry loss across network outages and power cycles.
+**Proposed fix:** ADOPT sequential write-ahead logs (WAL) with transactional lease-commit batching loops (`PullBatch` -> `Commit` or `Requeue`) for store-and-forward edge gateways; ADAPT index-masked file queues or rolling file blocks to bound local disk usage.
+**Status:** OPEN (study artifact created).
