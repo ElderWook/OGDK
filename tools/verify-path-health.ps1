@@ -92,12 +92,12 @@ $hooksPath = (git config core.hooksPath 2>$null)
 if ($hooksPath -eq 'tools/hooks') {
     Write-Host "[PASS] git hooks active (core.hooksPath -> tools/hooks: pre-commit + pre-push)" -ForegroundColor Green
 } else {
-    Write-Host "[WARN] git hooks not installed - run .\tools\install-hooks.ps1 to arm the pre-commit/pre-push privacy guard" -ForegroundColor Yellow
+    Write-Host "[WARN] git hooks not installed (optional - the privacy guard for repos you will share publicly). Arm any time: .\tools\install-hooks.ps1" -ForegroundColor Yellow
 }
 if (Test-Path (Join-Path $repoRoot 'tools/PRIVATE-MARKERS.list')) {
     Write-Host "[PASS] PRIVATE-MARKERS.list present (privacy scan armed)" -ForegroundColor Green
 } else {
-    Write-Host "[WARN] tools/PRIVATE-MARKERS.list missing - seed it (see tools/README.md) so the guards can catch leaks" -ForegroundColor Yellow
+    Write-Host "[WARN] tools/PRIVATE-MARKERS.list not set up (optional - only needed before you make a repo public; see tools/README.md)" -ForegroundColor Yellow
 }
 
 # Check 3: sed -- warn if it is MSYS2 sed

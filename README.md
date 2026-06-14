@@ -3,14 +3,21 @@
 **Oasis Games LLC.** The reusable foundation for every project — so starting a new app
 or game is an art workload, not a stack-building workload.
 
-> ## 🆕 New here? Start with **[GETTING-STARTED.md](./GETTING-STARTED.md)**
-> The complete ~20-minute walkthrough, **assuming zero experience** — it starts
-> at "press the Windows key and type powershell" and ends with you contributing.
-> Stages: install git → clone → run the self-test (`.\tools\gate.ps1` must print
-> **GATE PASSED**) → the **agent conflict check** before letting YOUR AI tools
-> loose here (your global agent configs can silently fight this repo's rules —
-> the guide shows you how to detect and defuse that) → first session → PRs.
-> Collaborators: contributions welcome, especially [LESSONS.md](./LESSONS.md)
+> ## 🆕 New here? Pick your door
+>
+> **"I have an idea — let me build."** → **[START-BUILDING.md](./START-BUILDING.md)**
+> The shortest path from zero to a running project: one setup command
+> (`bootstrap`), pick a shape for your app, and your AI agent builds it *while
+> explaining how the code works*. No jargon required up front — the guardrails stay
+> out of your way until one actually catches something. This is the door for someone
+> with great ideas and little or no coding experience.
+>
+> **"I want to run or improve the kit itself."** → **[GETTING-STARTED.md](./GETTING-STARTED.md)**
+> The complete ~20-minute walkthrough, assuming zero experience: install git → clone →
+> run the self-test (`.\tools\gate.ps1` must print **GATE PASSED**) → the **agent
+> conflict check** before letting YOUR AI tools loose here → first session → PRs.
+> Then [AGENTS.md](./AGENTS.md) is the law and [BOUNDARY.md](./BOUNDARY.md) the privacy
+> membrane. Collaborators: contributions welcome, especially [LESSONS.md](./LESSONS.md)
 > entries — breaking this kit politely is how it gets stronger.
 
 ## What makes this kit different
