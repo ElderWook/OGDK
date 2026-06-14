@@ -6,6 +6,8 @@
 verify-path-health
 sync-repo
 checkpoint
+rescue
+report-snag
 launch-claude-clean
 verify-file-integrity
 check-git-identity

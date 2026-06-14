@@ -106,16 +106,19 @@ Your SSH/GPG/auth specifics: `user-notes.local.md`.
 
 | Script | What |
 |--------|------|
+| `bootstrap.ps1/.sh` | (OGDK only) one-command first-run setup: checks git + identity, runs path-health + the gate, arms hooks, prints your next command. Run once on a fresh clone before anything else |
 | `gate.ps1/.sh` | **THE GATE — the only pre-commit command to remember.** Chains integrity + coverage + that repo's tests/builds. Exit 0 = commit. (gate.template.* = scaffolder source) |
 | `verify-path-health.ps1/.sh` | session-start env gate (MSYS2 poison / NTFS mount / identity / LFS); prints tools/KIT-VERSION provenance in project repos |
 | `sync-repo.ps1/.sh` | **safe arrival** — session start, after path-health: fetch + classify (ff-only auto; DIVERGED/dirty/merging = STOP with instructions; never auto-merges). Exit 0 = work, 2 = act first |
 | `checkpoint.ps1/.sh` (+`checkpoint.bat` double-click) | **panic save** — stage + `wip:` commit + push, zero questions; failed push still = saved (local commit). Optional arg: what you were doing |
+| `rescue.ps1/.sh` | **get back to safe** — checkpoint's opposite: cancels a half-finished merge/rebase, or shelves uncommitted changes (`git stash`, fully recoverable) so the tree returns to your last save. Never resets `--hard`/force-pushes. The "undo the mess" button |
 | `verify-file-integrity.ps1/.sh` | pre-commit corruption gate (NUL-fill, truncation, .py compile, script-syntax parse, EOF sentinel on tools scripts, git fsck) — run after heavy AI writes |
 | `check-git-identity.ps1/.sh` | pre-commit identity-leak gate: scans author+committer name/email across ALL history vs your gitignored `PRIVATE-MARKERS.list`, FAILs on a match (the leak content scans can't see — metadata rides in every commit). Marker-index output only; skips if git/list absent. Chained into gate |
 | `test-hostile-env.ps1/.sh` | hostile-environment smoke test suite (simulates space-in-path, clean git config setup, and verifies health/gate/scaffolding) |
 | `test-sync-repo.ps1/.sh` | smoke test for `sync-repo`: drives a throwaway bare remote through in-sync / behind-ff / ahead / dirty+behind / diverged / merge-in-progress, asserts each exit code (0 safe, 2 act). Run after touching `sync-repo` |
 | `install-hooks.ps1/.sh` | install this clone's git hooks (sets `core.hooksPath=tools/hooks`): enables the pre-push identity guard via `tools/hooks/pre-push`. Per-clone; undo: `git config --unset core.hooksPath` |
 | `check-reference-coverage.ps1/.sh` | docs gate: every component tracked to a reference page; flags STALE/MISSING; nudges on OPEN lessons (kit-retro at 5) and stale STATUS.md handoff |
+| `report-snag.ps1/.sh` | turn a snag into a ready-to-paste `LESSONS.md` entry: `report-snag "what broke"` prints a formatted draft + environment context to stdout (writes nothing). Makes capturing friction a 10-second job |
 | `check-kit-docs.ps1/.sh` | (OGDK only) keeps THIS file honest: twin rule + every script documented here and in tools/README; flags ghost refs; check 8 scans tracked files for your private markers (gitignored `tools/PRIVATE-MARKERS.list` — seed yours; policy: BOUNDARY.md) |
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |
 | `new-project.ps1/.sh` | (OGDK only) scaffold App/Game project |
