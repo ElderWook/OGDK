@@ -83,9 +83,10 @@ Copy-Item -Recurse (Join-Path $kit 'docs-template') (Join-Path $proj 'docs')
 Rename-Item (Join-Path $proj 'docs\STATUS.template.md') 'STATUS.md'
 Rename-Item (Join-Path $proj 'docs\README.template.md') 'README.md'
 
-# 2. Agent rules + Claude pointer
+# 2. Agent rules + Claude pointer + Changelog
 Copy-Item (Join-Path $kit 'AGENTS.template.md') (Join-Path $proj 'AGENTS.md')
 Copy-Item (Join-Path $kit 'CLAUDE.template.md') (Join-Path $proj 'CLAUDE.md')
+Copy-Item (Join-Path $kit 'CHANGELOG.template.md') (Join-Path $proj 'CHANGELOG.md')
 
 # 3. Tools (PATH health is mandatory on Windows; list lives in PROPAGATE.list)
 New-Item -ItemType Directory -Path (Join-Path $proj 'tools') | Out-Null
