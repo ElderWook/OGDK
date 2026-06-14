@@ -231,5 +231,23 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** ADAPT symbol-based parameter bindings and runner abstractions to separate physical definition from sweep execution in Python simulations.
 **Status:** OPEN (study artifact created).
 
+## 2026-06-14 study of FocusCookie/tauri-sqlite-example database migrations and frontend query boundaries
+**What happened:** studied FocusCookie/tauri-sqlite-example to analyze SQLite integration in Tauri 2.0 apps, focusing on tauri-plugin-sql migrations and frontend-driven query execution boundaries.
+**Root cause:** App templates lack a standard method for configuring local SQLite migrations and db wrappers at app startup.
+**Proposed fix:** ADOPT Rust-side startup migrations via `tauri-plugin-sql` in Svelte/Tauri app templates; DECLINE frontend-driven raw SQL query strings, enforcing a backend command bridge instead.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of filliperomero/InterfaceHero asynchronous UI asset loading and Common UI stack
+**What happened:** studied filliperomero/InterfaceHero to evaluate asynchronous user interface asset loading using soft references (`TSoftClassPtr`) and activatable widget stack layouts.
+**Root cause:** Game templates default to hard class references which force synchronous blocking asset loads at startup, causing frame hitches.
+**Proposed fix:** ADOPT soft widget references (`TSoftClassPtr`) and asynchronous streamable asset loading via `UAssetManager::Get().GetStreamableManager().RequestAsyncLoad` in UI subsystems.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of devbisme/skidl electrical rules checking and topological modeling
+**What happened:** studied devbisme/skidl to analyze its Net-Pin-Part data schema and symmetrical pin conflict contention matrix for design rule checking (ERC).
+**Root cause:** Python simulation solvers lack robust pre-flight checks, which causes execution failures to only trigger late in simulation runs.
+**Proposed fix:** ADOPT symmetrical contention matrices (`defaultdict` mappings) and pre-simulation verification validation gates (ERC checks) in physical simulation projects.
+**Status:** OPEN (study artifact created).
+
 
 
