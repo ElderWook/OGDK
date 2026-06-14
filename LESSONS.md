@@ -207,5 +207,29 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** ADAPT the `#platform` and `#server` abstraction pattern into App-track architecture templates (`docs-template/core/app-architecture.md`) to enforce clean backend/worker layer isolation.
 **Status:** OPEN (study artifact created).
 
+## 2026-06-14 study of tranek/GASDocumentation ASC and AttributeSet separation
+**What happened:** studied tranek/GASDocumentation to analyze C++ Gameplay Ability System (GAS) implementation, focusing on Actor-bound vs PlayerState-bound ASC layouts (Hero vs Minion topologies).
+**Root cause:** Game track templates lack clear guidelines on ASC lifetime and persistence models, which leads to issues with attribute state loss on character respawn.
+**Proposed fix:** ADAPT Hero (PlayerState-bound, initialized via `PossessedBy`/`OnRep_PlayerState`) vs Minion (Actor-bound) design guidelines into `docs-template/core/game-architecture.md`.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of tranek/GASDocumentation C++ macro and replication helpers
+**What happened:** studied tranek/GASDocumentation to analyze standard C++ helper macros (`ATTRIBUTE_ACCESSORS`) and RepNotify boilerplate for attribute replication.
+**Root cause:** C++ boilerplate in C++ AttributeSets is high-overhead and error-prone for developers setting up new attributes.
+**Proposed fix:** ADOPT the `ATTRIBUTE_ACCESSORS` definition and standard `DOREPLIFETIME_CONDITION_NOTIFY` / `OnRep` templates directly inside scaffolded C++ AttributeSet templates.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of Qiskit/qiskit topological circuit decoupling
+**What happened:** studied Qiskit/qiskit to evaluate node operation representation vs connection graph layout for Python-based simulation modeling.
+**Root cause:** Python simulation layouts often tightly couple component physics to their topological neighborhood, making component reuse and graph optimization difficult.
+**Proposed fix:** ADAPT Qiskit's decoupled architecture (standalone operation definitions mapped to an independent connection graph) into Python simulation track guidelines.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of Qiskit/qiskit simulation parameters and backend abstraction
+**What happened:** studied Qiskit's parameter expression mappings and unified backend runner interface to abstract solvers from model building.
+**Root cause:** simulation solvers and mathematical parameter sweeps are typically monolithic, coupling physical models directly to numerical runners.
+**Proposed fix:** ADAPT symbol-based parameter bindings and runner abstractions to separate physical definition from sweep execution in Python simulations.
+**Status:** OPEN (study artifact created).
+
 
 
