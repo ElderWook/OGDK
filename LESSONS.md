@@ -283,3 +283,27 @@ Format: see docs-template/LESSONS.md.
 **Root cause:** edge sensor gateways lack highly performant, crash-resilient local buffering that guarantees zero telemetry loss across network outages and power cycles.
 **Proposed fix:** ADOPT sequential write-ahead logs (WAL) with transactional lease-commit batching loops (`PullBatch` -> `Commit` or `Requeue`) for store-and-forward edge gateways; ADAPT index-masked file queues or rolling file blocks to bound local disk usage.
 **Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of seanys/2D-Irregular-Packing-Algorithm nesting logic and Bottom-Left-Fill heuristics
+**What happened:** studied seanys/2D-Irregular-Packing-Algorithm to analyze 2D irregular shape packing, No-Fit Polygon (NFP) generation, and Bottom-Left-Fill (BLF) coordinate selection algorithms.
+**Root cause:** CAD/CAM nesting routines lack dynamic placement search and fast boundary collision estimation capabilities, resulting in poor material sheet usage.
+**Proposed fix:** ADOPT the Bottom-Left-Fill (BLF) placement sequence logic to coordinate nesting; ADOPT the $O(1)$ rectangular NFP fast path algorithm in layout engines to drastically reduce collision check cycles for standard cabinet pieces.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of kizniche/Mycodo environmental automation and Atlas EZO I2C drivers
+**What happened:** studied kizniche/Mycodo to analyze native Linux I²C bus binding via ioctl slave selection, command timeouts, response data cleanups, and sensor calibration/temp-compensation commands.
+**Root cause:** agricultural sensor gateway projects require direct, robust, and dependency-free communication with Atlas Scientific EZO pH and EC sensors.
+**Proposed fix:** ADOPT native binary file streams (`io.open`) and Unix `fcntl.ioctl` slave address binding on `/dev/i2c-bus` files; ADOPT standard EZO command sequences (`Cal,mid`, `Cal,low`, `T,{temp}`) to calibrate and compensate sensor measurements.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of eitcom/pyEIT electrical impedance tomography reconstruction and solver math
+**What happened:** studied eitcom/pyEIT to analyze Finite Element Method (FEM) mesh representations, Jacobian sensitivity mapping, and Kotre regularization difference imaging.
+**Root cause:** impedance-based smart probes and circuit tracing systems need reliable, real-time spatial conductivity map reconstruction from boundary electrode potentials.
+**Proposed fix:** ADOPT dynamic difference imaging ($ds = -H \cdot dv$) for real-time conductive trace calculation; ADOPT Kotre diagonal regularization ($R = \text{diag}(\text{diag}(J^T J)^p)$) to prevent contact noise from corrupting reconstructions.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of linux-can/can-utils SocketCAN utilities and kernel packet filtering
+**What happened:** studied linux-can/can-utils to analyze raw SocketCAN socket configurations in C, binding interfaces, logging formats, and setsockopt kernel-level frame filtering.
+**Root cause:** low-power edge nodes experience heavy user-space context switch overhead when filtering high-frequency CAN bus telemetry.
+**Proposed fix:** ADOPT SocketCAN RAW binding APIs (`socket(PF_CAN, SOCK_RAW, CAN_RAW)`) in embedded gateways; ADOPT bitwise receive masks (`CAN_RAW_FILTER`) in kernel space to filter out unwanted CAN IDs before reading.
+**Status:** OPEN (study artifact created).
