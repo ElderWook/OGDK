@@ -5,14 +5,20 @@ description: Run the OGDK session-start protocol — verify environment safety, 
 
 # Session start
 
-Follow in order. Do not edit any file until step 6.
+Follow in order. Do not edit any file until step 6. All git this session follows **gitwalk** —
+the no-skip checkpoints in `docs/workflow/GIT-LIFECYCLE.md` (C0 ARRIVE is steps 1–2 here; C2
+SAVE / C4 HANDOFF / C5 DEPART come during and after work). For a sandboxed / synced-mount agent:
+present each checkpoint's exact command and WAIT for the human's pasted output before proceeding —
+never run git through the mount.
 
 1. **Environment:** run `.\tools\verify-path-health.ps1` (Linux: `bash ./tools/verify-path-health.sh`). If any FAIL, stop — report it and do not write files until the PATH is fixed. Also run `.\tools\install-hooks.ps1` (Linux: `bash ./tools/install-hooks.sh`) to ensure the pre-push guard is active.
-2. **Sync (multi-machine safety):** run `.\tools\sync-repo.ps1` (Linux:
-   `./tools/sync-repo.sh`). Exit 0 = safe to work (it fast-forwards if simply
-   behind). Exit 2 = STOP and follow its printed instructions — diverged/dirty/
-   mid-merge states must be resolved before any edits. Sandboxed sessions: this
-   needs a NATIVE shell — ask the human or use a host-shell MCP (MCP.md §3).
+2. **Sync — C0 ARRIVE:** run `.\tools\sync-repo.ps1` (Linux: `./tools/sync-repo.sh`); it must
+   end "SAFE TO WORK" (exit 0). Exit 2 = STOP and follow the matching resolve sub-flow in
+   `docs/workflow/GIT-LIFECYCLE.md` (S1–S6) before ANY edit — diverged/dirty/mid-merge are
+   never worked over. Touching several repos this session, or about to propagate kit tools?
+   run `.\tools\fleet-status.ps1` (`./tools/fleet-status.sh`) first and clear every `*` repo.
+   Sandboxed sessions: git needs a NATIVE shell — narrate the command and wait for the human's
+   pasted result; never run git through the mount (`docs/workflow/AI-PARITY.md` §4).
 3. **Rules:** read `AGENTS.md` (repo root) in full. These are non-negotiable.
 4. **State:** read `docs/STATUS.md` — note active plans, hazards, and "next up".
 5. **Plan:** read the active plan(s) named in STATUS.md before touching code they cover.

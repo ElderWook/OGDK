@@ -34,11 +34,19 @@ top of the rules below. The session lifecycle they hook into is in
 5. **Route personal data to `user-notes.local.md`** (gitignored), never into tracked
    files — repo paths, usernames, machine specifics, project codenames, collaborator
    names. The membrane is [BOUNDARY.md](./BOUNDARY.md).
-6. **Trust the mechanical backstop.** `install-hooks` arms a `pre-commit` guard (blocks
-   a commit whose staged content or authoring identity matches a private marker) and a
-   `pre-push` guard (rescans commit-history identity). Both read your gitignored
-   `tools/PRIVATE-MARKERS.list` and skip cleanly when it's absent — so seed it first.
-   Run `gate` before any commit for the full check.
+6. **Trust the mechanical backstop.** `install-hooks` arms a `pre-commit` guard (blocks a
+   private-marker leak in staged content or authoring identity, **plus** a panic-exempt cheap
+   integrity check — NUL bytes / missing EOF sentinel — skipped on `checkpoint`'s `wip:` save
+   via `OGDK_SKIP_INTEGRITY`) and a `pre-push` guard (rescans commit-history identity). Both
+   read your gitignored `tools/PRIVATE-MARKERS.list` and skip cleanly when it's absent — so
+   seed it first. Run `gate` before any commit for the full check.
+7. **gitwalk is on (the git lifecycle, no-skip).** Every git action in this repo follows the
+   checkpoint map in [docs-template/workflow/GIT-LIFECYCLE.md](./docs-template/workflow/GIT-LIFECYCLE.md):
+   ARRIVE → GROUND → SAVE → PROPAGATE → HANDOFF → DEPART → SWITCH-MACHINE. At each checkpoint,
+   present the exact command(s), gate on the human's pasted output before doing or proposing
+   anything further, and let **nothing cross a checkpoint with an uncommitted tree**. You
+   narrate; the human runs git on a native clone (rule 2). This operationalises rules 1–3;
+   suspend only if the human says "pause gitwalk".
 
 ## Rules of the kit (non-negotiable)
 

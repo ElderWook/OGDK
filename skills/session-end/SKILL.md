@@ -5,6 +5,10 @@ description: Run the OGDK session-end protocol — verification gate, docs-with-
 
 # Session end
 
+This is **C5 DEPART** in gitwalk (`docs/workflow/GIT-LIFECYCLE.md`); the emergency handoff below
+is **C4 HANDOFF**. For a sandboxed / synced-mount agent: narrate each git command and WAIT for the
+human's pasted result before the next step — nothing is assumed done, nothing crosses uncommitted.
+
 > **Emergency handoff (low usage / time pressure):** if there isn't capacity for the
 > full protocol, do ONLY this, immediately: add `## In-flight` to docs/STATUS.md
 > (what's half-done, which files, exact next step), then run
