@@ -101,6 +101,21 @@ propagate_one() {
             copied=$((copied+1))
         fi
     fi
+    # gitwalk lifecycle doc travels with the tooling - the propagated session skills
+    # (and AGENTS) reference docs/workflow/GIT-LIFECYCLE.md, so it must exist in every
+    # target or that reference dangles. Kit-owned process doc; overwrite like the tools.
+    lc_src="$KIT/docs-template/workflow/GIT-LIFECYCLE.md"
+    if [ -f "$lc_src" ]; then
+        mkdir -p "$target/docs/workflow"
+        cp "$lc_src" "$target/docs/workflow/GIT-LIFECYCLE.md"
+        if [ -s "$target/docs/workflow/GIT-LIFECYCLE.md" ] && cmp -s "$lc_src" "$target/docs/workflow/GIT-LIFECYCLE.md"; then
+            echo "[OK]   docs/workflow/GIT-LIFECYCLE.md"
+            copied=$((copied+1))
+        else
+            echo "[FAIL] GIT-LIFECYCLE.md does not match source after copy (truncation?) - investigate"
+            failed=$((failed+1))
+        fi
+    fi
     if [ "$SKILLS" = 1 ]; then
         if [ -d "$KIT/skills" ]; then
             # Per-skill replace: remove the existing entry (file OR folder - old

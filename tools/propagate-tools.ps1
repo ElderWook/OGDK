@@ -108,6 +108,23 @@ function Propagate-One([string]$t) {
             $copied++
         }
     }
+    # gitwalk lifecycle doc travels with the tooling - the propagated session skills
+    # (and AGENTS) reference docs/workflow/GIT-LIFECYCLE.md, so it must exist in every
+    # target or that reference dangles. Kit-owned process doc; overwrite like the tools.
+    $lcSrc = Join-Path $kit "docs-template\workflow\GIT-LIFECYCLE.md"
+    if (Test-Path $lcSrc) {
+        $wfDst = Join-Path $t "docs\workflow"
+        New-Item -ItemType Directory -Force -Path $wfDst | Out-Null
+        $lcDst = Join-Path $wfDst "GIT-LIFECYCLE.md"
+        Copy-Item $lcSrc $lcDst -Force
+        if ((Get-Item $lcDst).Length -gt 0 -and (Get-FileHash $lcSrc).Hash -eq (Get-FileHash $lcDst).Hash) {
+            Write-Host "[OK]   docs/workflow/GIT-LIFECYCLE.md" -ForegroundColor Green
+            $copied++
+        } else {
+            Write-Host "[FAIL] GIT-LIFECYCLE.md does not match source after copy (truncation?) - investigate" -ForegroundColor Red
+            $failed++
+        }
+    }
     if ($Skills) {
         $skillsSrc = Join-Path $kit "skills"
         if (Test-Path $skillsSrc) {
