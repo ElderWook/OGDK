@@ -4,17 +4,48 @@
 set -euo pipefail
 
 KIT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-NAME="" TYPE="" DEST="$(dirname "$KIT")" NOGIT=0
+NAME="" TYPE="" DEST="$(dirname "$KIT")" NOGIT=0 FEATURES="" PRESET=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        -n|--name) NAME="$2"; shift 2 ;;
-        -t|--type) TYPE="$2"; shift 2 ;;
-        -d|--dest) DEST="$2"; shift 2 ;;
-        --no-git)  NOGIT=1; shift ;;
+        -n|--name)     NAME="$2"; shift 2 ;;
+        -t|--type)     TYPE="$2"; shift 2 ;;
+        -d|--dest)     DEST="$2"; shift 2 ;;
+        -f|--features) FEATURES="$2"; shift 2 ;;
+        -p|--preset)   PRESET="$2"; shift 2 ;;
+        --no-git)      NOGIT=1; shift ;;
         *) echo "Unknown arg: $1"; exit 1 ;;
     esac
 done
+
+# Preset name (A-E) -> module set. core + app are added later as the always-present law.
+expand_preset() {
+    case "$(printf '%s' "$1" | tr '[:lower:]' '[:upper:]')" in
+        A) printf 'core,store,sync,bridge,render' ;;
+        B) printf 'core,store,api,adapters,jobs' ;;
+        C) printf 'core' ;;
+        D) printf 'core,store' ;;
+        E) printf 'core,store,render' ;;
+        *) printf '' ;;
+    esac
+}
+
+# One annotated placeholder dir per chosen module. Language code is GENERATED later by
+# the agent per CODE-CONVENTIONS - the kit never stores boilerplate that would rot.
+write_module() {
+    _m="$1"; _intent="$2"; _boundary="$3"
+    mkdir -p "$PROJ/src/$_m"
+    {
+        printf '# %s/ - structural placeholder (generate the real module here)\n\n' "$_m"
+        printf '@intent %s\n' "$_intent"
+        printf '@boundary %s\n' "$_boundary"
+        printf '\n'
+        printf '> This directory marks a module the app needs. Generate its implementation\n'
+        printf '> in your chosen language per docs/core/app-architecture.md and the kit\n'
+        printf '> CODE-CONVENTIONS: an annotated header, a mirrored test, gate green BEFORE\n'
+        printf '> any feature code. Delete this placeholder once the module + its test exist.\n'
+    } > "$PROJ/src/$_m/_MODULE.md"
+}
 [ -n "$NAME" ] || { echo "Missing -n NAME"; exit 1; }
 [ "$TYPE" = "App" ] || [ "$TYPE" = "Game" ] || { echo "-t must be App or Game"; exit 1; }
 PROJ="$DEST/$NAME"
@@ -29,6 +60,32 @@ cat <<'OGDKART'
   \___/ \____|____/|_|\_\
 OGDKART
 fi
+# Feature resolution (App track only): -p/--preset expands to a module set; -f/--features
+# is an explicit csv; with neither, an interactive terminal gets a one-question wizard.
+# Non-interactive with no flags = no modules (today's behavior - a clean blank slate).
+if [ "$TYPE" = "App" ]; then
+    if [ -z "$FEATURES" ] && [ -n "$PRESET" ]; then
+        FEATURES="$(expand_preset "$PRESET")"
+        [ -n "$FEATURES" ] || { echo "Unknown preset '$PRESET' (use A-E)"; exit 1; }
+    fi
+    if [ -z "$FEATURES" ] && [ -z "$PRESET" ] && [ -t 0 ]; then
+        echo "Pick a starting shape for your app (you can change it later):"
+        echo "  A) local-first, multi-device      (core + store + sync + bridge + render)"
+        echo "  B) web service / API              (core + store + api + adapters + jobs)"
+        echo "  C) command-line tool              (core)"
+        echo "  D) simple web app                 (core + store)"
+        echo "  E) single desktop app  [default]  (core + store + render)"
+        printf 'Your choice [E]: '
+        read -r choice || true
+        [ -n "${choice:-}" ] || choice="E"
+        FEATURES="$(expand_preset "$choice")"
+        [ -n "$FEATURES" ] || { echo "Unknown choice '$choice' (use A-E)"; exit 1; }
+    fi
+elif [ -n "$FEATURES" ] || [ -n "$PRESET" ]; then
+    echo "[note] -Features/-Preset apply to the App track only; ignoring for a Game project."
+    FEATURES=""
+fi
+
 echo "Scaffolding $TYPE project '$NAME' -> $PROJ"
 mkdir -p "$PROJ"
 
@@ -95,6 +152,31 @@ fi
     echo '(AGENTS.md -> docs/STATUS.md -> active plan) for humans and AI alike.'
 } > "$PROJ/README.md"
 
+# 5c. Feature modules (App track): one annotated placeholder dir per chosen module.
+if [ "$TYPE" = "App" ] && [ -n "$FEATURES" ]; then
+    mkdir -p "$PROJ/src"
+    seen=","
+    for m in core app $(printf '%s' "$FEATURES" | tr ',' ' '); do
+        m="$(printf '%s' "$m" | xargs)"; [ -n "$m" ] || continue
+        case "$seen" in *",$m,"*) continue ;; esac
+        seen="$seen$m,"
+        case "$m" in
+            core)     write_module core     "pure domain logic, exact math, validation" "depends on nothing; every other module points here" ;;
+            app)      write_module app      "composition root - wiring ONLY, one per surface" "may import any module; nothing imports it" ;;
+            store)    write_module store    "durable atomic persistence + migrations" "core has no direct access to the store" ;;
+            sync)     write_module sync     "multi-device replication + authority model" "decide conflict/authority policy day one; parity tests mandatory" ;;
+            bridge)   write_module bridge   "per-platform injection (the platform-bridge pattern)" "platform code calls pure core through interfaces only" ;;
+            render)   write_module render   "documents and exports" "keep themes separate from generation primitives" ;;
+            jobs)     write_module jobs     "background work queue + status" "runs async; never blocks the main path" ;;
+            identity) write_module identity "sessions, permissions, third-party identity" "buy-don't-build the crypto/protocol" ;;
+            adapters) write_module adapters "one folder per external service" "zero inline integration calls inside core" ;;
+            api)      write_module api      "versioned external surface" "API versioning decoupled from core changes" ;;
+            *)        write_module "$m"     "custom module" "declare its boundary before writing code" ;;
+        esac
+    done
+    echo "  src/ modules: $(printf '%s' "$seen" | sed -e 's/^,//' -e 's/,$//')"
+fi
+
 # 6. Token replacement
 DATE="$(date +%F)"
 find "$PROJ" -name '*.md' -type f -exec sed -i "s/{{PROJECT_NAME}}/$NAME/g; s/{{DATE}}/$DATE/g" {} +
@@ -130,4 +212,8 @@ else
 fi
 echo "  3. Write your first plan in docs/plans/, update docs/STATUS.md"
 echo "  4. See OGDK checklists/new-project.md for the full list"
+if [ "$TYPE" = "App" ] && [ -n "$FEATURES" ]; then
+    echo "  * src/ has annotated module placeholders - ask your agent to generate each"
+    echo "    one (real code + a mirrored test), gate green before any feature work."
+fi
 exit 0
