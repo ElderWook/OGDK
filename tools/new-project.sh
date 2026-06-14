@@ -94,9 +94,10 @@ cp -r "$KIT/docs-template" "$PROJ/docs"
 mv "$PROJ/docs/STATUS.template.md" "$PROJ/docs/STATUS.md"
 mv "$PROJ/docs/README.template.md" "$PROJ/docs/README.md"
 
-# 2. Agent rules + Claude pointer
+# 2. Agent rules + Claude pointer + Changelog
 cp "$KIT/AGENTS.template.md" "$PROJ/AGENTS.md"
 cp "$KIT/CLAUDE.template.md" "$PROJ/CLAUDE.md"
+cp "$KIT/CHANGELOG.template.md" "$PROJ/CHANGELOG.md"
 
 # 3. Tools (both platforms' twins travel together; list lives in PROPAGATE.list)
 mkdir -p "$PROJ/tools"

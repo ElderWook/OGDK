@@ -175,3 +175,10 @@ checks + tests/builds in one shot — you rarely need the raw commands.
 - Never work on a shared NTFS partition from Linux — separate clones, sync via the remote
 - Binary committed without LFS = permanent repo weight — `git check-attr filter` before new types
 - `.ps1` scripts: ASCII only, no here-strings (PS 5.1 + LF endings = parse bombs)
+
+## 12. Recommended Developer/Agent Extensions (optional)
+
+- **`opensrc` (Vercel Labs):** Gives AI agents deep implementation context of third-party libraries on-demand. Resolves packages (npm, PyPI, crates.io, GitHub repos) to their source repositories, shallow-clones the exact version tag, and caches them at `~/.opensrc/` for search (`rg`) and reading (`cat`).
+  - Install: `npm install -g opensrc`
+  - Agent query pattern: `rg "parse" $(opensrc path zod)` or `find $(opensrc path requests)`
+
