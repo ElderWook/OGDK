@@ -116,6 +116,10 @@ if (Test-Path $verFile) {
 }
 Set-Content -Path (Join-Path $proj 'tools\KIT-VERSION') -Value "$kitSemver$kitver $(Get-Date -Format yyyy-MM-dd) (kit version + commit + propagation date - written by propagate-tools/new-project; do not edit)" -Encoding ASCII
 
+# Seed the per-owner private markers (gitignored - never committed) so privacy scans work day one.
+$pmSrc = Join-Path $kit 'tools\PRIVATE-MARKERS.list'
+if (Test-Path $pmSrc) { Copy-Item $pmSrc (Join-Path $proj 'tools\PRIVATE-MARKERS.list') }
+
 # 4. Skills for Claude Code
 New-Item -ItemType Directory -Path (Join-Path $proj '.claude') | Out-Null
 Copy-Item -Recurse (Join-Path $kit 'skills') (Join-Path $proj '.claude\skills')
@@ -127,7 +131,7 @@ if ($Type -eq 'Game') {
     Copy-Item (Join-Path $kit 'game\STACK.md') (Join-Path $proj 'docs\core\game-architecture.md')
     Copy-Item -Recurse (Join-Path $kit 'game\conventions') (Join-Path $proj 'docs\core\conventions')
 } else {
-    Set-Content -Path (Join-Path $proj '.gitignore') -Value @('node_modules/','dist/','*.sqlite','.env')
+    Set-Content -Path (Join-Path $proj '.gitignore') -Value @('# --- OGDK private: NEVER commit (per-owner, gitignored) ---','user-notes.local.md','tools/PRIVATE-MARKERS.list','tools/TARGETS.list','','node_modules/','dist/','*.sqlite','.env')
     Set-Content -Path (Join-Path $proj '.gitattributes') -Value @('* text=auto','*.sh text eol=lf','*.ps1 text eol=crlf','*.bat text eol=crlf')
     Copy-Item (Join-Path $kit 'app\STACK.md') (Join-Path $proj 'docs\core\app-architecture.md')
 }

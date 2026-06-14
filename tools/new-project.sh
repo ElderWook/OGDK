@@ -129,6 +129,10 @@ if [ -f "$KIT/VERSION" ]; then
 fi
 printf '%s\n' "$kitsemver$kitver $(date +%Y-%m-%d) (kit version + commit + propagation date - written by propagate-tools/new-project; do not edit)" > "$PROJ/tools/KIT-VERSION"
 
+# Seed the per-owner private markers (gitignored - never committed) so the privacy scans work
+# from day one. Local copy of the kit's canonical list.
+[ -f "$KIT/tools/PRIVATE-MARKERS.list" ] && cp "$KIT/tools/PRIVATE-MARKERS.list" "$PROJ/tools/PRIVATE-MARKERS.list"
+
 # 4. Skills for Claude Code
 mkdir -p "$PROJ/.claude"
 cp -r "$KIT/skills" "$PROJ/.claude/skills"
@@ -140,7 +144,7 @@ if [ "$TYPE" = "Game" ]; then
     cp "$KIT/game/STACK.md" "$PROJ/docs/core/game-architecture.md"
     cp -r "$KIT/game/conventions" "$PROJ/docs/core/conventions"
 else
-    printf 'node_modules/\ndist/\n*.sqlite\n.env\n' > "$PROJ/.gitignore"
+    printf '# --- OGDK private: NEVER commit (per-owner, gitignored) ---\nuser-notes.local.md\ntools/PRIVATE-MARKERS.list\ntools/TARGETS.list\n\nnode_modules/\ndist/\n*.sqlite\n.env\n' > "$PROJ/.gitignore"
     printf '* text=auto\n*.sh text eol=lf\n*.ps1 text eol=crlf\n*.bat text eol=crlf\n' > "$PROJ/.gitattributes"
     cp "$KIT/app/STACK.md" "$PROJ/docs/core/app-architecture.md"
 fi

@@ -1,3 +1,8 @@
+# --- OGDK private: NEVER commit (per-owner, gitignored) ---
+user-notes.local.md
+tools/PRIVATE-MARKERS.list
+tools/TARGETS.list
+
 # Unreal Engine — OGDK game template .gitignore
 Binaries/
 DerivedDataCache/

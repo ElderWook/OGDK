@@ -127,6 +127,14 @@ function Propagate-One([string]$t) {
             $failed++
         }
     }
+    # Distribute the per-owner private markers (gitignored everywhere - never committed) so the
+    # privacy scans (check-git-identity / pre-push) work in every target. Local copy only.
+    $pmSrc = Join-Path $kit 'tools\PRIVATE-MARKERS.list'
+    if (Test-Path $pmSrc) {
+        Copy-Item $pmSrc (Join-Path $t 'tools\PRIVATE-MARKERS.list') -Force
+        Write-Host "[OK]   tools/PRIVATE-MARKERS.list (private; gitignored)" -ForegroundColor Green
+        $copied++
+    }
     if ($Skills) {
         $skillsSrc = Join-Path $kit "skills"
         if (Test-Path $skillsSrc) {

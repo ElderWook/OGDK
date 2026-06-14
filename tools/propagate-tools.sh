@@ -118,6 +118,13 @@ propagate_one() {
             failed=$((failed+1))
         fi
     fi
+    # Distribute the per-owner private markers (gitignored everywhere - never committed) so the
+    # privacy scans (check-git-identity / pre-push) work in every target. Local copy only.
+    if [ -f "$KIT/tools/PRIVATE-MARKERS.list" ]; then
+        cp "$KIT/tools/PRIVATE-MARKERS.list" "$target/tools/PRIVATE-MARKERS.list"
+        echo "[OK]   tools/PRIVATE-MARKERS.list (private; gitignored)"
+        copied=$((copied+1))
+    fi
     if [ "$SKILLS" = 1 ]; then
         if [ -d "$KIT/skills" ]; then
             # Per-skill replace: remove the existing entry (file OR folder - old
