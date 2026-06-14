@@ -58,7 +58,7 @@ if ($Type -eq 'App') {
         $Features = Expand-Preset $Preset
         if ($Features -eq '') { throw "Unknown preset '$Preset' (use A-E)" }
     }
-    if ($Features -eq '' -and $Preset -eq '' -and [Environment]::UserInteractive) {
+    if ($Features -eq '' -and $Preset -eq '' -and [Environment]::UserInteractive -and -not [Console]::IsInputRedirected) {
         Write-Host 'Pick a starting shape for your app (you can change it later):'
         Write-Host '  A) local-first, multi-device      (core + store + sync + bridge + render)'
         Write-Host '  B) web service / API              (core + store + api + adapters + jobs)'
@@ -182,20 +182,23 @@ if (-not $NoGit) {
         Write-Warning 'git identity not set (git config --global user.name / user.email) - skipping git init. Init manually after setting it.'
     } else {
         Push-Location $proj
+        $oldEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
         try {
-            git init -b main | Out-Null
+            git init -b main 2>$null | Out-Null
             if ($Type -eq 'Game') {
                 if (Get-Command git-lfs -ErrorAction SilentlyContinue) {
-                    git lfs install | Out-Null
+                    git lfs install 2>$null | Out-Null
                 } else {
                     Write-Warning 'git-lfs not installed - install it BEFORE committing any .uasset (a binary committed without LFS is permanent repo weight).'
                 }
             }
-            git add -A
-            git commit -m "chore: scaffold $Name from OGDK ($Type track)" | Out-Null
+            git add -A 2>$null
+            git commit -m "chore: scaffold $Name from OGDK ($Type track)" 2>$null | Out-Null
             $inst = Join-Path $proj "tools\install-hooks.ps1"
-            if (Test-Path $inst) { & $inst | Out-Null }
+            if (Test-Path $inst) { & $inst 2>$null | Out-Null }
         } finally {
+            $ErrorActionPreference = $oldEAP
             Pop-Location
         }
     }
