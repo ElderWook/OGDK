@@ -38,11 +38,12 @@
 ## Git lifecycle (gitwalk — on by default)
 Every git action follows the no-skip checkpoint map in
 [docs/workflow/GIT-LIFECYCLE.md](./docs/workflow/GIT-LIFECYCLE.md):
-**ARRIVE → GROUND → SAVE → PROPAGATE → HANDOFF → DEPART → SWITCH-MACHINE.** An AI agent
-presents the exact commands at each checkpoint, waits for your pasted output before doing or
-proposing anything further, and lets nothing cross a checkpoint with an uncommitted tree.
-Sandboxed/synced-mount agents narrate the commands; git runs in a native shell only. Suspend
-for throwaway work by saying "pause gitwalk".
+**ARRIVE → GROUND → SAVE → PROPAGATE → HANDOFF → DEPART → SWITCH-MACHINE.** At each checkpoint
+the agent runs (or, on a synced mount, narrates for the human) the exact commands, gates on
+success before proceeding, and lets nothing cross a checkpoint with an uncommitted tree. A
+synced-mount agent narrates and the human runs git; an agent with native git access may use
+`tools/safe-agent-push` (path-health → sync → gate → commit → push, aborting — never forcing —
+on any divergence). Suspend for throwaway work by saying "pause gitwalk".
 
 ## Process
 - Update docs in the SAME commit as code (docs/DOCUMENTATION-VERSIONING-GUIDE.md).

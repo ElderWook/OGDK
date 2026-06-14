@@ -19,6 +19,19 @@ The agent reads your output and either advances or routes you into the matching 
 sub-flow. "Unskippable" means *the agent will not proceed past a checkpoint until you've run
 it and pasted the result* — that refusal is the whole mechanism.
 
+## Execution modes — narrate vs. run-it-yourself
+
+gitwalk runs the same checkpoints two ways, depending on the agent's access:
+
+- **Synced-mount / sandbox agent (cannot run git):** narrate the checkpoint's exact commands,
+  wait for the human's pasted output, then advance. (The mount reality, above.)
+- **Agent with native git access (can run git):** runs the commands itself, gating on each. For
+  SAVE+push it uses `tools/safe-agent-push`, which chains path-health → sync-repo → gate →
+  `git add -A` → commit → `git push` (the current branch's upstream) and ABORTS — never forces —
+  on any failure or divergence. It carries a mount guard that refuses to run if it detects a
+  synced mount, so it can only ever run where git is safe. A panic save still uses `checkpoint`,
+  not safe-agent-push.
+
 ## The contract (binding — mirrored in AGENTS.md)
 
 1. At each checkpoint, the agent presents the exact commands + one line of why, then **waits
