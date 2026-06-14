@@ -249,5 +249,23 @@ Format: see docs-template/LESSONS.md.
 **Proposed fix:** ADOPT symmetrical contention matrices (`defaultdict` mappings) and pre-simulation verification validation gates (ERC checks) in physical simulation projects.
 **Status:** OPEN (study artifact created).
 
+## 2026-06-14 study of pubkey/rxdb reactive queries and signals garbage collection
+**What happened:** studied pubkey/rxdb to analyze fine-grained reactive queries, state-management wrappers, and automatic GC cleanup of database subscriptions using `FinalizationRegistry`.
+**Root cause:** local-first app queries rely on manual subscription cleanup, which is prone to memory leaks if components unmount prematurely.
+**Proposed fix:** ADOPT `FinalizationRegistry` and `WeakRef` patterns in Custom Reactivity bridges to automatically clean up database subscriptions when UI state variables go out of scope.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of Hazelight/Docs-UnrealEngine-Angelscript scripting and memory boundaries
+**What happened:** studied Hazelight's Docs-UnrealEngine-Angelscript to evaluate AngelScript as an alternative text-based scripting framework in game engines, and its object pointer abstraction patterns.
+**Root cause:** Game development options default to visual Blueprints or heavy C++, leading to merge conflicts or raw pointer crash hazards.
+**Proposed fix:** ADAPT text-based scripting concepts (AngelScript/Lua) and C++ reference pointer wrappers to safeguard visual designers and speed up gameplay iterations.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of PyO3/pyo3 high-performance language bridges and thread safety
+**What happened:** studied PyO3/pyo3 to analyze Rust-to-Python language bridges, zero-overhead memory pointer boundaries (`Bound<'py, T>`), and releasing the Global Interpreter Lock (GIL).
+**Root cause:** Python simulation solvers suffer from single-threaded speed limits, making Monte Carlo sweeps slow.
+**Proposed fix:** ADOPT PyO3 native Rust modules for performance-critical simulation logic, and release the GIL via `allow_threads` to execute parallel loops.
+**Status:** OPEN (study artifact created).
+
 
 
