@@ -325,3 +325,9 @@ Format: see docs-template/LESSONS.md.
 **Root cause:** card games and table prototypes are vulnerable to client-side cheating and logic leaks if rules are tightly coupled to rendering frameworks.
 **Proposed fix:** ADOPT server-authoritative state loops (`LocalHand`) where private card data is withheld from clients until showdown; ADOPT secure nondeterministic array shuffling; ADOPT strict interface contracts to separate card rules from views.
 **Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of Unreal Engine 5 Editor automation and MCP tool integration
+**What happened:** studied programmatic Unreal Engine 5 Editor control and Model Context Protocol (MCP) server integration to allow AI agents and CLI tools to query, build, and test a game project without navigating the graphical editor interface.
+**Root cause:** standard Unreal Engine workflows rely on a visual editor interface (PIE, manual blueprint compilation, GUI-based actor property editing), which is a major point of friction and a potential "rabbit hole" for AI agents.
+**Proposed fix:** ADOPT the native Remote Control Web API (HTTP/WebSocket on port 30010) to execute console commands, compile blueprints, and inspect/mutate actor properties programmatically; ADAPT these operations into a local Node.js or Python-based MCP server (`mcp-server-ue5`) to expose UE5 editor actions as structured tools; ADAPT headless execution via `UnrealEditor-Cmd.exe -run=pythonscript` for automated CLI gate tests.
+**Status:** OPEN (study artifact created).
