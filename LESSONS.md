@@ -307,3 +307,21 @@ Format: see docs-template/LESSONS.md.
 **Root cause:** low-power edge nodes experience heavy user-space context switch overhead when filtering high-frequency CAN bus telemetry.
 **Proposed fix:** ADOPT SocketCAN RAW binding APIs (`socket(PF_CAN, SOCK_RAW, CAN_RAW)`) in embedded gateways; ADOPT bitwise receive masks (`CAN_RAW_FILTER`) in kernel space to filter out unwanted CAN IDs before reading.
 **Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of gnea/grbl trajectory planning and acceleration profiling
+**What happened:** studied gnea/grbl to analyze CNC G-code parsing, motion look-ahead queues, trapezoidal velocity profiling, and centripetal cornering junction speeds.
+**Root cause:** digital fabrication routines require smooth acceleration control and optimized cornering speeds to prevent mechanical tool vibration and material burn.
+**Proposed fix:** ADOPT motion look-ahead buffers with reverse/forward planning passes to calculate optimal velocity limits; ADOPT centripetal cornering junction equations to scale segment transitions based on path tolerances.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of jgaeddert/liquid-dsp software-defined PLL and phase accumulation
+**What happened:** studied jgaeddert/liquid-dsp to analyze 32-bit integer phase accumulators, Numerically Controlled Oscillators (NCO), and second-order Proportional-Integral (PI) Phase Locked Loop (PLL) filters.
+**Root cause:** smart circuit probes need a noise-resilient phase lock to track high-frequency powerline zero-crossings and CDMA sequences.
+**Proposed fix:** ADOPT 32-bit unsigned integer phase accumulators for natural overflow wrapping; ADOPT second-order PI loop filters (`_pll_step`) to dynamically lock local oscillators to phase-drifting line signals.
+**Status:** OPEN (study artifact created).
+
+## 2026-06-14 study of pokerth/pokerth authoritative card game loops and state boundaries
+**What happened:** studied pokerth/pokerth to analyze authoritative server-dealer turn progression, nondeterministic array shuffling, and Model-View-Controller (MVC) logic decoupling.
+**Root cause:** card games and table prototypes are vulnerable to client-side cheating and logic leaks if rules are tightly coupled to rendering frameworks.
+**Proposed fix:** ADOPT server-authoritative state loops (`LocalHand`) where private card data is withheld from clients until showdown; ADOPT secure nondeterministic array shuffling; ADOPT strict interface contracts to separate card rules from views.
+**Status:** OPEN (study artifact created).
