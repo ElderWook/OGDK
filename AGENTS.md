@@ -23,10 +23,11 @@ top of the rules below. The session lifecycle they hook into is in
    at stale offsets and corrupt files. Make whole-file edits with your direct file
    tools only, and let the human run git on a native clone. (Hazard map:
    [tools/README.md](./tools/README.md).)
-3. **Never push, force-push, or auto-merge from a sandbox or non-interactive session.**
-   No `git push`, no `git merge`, no history rewrite, no `--no-verify`. `sync-repo`
-   stops on divergence by design — if it says STOP, hand back to the human rather than
-   untangle it yourself.
+3. **Never commit, push, force-push, or auto-merge directly from a sandbox or non-interactive session.**
+   No direct `git commit`, `git push`, `git merge`, or `--no-verify`. Automated git commits/pushes 
+   must go exclusively through the safety wrapper script `tools/safe-agent-push` (which enforces 
+   path health, remote synchronization, and project gates). If the sync check stops on divergence, 
+   hand back to the human rather than force-push or rebase.
 4. **Identity is private.** Commits must be authored by a GitHub noreply email; verify
    it with `verify-path-health`. Never set or edit the human's global git config for
    them, and never commit with an unset or personal identity.
