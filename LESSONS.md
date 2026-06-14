@@ -193,7 +193,7 @@ Format: see docs-template/LESSONS.md.
 **What happened:** an embedded project's very first gate FAILED on an empty project — the project-checks step ran `python -m unittest discover`, which on **Python 3.12+** exits code **5** ("NO TESTS RAN") instead of 0, so a brand-new, test-less Python project can never pass its own gate.
 **Root cause:** the kit's App guidance (`user-notes.md`: "Python projects: python -m unittest discover tests") and the `gate.template.{ps1,sh}` FILL-IN example assume `unittest` returns 0 with zero tests — true pre-3.12, but 3.12 changed it to exit 5 (matching pytest), silently breaking the gate of every freshly-scaffolded Python App.
 **Proposed fix:** guard the test run behind "do tests exist yet" — `find src -name 'test_*.py'` (sh) / `Get-ChildItem -Recurse -Filter test_*.py` (ps1) — and only invoke unittest when at least one test file is present; otherwise print "(no tests yet)" and pass cleanly. Proven in `an embedded project/tools/gate.{sh,ps1}`; graduate the guard into `tools/gate.template.{ps1,sh}` and fix the `user-notes.md` App line.
-**Status:** OPEN — flow-back from an embedded project (rule 7); fix proven there but NOT yet in the kit template. Also still OPEN: propagate the **pre-commit** hook to projects (only pre-push propagates today).
+**Status:** CODIFIED 2026-06-14, gate.template.{sh,ps1} + user-notes.md + propagate-tools.{sh,ps1} + new-project.{sh,ps1}.
 
 ## 2026-06-14 study of actualbudget/actual local-first synchronization and HLC
 **What happened:** studied actualbudget/actual to evaluate its offline-first SQLite synchronization, Hybrid Logical Clock (HLC), and Merkle trie diffing logic for App-track local-first syncing.

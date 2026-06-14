@@ -29,7 +29,12 @@ bash "$DIR/check-git-identity.sh" || total=$((total+$?))
 step "project checks"
 # FILL IN: this project's tests + builds, each followed by:  || total=$((total+1))
 # App example:   npm test || total=$((total+1))
-# Python example: python3 -m unittest discover tests || total=$((total+1))
+# Python example (Py3.12+ safe):
+#   if [ -d "tests" ] && [ -n "$(find tests -name 'test_*.py' -print -quit 2>/dev/null)" ]; then
+#       python3 -m unittest discover tests || total=$((total+1))
+#   else
+#       echo "(no tests yet)"
+#   fi
 echo "(none defined yet - fill in tools/gate.sh)"
 
 echo

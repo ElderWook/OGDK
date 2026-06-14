@@ -26,7 +26,12 @@ Step 'git identity'
 Step 'project checks'
 # FILL IN: this project's tests + builds, each followed by:  $total += $LASTEXITCODE
 # App example:   npm test; $total += $LASTEXITCODE
-# Python example: python -m unittest discover tests; $total += $LASTEXITCODE
+# Python example (Py3.12+ safe):
+#   if ((Test-Path tests) -and (Get-ChildItem -Recurse -Filter test_*.py -Path tests -ErrorAction SilentlyContinue)) {
+#       python -m unittest discover tests; $total += $LASTEXITCODE
+#   } else {
+#       Write-Host '(no tests yet)'
+#   }
 Write-Host '(none defined yet - fill in tools\gate.ps1)'
 
 Write-Host ''

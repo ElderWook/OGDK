@@ -142,7 +142,7 @@ and machine layout). The universal pattern:
   `stat unit` / Insights on the milestone scene.
 - **App track (Node):** `npm install` per package once, `npm test` before commit,
   `npm run build` per target.
-- **Python projects:** `python -m unittest discover tests`.
+- **Python projects:** `python -m unittest discover tests` (Py3.12+ exits code 5 if no tests exist; guard with file checks to pass empty projects).
 
 **The gate wraps all of these:** `.\tools\gate.ps1` in any repo runs that repo's
 checks + tests/builds in one shot — you rarely need the raw commands.

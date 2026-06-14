@@ -88,19 +88,21 @@ propagate_one() {
             copied=$((copied+1))
         fi
     done < "$LIST"
-    # Copy pre-push hook (infrastructure)
-    if [ -f "$KIT/tools/hooks/pre-push" ]; then
-        mkdir -p "$target/tools/hooks"
-        cp "$KIT/tools/hooks/pre-push" "$target/tools/hooks/pre-push"
-        if [ ! -s "$target/tools/hooks/pre-push" ] || ! cmp -s "$KIT/tools/hooks/pre-push" "$target/tools/hooks/pre-push"; then
-            echo "[FAIL] tools/hooks/pre-push does not match source after copy (truncation?) - investigate"
-            failed=$((failed+1))
-        else
-            chmod +x "$target/tools/hooks/pre-push" 2>/dev/null || true
-            echo "[OK]   hooks/pre-push"
-            copied=$((copied+1))
+    # Copy hooks (pre-push + pre-commit infrastructure)
+    for hook in pre-push pre-commit; do
+        if [ -f "$KIT/tools/hooks/$hook" ]; then
+            mkdir -p "$target/tools/hooks"
+            cp "$KIT/tools/hooks/$hook" "$target/tools/hooks/$hook"
+            if [ ! -s "$target/tools/hooks/$hook" ] || ! cmp -s "$KIT/tools/hooks/$hook" "$target/tools/hooks/$hook"; then
+                echo "[FAIL] tools/hooks/$hook does not match source after copy (truncation?) - investigate"
+                failed=$((failed+1))
+            else
+                chmod +x "$target/tools/hooks/$hook" 2>/dev/null || true
+                echo "[OK]   hooks/$hook"
+                copied=$((copied+1))
+            fi
         fi
-    fi
+    done
     # gitwalk lifecycle doc travels with the tooling - the propagated session skills
     # (and AGENTS) reference docs/workflow/GIT-LIFECYCLE.md, so it must exist in every
     # target or that reference dangles. Kit-owned process doc; overwrite like the tools.

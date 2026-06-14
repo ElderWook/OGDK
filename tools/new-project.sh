@@ -109,11 +109,13 @@ while IFS= read -r tname; do
 done < "$KIT/tools/PROPAGATE.list"
 cp "$KIT/tools/gate.template.ps1" "$PROJ/tools/gate.ps1"
 cp "$KIT/tools/gate.template.sh"  "$PROJ/tools/gate.sh"
-# 3b. Git hooks (pre-push guard)
+# 3b. Git hooks (pre-push and pre-commit guards)
 mkdir -p "$PROJ/tools/hooks"
-if [ -f "$KIT/tools/hooks/pre-push" ]; then
-    cp "$KIT/tools/hooks/pre-push" "$PROJ/tools/hooks/"
-fi
+for hook in pre-push pre-commit; do
+    if [ -f "$KIT/tools/hooks/$hook" ]; then
+        cp "$KIT/tools/hooks/$hook" "$PROJ/tools/hooks/"
+    fi
+done
 chmod +x "$PROJ/tools/"*.sh "$PROJ/tools/hooks/"* 2>/dev/null || true
 # Provenance stamp: which kit version+commit these tools came from (drift visibility)
 kitver="unknown"

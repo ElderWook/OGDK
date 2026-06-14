@@ -99,10 +99,12 @@ foreach ($raw in (Get-Content (Join-Path $kit 'tools\PROPAGATE.list') -Encoding 
 }
 Copy-Item (Join-Path $kit 'tools\gate.template.ps1') (Join-Path $proj 'tools\gate.ps1')
 Copy-Item (Join-Path $kit 'tools\gate.template.sh')  (Join-Path $proj 'tools\gate.sh')
-# 3b. Git hooks (pre-push guard)
+# 3b. Git hooks (pre-push and pre-commit guards)
 New-Item -ItemType Directory -Path (Join-Path $proj 'tools\hooks') | Out-Null
-$hookSrc = Join-Path $kit 'tools\hooks\pre-push'
-if (Test-Path $hookSrc) { Copy-Item $hookSrc (Join-Path $proj 'tools\hooks\pre-push') }
+foreach ($hook in @("pre-push", "pre-commit")) {
+    $hookSrc = Join-Path $kit "tools\hooks\$hook"
+    if (Test-Path $hookSrc) { Copy-Item $hookSrc (Join-Path $proj "tools\hooks\$hook") }
+}
 # Provenance stamp: which kit version+commit these tools came from (drift visibility)
 $kitver = 'unknown'
 try { $v = git -C $kit rev-parse --short HEAD 2>$null; if ($LASTEXITCODE -eq 0 -and $v) { $kitver = $v.Trim() } } catch { }
