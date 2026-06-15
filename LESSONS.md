@@ -337,3 +337,13 @@ Format: see docs-template/LESSONS.md.
 **Root cause:** standard Unreal Engine workflows rely on a visual editor interface (PIE, manual blueprint compilation, GUI-based actor property editing), which is a major point of friction and a potential "rabbit hole" for AI agents.
 **Proposed fix:** ADOPT the native Remote Control Web API (HTTP/WebSocket on port 30010) to execute console commands, compile blueprints, and inspect/mutate actor properties programmatically; ADAPT these operations into a local Node.js or Python-based MCP server (`mcp-server-ue5`) to expose UE5 editor actions as structured tools; ADAPT headless execution via `UnrealEditor-Cmd.exe -run=pythonscript` for automated CLI gate tests.
 **Status:** OPEN (study artifact created).
+
+## 2026-06-14 kit-retro — codified the study sweep into templates
+**What happened:** the 2026-06-14 student-mode sweep (23 external repos) was triaged (see the fleet STUDY-FOLD-IN-MAP). Project-specific findings were folded into each project's docs/LESSONS.md as proposals; the generic, kit-level findings are now codified into kit templates.
+**Root cause:** study findings sat OPEN in this buffer — left unprocessed they decay.
+**Proposed fix:** codified into the kit:
+- Python-sim findings (Qiskit x2, PyO3, skidl) -> `docs-template/core/python-simulation.md` (NEW).
+- App local-first findings (actual x2, tauri-sqlite, rxdb) -> `app/APP-ARCHITECT.md` Local-first patterns; `@oasis/local-first-sync` left as a rule-of-two extraction candidate.
+- Game GAS/UI findings (GASDocumentation x2, InterfaceHero) + the AngelScript decline -> `game/conventions/gas-and-ui.md` (NEW).
+- Project-level findings (pokerth, Mycodo, telegraf, cantools, can-utils, pyEIT, liquid-dsp, grbl, sverchok, 2D-packing) -> folded to their project repos' LESSONS (codify there, per project).
+**Status:** CODIFIED 2026-06-14 -- docs-template/core/python-simulation.md, game/conventions/gas-and-ui.md, app/APP-ARCHITECT.md. (The individual study entries above stay as raw capture; this is the codification record.)

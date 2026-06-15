@@ -164,3 +164,21 @@ When specific features/modules are enabled, the scaffolder generates the matchin
    - **Baseline Stub:** `src/api/api.ts`
    - **Annotation:** `@intent: versioned public external API or IPC surface; @invariant: API versioning must be decoupled from internal core changes.`
 
+## Local-first patterns (study-derived, 2026-06-14)
+
+Proven patterns for the local-first app preset (see [STACK.md](./STACK.md)). Distilled
+from external study (actualbudget/actual, FocusCookie/tauri-sqlite-example, pubkey/rxdb).
+
+- **Platform isolation.** Keep business / query / state logic in a platform-agnostic
+  core; inject desktop / mobile / server differences through a bridge (`#platform` /
+  `#server`), never with `if (platform)` branches inside the core or UI.
+- **Local database.** Run schema migrations on the **native/Rust side at startup**;
+  expose data only through backend commands. **Decline** frontend-issued raw SQL — it
+  re-couples the UI to the schema.
+- **Reactive cleanup.** Auto-dispose database subscriptions with `FinalizationRegistry`
+  / `WeakRef` so unmounted UI can't leak listeners.
+- **Shared sync (rule-of-two candidate).** Offline-first sync = a Hybrid Logical Clock
+  + Merkle-trie diffing. When a **second** app needs it, extract to
+  `app/packages/@oasis/local-first-sync` rather than reimplementing — never extract
+  speculatively for the first consumer.
+
