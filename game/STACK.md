@@ -51,7 +51,7 @@ This is the Lyra-style modular pattern: ship-tested by Epic, designed exactly fo
    which engine APIs it touches — those sections collectively ARE the future port
    checklist. Full policy: [conventions/engine-portability.md](./conventions/engine-portability.md).
 
-See [conventions/modules.md](./conventions/modules.md), [conventions/performance.md](./conventions/performance.md), [conventions/naming.md](./conventions/naming.md), [conventions/git-lfs.md](./conventions/git-lfs.md), [conventions/engine-portability.md](./conventions/engine-portability.md).
+See [conventions/modules.md](./conventions/modules.md), [conventions/performance.md](./conventions/performance.md), [conventions/naming.md](./conventions/naming.md), [conventions/git-lfs.md](./conventions/git-lfs.md), [conventions/engine-portability.md](./conventions/engine-portability.md), [conventions/gas-and-ui.md](./conventions/gas-and-ui.md).
 
 ## Verification gate (game projects)
 
