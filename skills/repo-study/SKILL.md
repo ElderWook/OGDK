@@ -22,6 +22,9 @@ proposals. **Ideas and patterns flow in; foreign code does not.**
    COPYING code or substantial text requires license compatibility + attribution and
    is almost never the goal — when tempted to copy, write the kit's own version of
    the idea instead. Note the studied repo's license in the findings.
+   **Strong-copyleft (GPL/AGPL) sources are IDEAS-ONLY** — never port an algorithm or
+   implementation; reimplement the idea clean. Run `tools/check-study-licenses.{ps1,sh}`
+   (kit) to classify every clone and flag any copyleft/unknown source that has a fold-in.
 4. The kit's own rules still apply to YOU during the study (no git through mounts,
    file tools for writes, etc.).
 
@@ -42,7 +45,9 @@ proposals. **Ideas and patterns flow in; foreign code does not.**
    re-litigated) · **CONFIRMS** (kit already does this as well or better — also
    worth recording; calibration is learning too).
 4. **Output, in the kit's own currency:**
-   - One LESSONS.md entry per ADOPT/ADAPT finding (source repo named in the entry)
+   - One LESSONS.md entry per ADOPT/ADAPT finding (source repo named in the entry),
+     each carrying a `Source-License:` line (the studied repo's license id + class, from
+     `check-study-licenses`)
    - DECLINEs logged in the same entries as "declined — <reason>"
    - Big ADOPTs (new scripts, structural changes) get a `docs/plans/` plan instead
      of direct edits — study findings are evidence, not authority
