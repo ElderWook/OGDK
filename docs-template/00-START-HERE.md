@@ -18,6 +18,9 @@ Follow the chain in order. Do not skip steps.
 Working across models/accounts? The parity contract is [workflow/AI-PARITY.md](./workflow/AI-PARITY.md) —
 the short version: **if it isn't in the repo, the next session doesn't know it.**
 
+As plans / studies / lessons pile up, [workflow/SCALING.md](./workflow/SCALING.md) is the
+growth contract — working buffer → generated manifest → cold archive, so nothing rots.
+
 ## Session protocol
 
 **Start of session**
