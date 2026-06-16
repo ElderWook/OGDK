@@ -122,6 +122,7 @@ Your SSH/GPG/auth specifics: `user-notes.local.md`.
 | `check-reference-coverage.ps1/.sh` | docs gate: every component tracked to a reference page; flags STALE/MISSING; nudges on OPEN lessons (kit-retro at 5) and stale STATUS.md handoff |
 | `report-snag.ps1/.sh` | turn a snag into a ready-to-paste `LESSONS.md` entry: `report-snag "what broke"` prints a formatted draft + environment context to stdout (writes nothing). Makes capturing friction a 10-second job |
 | `check-kit-docs.ps1/.sh` | (OGDK only) keeps THIS file honest: twin rule + every script documented here and in tools/README; flags ghost refs; check 8 scans tracked files for your private markers (gitignored `tools/PRIVATE-MARKERS.list` — seed yours; policy: BOUNDARY.md) |
+| `check-study-licenses.ps1/.sh` | (OGDK only) study license gate: classifies each `study-repo/study/` clone permissive / weak-copyleft / strong-copyleft / unknown and FAILs on a strong-copyleft (GPL/AGPL) source that has a fold-in — the ideas-only guard for repo-study. Run during a study sweep |
 | `launch-claude-clean.ps1/.sh` | health gate, then launch Claude Code |
 | `new-project.ps1/.sh` | (OGDK only) scaffold App/Game project |
 | `new-reference-page.ps1/.sh` | scaffold a reference page + its COVERAGE.md row in one shot: `-n slug -c "Title" -s "source/path"` from project root. Fill the page, commit with the component |

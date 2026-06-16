@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# Study license checker (OGDK) - classifies every external study clone's license and
+# flags copyleft / unknown sources that already have a fold-in (the code-vs-idea risk).
+# Studies live OUTSIDE the kit (study-repo/study/<name>); this is a KIT tool, NOT
+# propagated to projects. Run during a repo-study sweep and before any code-shaped ADOPT.
+#   Permissive  (MIT/BSD/Apache/ISC) -> ideas AND code reusable with attribution
+#   weak-copyleft (LGPL/MPL)         -> ideas free; shipping the lib has obligations
+#   strong-copyleft (GPL/AGPL)       -> IDEAS ONLY; never port algorithm/implementation
+# Usage: check-study-licenses.sh [STUDY_DIR]   (default: ../study-repo/study)
+# Twin: check-study-licenses.ps1
+set -u
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DEV_ROOT="$(cd "$REPO_ROOT/.." && pwd)"
+STUDY_DIR="${1:-$DEV_ROOT/study-repo/study}"
+
+if [ ! -d "$STUDY_DIR" ]; then
+    echo "[skip] no study dir at $STUDY_DIR (nothing to check)"
+    exit 0
+fi
+
+classify() { # $1 = license text/blob -> echoes "ID|CLASS"
+    local t; t="$(printf '%s' "$1" | tr '[:lower:]' '[:upper:]')"
+    case "$t" in
+        *AFFERO*|*AGPL*)                       echo "AGPL|strong-copyleft" ;;
+        *LESSER\ GENERAL\ PUBLIC*|*LGPL*)      echo "LGPL|weak-copyleft" ;;
+        *GENERAL\ PUBLIC\ LICENSE*|*GPL-2*|*GPL-3*|*GPLV*|*\ GPL*|GPL*) echo "GPL|strong-copyleft" ;;
+        *MOZILLA\ PUBLIC*|*MPL-*)              echo "MPL|weak-copyleft" ;;
+        *APACHE*)                              echo "Apache-2.0|permissive" ;;
+        *PERMISSION\ IS\ HEREBY\ GRANTED*|*MIT\ LICENSE*|MIT*) echo "MIT|permissive" ;;
+        *REDISTRIBUTION\ AND\ USE\ IN\ SOURCE*|*BSD*) echo "BSD|permissive" ;;
+        *ISC\ LICENSE*|ISC*)                   echo "ISC|permissive" ;;
+        *UNLICENSE*|*PUBLIC\ DOMAIN*)          echo "Unlicense|permissive" ;;
+        *)                                     echo "UNKNOWN|unknown" ;;
+    esac
+}
+
+detect() { # $1 = clone dir -> echoes "ID|CLASS|SOURCE"
+    local d="$1" f lic ids
+    f="$(ls "$d" 2>/dev/null | grep -iE '^(license|licence|copying)(\.|$)' | head -1)"
+    if [ -n "$f" ]; then echo "$(classify "$(head -c 4000 "$d/$f")")|LICENSE"; return; fi
+    if [ -d "$d/LICENSES" ]; then
+        ids="$(ls "$d/LICENSES" 2>/dev/null | sed 's/\.txt$//' | paste -sd+ -)"
+        echo "$(classify "$ids")|LICENSES/($ids)"; return; fi
+    if [ -f "$d/package.json" ]; then
+        lic="$(grep -m1 '"license"' "$d/package.json" | sed 's/.*"license"[^"]*"\([^"]*\)".*/\1/')"
+        [ -n "$lic" ] && { echo "$(classify "$lic")|pkg:$lic"; return; }
+    fi
+    f="$(ls "$d"/pyproject.toml "$d"/setup.cfg "$d"/setup.py 2>/dev/null | head -1)"
+    if [ -n "$f" ]; then
+        lic="$(grep -i -m1 'licen[sc]e' "$f")"
+        [ -n "$lic" ] && { echo "$(classify "$lic")|pyproject"; return; }
+    fi
+    f="$(ls "$d" 2>/dev/null | grep -iE '^readme' | head -1)"
+    if [ -n "$f" ]; then
+        lic="$(grep -i -m1 'licen[sc]e' "$d/$f")"
+        [ -n "$lic" ] && { echo "$(classify "$lic")|README"; return; }
+    fi
+    echo "UNKNOWN|unknown|none"
+}
+
+folded() { # $1 = clone name -> echoes yes/no  (heuristic: name referenced in any LESSONS/map)
+    if grep -rqI -- "$1" "$REPO_ROOT/LESSONS.md" "$DEV_ROOT/STUDY-FOLD-IN-MAP.md" "$DEV_ROOT"/*/docs/LESSONS.md 2>/dev/null
+    then echo yes; else echo no; fi
+}
+
+echo "Study license check - $STUDY_DIR"
+printf '%-30s %-11s %-16s %-7s %s\n' "CLONE" "LICENSE" "CLASS" "FOLDED" "SRC"
+echo "--------------------------------------------------------------------------------"
+high=0; med=0; total=0
+for d in "$STUDY_DIR"/*/; do
+    [ -d "$d" ] || continue
+    total=$((total+1))
+    name="$(basename "$d")"
+    res="$(detect "$d")"; id="${res%%|*}"; rest="${res#*|}"; class="${rest%%|*}"; src="${rest#*|}"
+    fold="$(folded "$name")"
+    printf '%-30s %-11s %-16s %-7s %s\n' "$name" "$id" "$class" "$fold" "$src"
+    if [ "$fold" = yes ]; then
+        case "$class" in
+            strong-copyleft) high=$((high+1)) ;;
+            weak-copyleft|unknown) med=$((med+1)) ;;
+        esac
+    fi
+done
+echo "--------------------------------------------------------------------------------"
+echo "Scanned $total clone(s). Fold-in risk: $high strong-copyleft, $med weak/unknown."
+if [ "$high" -gt 0 ]; then
+    echo "[FAIL] strong-copyleft (GPL/AGPL) source(s) have a fold-in - confirm IDEAS ONLY,"
+    echo "       no algorithm/implementation was ported, and cite the license in the entry."
+    exit 1
+fi
+[ "$med" -gt 0 ] && echo "[WARN] weak-copyleft/unknown source(s) folded - verify license posture."
+exit 0
+# EOF
