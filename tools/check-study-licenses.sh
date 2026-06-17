@@ -63,7 +63,7 @@ detect() { # $1 = clone dir -> echoes "ID|CLASS|SOURCE"
 }
 
 folded() { # $1 = clone name -> echoes yes/no  (heuristic: name referenced in any LESSONS/map)
-    if grep -rqI -- "$1" "$REPO_ROOT/LESSONS.md" "$DEV_ROOT/STUDY-FOLD-IN-MAP.md" "$DEV_ROOT"/*/docs/LESSONS.md 2>/dev/null
+    if grep -rqI -- "$1" "$REPO_ROOT/LESSONS.md" "$REPO_ROOT/LESSONS-ARCHIVE.md" "$DEV_ROOT/STUDY-FOLD-IN-MAP.md" "$DEV_ROOT"/*/docs/LESSONS.md 2>/dev/null
     then echo yes; else echo no; fi
 }
 

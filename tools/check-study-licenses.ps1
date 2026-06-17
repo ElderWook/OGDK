@@ -51,7 +51,7 @@ function Detect([string]$d) {
 }
 
 function Folded([string]$n) {
-    $files = @((Join-Path $RepoRoot 'LESSONS.md'), (Join-Path $DevRoot 'STUDY-FOLD-IN-MAP.md'))
+    $files = @((Join-Path $RepoRoot 'LESSONS.md'), (Join-Path $RepoRoot 'LESSONS-ARCHIVE.md'), (Join-Path $DevRoot 'STUDY-FOLD-IN-MAP.md'))
     $files += (Get-ChildItem -Path $DevRoot -Directory -ErrorAction SilentlyContinue |
         ForEach-Object { Join-Path $_.FullName 'docs/LESSONS.md' })
     foreach ($f in $files) { if (Test-Path $f) { if (Select-String -LiteralPath $f -Pattern ([regex]::Escape($n)) -Quiet) { return 'yes' } } }
