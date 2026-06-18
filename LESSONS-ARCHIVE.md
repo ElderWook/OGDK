@@ -208,6 +208,12 @@
 - Project-level findings (pokerth, Mycodo, telegraf, cantools, can-utils, pyEIT, liquid-dsp, grbl, sverchok, 2D-packing) -> folded to their project repos' LESSONS (codify there, per project).
 **Status:** CODIFIED 2026-06-14 -- docs-template/core/python-simulation.md, game/conventions/gas-and-ui.md, app/APP-ARCHITECT.md. (The individual study records below stay as raw capture; this is the codification record.)
 
+## 2026-06-15 The codified grep -c "two-zeros" bug recurred in a brand-new tool
+**What happened:** `fleet-work.sh` (new) reintroduced the `grep -c ... || echo 0` two-zeros idiom already CODIFIED 2026-06-11; it surfaced once OGDK's OPEN count hit 0 (`grep -c` prints `0` and exits 1, so `|| echo 0` yields "0\n0" → `$(( ))` arithmetic error). The `.ps1` twin was immune (`@(Select-String).Count`), so the twins diverged in robustness.
+**Root cause:** the 2026-06-11 fix patched the scripts that *had* the bug but added no guard against recurrence; a new author re-typed the idiom from muscle memory.
+**Proposed fix:** `open_count()` rewritten to a single integer (done). A mechanical `check-kit-docs` lint was evaluated and **declined** — it false-positives on the comments that document this rule and on safe lines that pair `|| true` with an explanatory `|| echo 0` in a trailing comment. Codified instead as a written convention (`tools/README.md` §Rules rule 5) + inline guard comments at each `grep -c` site; a shared `count_matches` helper both twins call remains the option if it recurs.
+**Status:** CODIFIED 2026-06-17, `tools/README.md` §Rules rule 5 + inline comments. Mechanical lint declined (fragile). Does not reopen unless the idiom actually ships a bug again.
+
 ---
 
 ## Study records — 2026-06-14 student-mode sweep (provenance)

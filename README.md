@@ -54,7 +54,7 @@ by every failure that survived contact with that reality:
   as the audited escape hatch for sandboxed sessions
   ([docs-template/workflow/MCP.md](./docs-template/workflow/MCP.md)).
 
-Two tracks on one shared process:
+Three tracks on one shared process:
 
 ```
 OGDK/
@@ -66,6 +66,11 @@ OGDK/
 ├── app/                # APP track — feature-driven skeletons (Tauri + Svelte preset proven)
 └── game/               # GAME track — Unreal Engine, modular, perf-first, port-aware
 ```
+
+The third is the **Python-sim / Embedded** track — CAN firmware, sensors, smart probes, and
+simulation (an embedded project, the hardware project, an embedded project, and an embedded project lean here). Its guide is
+[`docs-template/core/python-simulation.md`](./docs-template/core/python-simulation.md); it reuses the
+App-track `core/` shape rather than a separate top-level dir.
 
 ## Start a new project
 

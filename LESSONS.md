@@ -22,8 +22,5 @@ Format: see docs-template/LESSONS.md.
 _Buffer reset 2026-06-15: codified lessons + the 2026-06-14 study-sweep records migrated to
 `LESSONS-ARCHIVE.md`; study provenance is the generated `study-repo/STUDY-INDEX.md`._
 
-## 2026-06-15 The codified grep -c "two-zeros" bug recurred in a brand-new tool
-**What happened:** `fleet-work.sh` (new this session) reintroduced the exact `grep -c ... || echo 0` two-zeros idiom already **CODIFIED 2026-06-11** (which fixed check-kit-docs.sh + check-reference-coverage.sh). It stayed invisible until OGDK's OPEN count hit **0** for the first time — right after this LESSONS-ARCHIVE migration — at which point `grep -c` printed `0` AND exited 1, the `|| echo 0` appended a second `0`, and `total=$((total + o))` died with "arithmetic syntax error". The `.ps1` twin was immune (`@(Select-String).Count` yields a clean 0), so the twins silently diverged in robustness.
-**Root cause:** the 2026-06-11 fix patched the two scripts that *had* the bug but added no GUARD against the pattern reappearing; a new author re-typed the idiom from muscle memory. `check-kit-docs` has no lint for it, and the zero-count path is rarely exercised, so it escaped first-run testing of a brand-new tool.
-**Proposed fix:** `open_count()` rewritten to yield a single integer (done, verified at 0 OPEN). Systemic candidate: a `check-kit-docs` lint that flags `grep -c` piped to `|| echo`/`|| true` in `tools/*.sh` (or a shared `count_matches` helper both twins call), so the codified lesson is mechanically enforced rather than discipline-only — the recurring "rule existed as prose faster than a check existed as a script" pattern.
-**Status:** OPEN (bug fixed; the preventive lint is the kit-retro candidate).
+_No OPEN process-friction lessons. (The 2026-06-15 grep -c recurrence was **CODIFIED 2026-06-17** —
+convention in `tools/README.md` §Rules rule 5 — and moved to `LESSONS-ARCHIVE.md`.)_

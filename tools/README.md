@@ -56,6 +56,12 @@ exit), so a gate run shows ONE banner, not one per chained tool. Exceptions:
    (`chmod +x tools/*.sh`).
 4. Line-ending policy lives in `.gitattributes` (`*.sh` forced LF, `*.ps1` CRLF-safe),
    never in per-machine git config.
+5. **Counting matches:** never `grep -c <pat> <file> … || echo 0` — `grep -c` prints `0`
+   AND exits 1 on no match, so `|| echo` appends a second `0` (the "two-zeros" bug that
+   breaks `$(( ))` math). Use `… || true` then `${v:-0}`; in `.ps1` use
+   `@(Select-String …).Count`. (A mechanical lint was evaluated and declined — it
+   false-positives on the very comments that document this rule; the guard is this
+   convention plus an inline comment at each `grep -c` site.)
 
 ## The dual-boot hazard map (why the gates differ per OS)
 
