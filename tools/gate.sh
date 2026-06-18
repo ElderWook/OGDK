@@ -20,6 +20,8 @@ echo; echo "=== GATE: file integrity ==="
 bash "$DIR/verify-file-integrity.sh" || total=$((total+$?))
 echo; echo "=== GATE: git identity ==="
 bash "$DIR/check-git-identity.sh" || total=$((total+$?))
+echo; echo "=== GATE: study licenses (advisory) ==="
+bash "$DIR/check-study-licenses.sh" || echo "  advisory only (NOT counted): review the strong-copyleft fold-ins above - each must carry an ideas-only Source-License line in the target repo's LESSONS."
 echo; echo "======================================"
 if [ "$total" -eq 0 ]; then echo "  GATE PASSED - safe to commit"; else echo "  GATE FAILED ($total) - do not commit"; fi
 exit "$total"

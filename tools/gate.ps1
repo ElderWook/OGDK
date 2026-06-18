@@ -17,6 +17,8 @@ Write-Host ''; Write-Host '=== GATE: file integrity ===' -ForegroundColor Cyan
 & "$dir\verify-file-integrity.ps1"; $total += $LASTEXITCODE
 Write-Host ''; Write-Host '=== GATE: git identity ===' -ForegroundColor Cyan
 & "$dir\check-git-identity.ps1"; $total += $LASTEXITCODE
+Write-Host ''; Write-Host '=== GATE: study licenses (advisory) ===' -ForegroundColor Cyan
+& "$dir\check-study-licenses.ps1"; if ($LASTEXITCODE -ne 0) { Write-Host '  advisory only (NOT counted): review the strong-copyleft fold-ins above - each must carry an ideas-only Source-License line in the target repo LESSONS.' -ForegroundColor Yellow }
 Write-Host ''; Write-Host '======================================'
 if ($total -eq 0) { Write-Host '  GATE PASSED - safe to commit' -ForegroundColor Green }
 else { Write-Host "  GATE FAILED ($total) - do not commit" -ForegroundColor Red }
