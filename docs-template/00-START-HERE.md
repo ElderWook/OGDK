@@ -23,15 +23,20 @@ growth contract — working buffer → generated manifest → cold archive, so n
 
 ## Session protocol
 
-**Start of session**
-1. Read `AGENTS.md` in full. On Windows, run `.\tools\verify-path-health.ps1` before any file writes.
-2. Read `docs/STATUS.md` — it names the active plan and any open hazards.
-3. Read the active plan before touching code it covers.
-4. **Interrupted-session recovery:** if the working tree is dirty, or the last commit
-   is `wip:`, or STATUS.md has an `## In-flight` section — the previous session died
-   mid-task. Do NOT start new work: read `git status` / `git diff` (and the wip
-   commit) against the active plan, reconstruct what was in flight, record your
-   findings in STATUS.md, then deliberately either finish, or revert, that work first.
+**Start of session** — all git follows **gitwalk**: [workflow/GIT-LIFECYCLE.md](./workflow/GIT-LIFECYCLE.md)
+is the single source of truth for the git sequence. A native-git agent walks the checkpoints
+itself (SAVE+push via `tools/safe-agent-push`); a mount/sandbox agent narrates each and waits for
+the human's pasted output. Never run git through a mount.
+1. Read `AGENTS.md` in full, then run `verify-path-health` before any file write.
+2. **Arrive (gitwalk C0):** run `sync-repo` (`.\tools\sync-repo.ps1` / `./tools/sync-repo.sh`); it
+   must end **"SAFE TO WORK"** before you touch a file. Exit 2 = follow its resolve sub-flow first.
+3. Read `docs/STATUS.md` — it names the active plan and any open hazards. (A low-churn repo with no
+   STATUS.md uses `git log` + `LESSONS.md`/`ROADMAP.md` as its handoff instead.)
+4. Read the active plan before touching code it covers.
+5. **Interrupted-session recovery:** if the working tree is dirty, the last commit is `wip:`, or
+   STATUS.md has an `## In-flight` section — the previous session died mid-task. Do NOT start new
+   work: reconstruct from the `sync-repo` / `git status` output and the wip commit against the
+   active plan, record what you found in STATUS.md, then deliberately finish or revert it first.
 
 **During**
 - Plans are written before implementation (`docs/plans/`); specs live in

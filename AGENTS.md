@@ -46,7 +46,11 @@ top of the rules below. The session lifecycle they hook into is in
    present the exact command(s), gate on the human's pasted output before doing or proposing
    anything further, and let **nothing cross a checkpoint with an uncommitted tree**. You
    narrate; the human runs git on a native clone (rule 2). This operationalises rules 1–3;
-   suspend only if the human says "pause gitwalk".
+   suspend only if the human says "pause gitwalk". The "you narrate; the human runs git"
+   division above is **mount/sandbox** mode; an agent with **native git access** (it can run
+   git and is NOT on a mount) instead runs each checkpoint itself, using `tools/safe-agent-push`
+   for SAVE+push (it aborts, never forces), and hands the matching sub-flow back to the human on
+   any STOP — it does not auto-resolve. See GIT-LIFECYCLE "Execution modes".
 
 ## Rules of the kit (non-negotiable)
 

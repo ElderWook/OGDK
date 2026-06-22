@@ -30,7 +30,9 @@ gitwalk runs the same checkpoints two ways, depending on the agent's access:
   `git add -A` → commit → `git push` (the current branch's upstream) and ABORTS — never forces —
   on any failure or divergence. It carries a mount guard that refuses to run if it detects a
   synced mount, so it can only ever run where git is safe. A panic save still uses `checkpoint`,
-  not safe-agent-push.
+  not safe-agent-push. On **any** abort/STOP (divergence, dirty tree, mid-merge, gate-fail, or a
+  mount detected) it hands the matching sub-flow back to the human and does **not** auto-resolve —
+  full autonomy up to the first stop, then a human.
 
 ## The contract (binding — mirrored in AGENTS.md)
 
