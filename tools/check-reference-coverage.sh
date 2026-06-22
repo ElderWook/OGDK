@@ -38,7 +38,10 @@ while IFS='|' read -r _ comp src page status _; do
     comp="$(echo "$comp" | xargs)"; src="$(echo "$src" | xargs)"
     page="$(echo "$page" | xargs)"; status="$(echo "$status" | xargs | tr 'A-Z' 'a-z')"
     case "$comp" in ""|Component|_none*|---*|:---*) continue ;; esac
-    case "$status" in
+    # status may carry a trailing note, e.g. "planned (spec ahead)"; match the leading
+    # keyword only so a human annotation doesn't hard-fail the gate (2026-06-22 lesson).
+    status_kw="${status%%[^a-z]*}"
+    case "$status_kw" in
         planned) continue ;;
         missing) backlog=$((backlog+1)); continue ;;
         current|stale) ;;

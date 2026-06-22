@@ -37,12 +37,15 @@ foreach ($line in (Get-Content $manifest -Encoding UTF8)) {
     if ($cells.Count -lt 4) { continue }
     $comp = $cells[0]; $src = $cells[1]; $page = $cells[2]; $status = $cells[3].ToLower()
     if ($comp -eq '' -or $comp -eq 'Component' -or $comp -like '_none*' -or $comp -like ':---*' -or $comp -like '---*') { continue }
-    if ($status -eq 'planned') { continue }
-    if ($status -eq 'missing') {
+    # status may carry a trailing note, e.g. "planned (spec ahead)"; match the leading
+    # keyword only so a human annotation doesn't hard-fail the gate (2026-06-22 lesson).
+    $statusKw = if ($status -match '^([a-z]+)') { $matches[1] } else { $status }
+    if ($statusKw -eq 'planned') { continue }
+    if ($statusKw -eq 'missing') {
         $backlog++
         continue
     }
-    if ($status -ne 'current' -and $status -ne 'stale') {
+    if ($statusKw -ne 'current' -and $statusKw -ne 'stale') {
         Write-Host "[FAIL] ${comp}: unknown status '$status' in COVERAGE.md" -ForegroundColor Red
         $issues++; continue
     }

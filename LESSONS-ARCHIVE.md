@@ -222,6 +222,12 @@
 **Proposed fix:** make both session skills mode-aware (native runs the checkpoints + safe-agent-push; mount narrates) and kit-aware (no docs/STATUS.md -> git log + ROADMAP/LESSONS handoff); apply the same carve-out to verify-path-health + the interrupted-check; make GIT-LIFECYCLE the single source of truth for the git sequence (skill + 00-START-HERE point to it, not restate it); refresh user-notes §1 arrival from raw `git pull` to gitwalk C0 `sync-repo`.
 **Status:** CODIFIED 2026-06-22, skills/session-start + skills/session-end + docs-template/00-START-HERE.md + AGENTS.md rule 7 + docs-template/workflow/GIT-LIFECYCLE.md + user-notes.md (session-start shipped commit 5b98e8d; session-end + docs in this cleanup pass).
 
+## 2026-06-22 Reference-coverage status parser rejected annotated keywords
+**What happened:** a game project's gate hard-failed on a COVERAGE.md row whose status cell read `planned (spec authored ahead; styles land at s1)` — a natural human annotation. The checker exact-matched the whole cell against bare keywords and called it "unknown status", failing the gate. It surfaced during the 2026-06-22 skill re-propagation: a game project couldn't commit its kit-sync because its own (pre-existing) gate was red on this row.
+**Root cause:** check-reference-coverage compared the full status cell against bare keywords (planned/missing/current/stale); any trailing note made it unknown. Brittle and fleet-wide.
+**Proposed fix:** parse the leading keyword only (`status_kw="${status%%[^a-z]*}"` / `-match '^([a-z]+)'`) and ignore a trailing note; keep the full status text in the error so genuine typos still surface.
+**Status:** CODIFIED 2026-06-22, tools/check-reference-coverage.{ps1,sh} (in PROPAGATE.list — re-propagated to the fleet so every project's gate accepts annotated statuses).
+
 ## Study records — 2026-06-14 student-mode sweep (provenance)
 
 > Raw capture of the student-mode repo sweep. Findings have been codified into kit
