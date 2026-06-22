@@ -5,22 +5,27 @@ scaffold a project, work in it for weeks, and never think about the kit except w
 deliberately flowing an improvement back. The base is done when it stops generating
 its own work.
 
-## Status (2026-06-13): structurally finished; what's left is validation + use
+## Status (2026-06-22): structurally finished; validation + use is what's left
 
-The base is built. Architecture, gates, the learning loop, cross-platform twins, the
-privacy boundary, and now a beginner on-ramp all exist, and the kit gate is green. What
-remains is **not new construction** - it is proving the kit under real conditions and
-then using it:
+The base is built and then some. Since the 2026-06-13 audit the kit has added: the
+**gitwalk** git-lifecycle (no-skip C0-C6 checkpoints + native/mount execution modes +
+`safe-agent-push`), the **SCALING** three-tier model (LESSONS working buffer -> archive;
+study provenance via `study-repo/STUDY-INDEX.md`), **fleet** auto-tracking
+(`track-projects` / `fleet-status` / `fleet-work`), the behavioral **twin-parity** check,
+a **wip-exempt pre-commit** integrity gate, and a **beginner on-ramp** (START-BUILDING,
+bootstrap, rescue, report-snag, explain-mode/project-retro, the `-Features` scaffolder).
+The session-start AND session-end skills are now mode-aware and kit-aware. The whole fleet
+(kit + 7 projects) is clean and leveled. What remains is **not new construction** - it is
+proving and using:
 
-- the hostile-environment pass on a real fresh Windows box (Phase 3, still open) -
-  now higher-stakes because the audit added new `.ps1` tools (pwsh-parse-verified, but
-  not yet executed on real PowerShell 5.1 hardware);
-- a real first-timer running the beginner track end to end (WS4, still open) - the
-  persona the on-ramp was built for has not met it yet.
+- the hostile-environment pass on a real fresh Windows box (Phase 3, still open) - the new
+  `.ps1` tools are pwsh-parse-verified but not yet run on real PowerShell 5.1 hardware;
+- a real first-timer running the beginner track end to end (WS4, still open) - the persona
+  the on-ramp was built for has not met it yet.
 
-Per the anti-goals below, the surest sign the kit is finished is to **stop adding to it
-and ship a real project**. After the current to-do list clears, kit time is polishing,
-and polishing is allowed only against a concrete need (rule of two).
+The anti-goals below are the tiebreaker: the surest sign the kit is finished is to **stop
+adding to it and ship a real project.** Kit time is now polishing, allowed only against a
+concrete need (rule of two).
 
 ## Phase 1 — Anchor (do before any real project work)
 

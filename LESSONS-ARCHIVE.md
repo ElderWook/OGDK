@@ -216,6 +216,12 @@
 
 ---
 
+## 2026-06-22 session-start/session-end skills assumed a project tree and native git
+**What happened:** an audit found the session-start (and, until this pass, session-end) skill assumed a project `docs/` tree and a native-git agent; both broke when run IN THE KIT (no docs/STATUS.md, no plans/) and as a sandbox/mount agent (verify-path-health checked the sandbox's own throwaway env and emitted a false "git identity not set"; the interrupted-check told the agent to run git it cannot). docs-template/00-START-HERE.md was also stale and wrongly declared "authoritative" over the gitwalk C0 sync step.
+**Root cause:** the session skills were written for one context (a project on a native machine) but run in four (kit/project x native/mount); no kit-mode branch, no execution-mode branch, and the arrival sequence was restated in three places (skill, 00-START-HERE, GIT-LIFECYCLE) so they drifted.
+**Proposed fix:** make both session skills mode-aware (native runs the checkpoints + safe-agent-push; mount narrates) and kit-aware (no docs/STATUS.md -> git log + ROADMAP/LESSONS handoff); apply the same carve-out to verify-path-health + the interrupted-check; make GIT-LIFECYCLE the single source of truth for the git sequence (skill + 00-START-HERE point to it, not restate it); refresh user-notes §1 arrival from raw `git pull` to gitwalk C0 `sync-repo`.
+**Status:** CODIFIED 2026-06-22, skills/session-start + skills/session-end + docs-template/00-START-HERE.md + AGENTS.md rule 7 + docs-template/workflow/GIT-LIFECYCLE.md + user-notes.md (session-start shipped commit 5b98e8d; session-end + docs in this cleanup pass).
+
 ## Study records — 2026-06-14 student-mode sweep (provenance)
 
 > Raw capture of the student-mode repo sweep. Findings have been codified into kit

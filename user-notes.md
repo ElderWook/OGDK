@@ -18,14 +18,13 @@
 ## 1. The pipeline (every dev session)
 
 ```
-START:  git pull                              # another machine may have pushed
-        .\tools\verify-path-health.ps1        # must say ALL CHECKS PASSED (Linux: .sh)
-        read: AGENTS.md → docs\STATUS.md → active plan
-        (AI session? open with: "run session-start" or
-         "read AGENTS.md, then docs/00-START-HERE.md, follow the chain")
+START:  .\tools\verify-path-health.ps1        # env health (Linux: .sh)
+        .\tools\sync-repo.ps1                  # gitwalk C0 ARRIVE: must say "SAFE TO WORK" (NOT a raw git pull)
+        read: AGENTS.md → docs\STATUS.md → active plan   (kit: AGENTS.md → ROADMAP.md → git log)
+        (AI session? just say: "run session-start")
 WORK:   plans before code · docs change in the same commit as code
-END:    .\tools\gate.ps1                      # THE GATE — exit 0 or no commit
-        update docs\STATUS.md  →  git add -A → commit → push
+END:    .\tools\gate.ps1                      # THE GATE (gitwalk C5) — exit 0 or no commit
+        update docs\STATUS.md → git add -A → commit → push   (native agent: .\tools\safe-agent-push.ps1)
 ```
 
 Golden rule: **if it isn't in the repo, the next session doesn't know it.**
