@@ -18,7 +18,7 @@ function PlanCount([string]$d) { $p = Join-Path $d 'docs/plans'; if (Test-Path $
 function NextUp([string]$d) {
     $s = Join-Path $d 'docs/STATUS.md'
     if (-not (Test-Path $s)) { return '-' }
-    $lines = Get-Content -LiteralPath $s
+    $lines = Get-Content -LiteralPath $s -Encoding UTF8
     $f = $false
     foreach ($ln in $lines) {
         if ($ln -match '^## Next up') { $f = $true; continue }
