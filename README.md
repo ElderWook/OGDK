@@ -68,7 +68,7 @@ OGDK/
 ```
 
 The third is the **Python-sim / Embedded** track — CAN firmware, sensors, smart probes, and
-simulation (an embedded project, the hardware project, an embedded project, and an embedded project lean here). Its guide is
+simulation. Its guide is
 [`docs-template/core/python-simulation.md`](./docs-template/core/python-simulation.md); it reuses the
 App-track `core/` shape rather than a separate top-level dir.
 

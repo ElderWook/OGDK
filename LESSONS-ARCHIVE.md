@@ -223,7 +223,7 @@
 **Status:** CODIFIED 2026-06-22, skills/session-start + skills/session-end + docs-template/00-START-HERE.md + AGENTS.md rule 7 + docs-template/workflow/GIT-LIFECYCLE.md + user-notes.md (session-start shipped commit 5b98e8d; session-end + docs in this cleanup pass).
 
 ## 2026-06-22 Reference-coverage status parser rejected annotated keywords
-**What happened:** a game project's gate hard-failed on a COVERAGE.md row whose status cell read `planned (spec authored ahead; styles land at s1)` — a natural human annotation. The checker exact-matched the whole cell against bare keywords and called it "unknown status", failing the gate. It surfaced during the 2026-06-22 skill re-propagation: a game project couldn't commit its kit-sync because its own (pre-existing) gate was red on this row.
+**What happened:** a project's gate hard-failed on a COVERAGE.md row whose status cell read `planned (spec authored ahead; styles land at s1)` — a natural human annotation. The checker exact-matched the whole cell against bare keywords and called it "unknown status", failing the gate. It surfaced during the 2026-06-22 skill re-propagation: the project couldn't commit its kit-sync because its own (pre-existing) gate was red on this row.
 **Root cause:** check-reference-coverage compared the full status cell against bare keywords (planned/missing/current/stale); any trailing note made it unknown. Brittle and fleet-wide.
 **Proposed fix:** parse the leading keyword only (`status_kw="${status%%[^a-z]*}"` / `-match '^([a-z]+)'`) and ignore a trailing note; keep the full status text in the error so genuine typos still surface.
 **Status:** CODIFIED 2026-06-22, tools/check-reference-coverage.{ps1,sh} (in PROPAGATE.list — re-propagated to the fleet so every project's gate accepts annotated statuses).
@@ -374,7 +374,7 @@
 **What happened:** studied pokerth/pokerth to analyze authoritative server-dealer turn progression, nondeterministic array shuffling, and Model-View-Controller (MVC) logic decoupling.
 **Root cause:** card games and table prototypes are vulnerable to client-side cheating and logic leaks if rules are tightly coupled to rendering frameworks.
 **Proposed fix:** ADOPT server-authoritative state loops (`LocalHand`) where private card data is withheld from clients until showdown; ADOPT secure nondeterministic array shuffling; ADOPT strict interface contracts to separate card rules from views.
-**Status:** ARCHIVED 2026-06-14 — IDEAS-ONLY (pokerth is AGPL, strong-copyleft); folded to a game project (a game title server-authoritative poker); provenance: study-repo/STUDY-INDEX.md.
+**Status:** ARCHIVED 2026-06-14 — IDEAS-ONLY (pokerth is AGPL, strong-copyleft); folded to a game project (server-authoritative poker); provenance: study-repo/STUDY-INDEX.md.
 
 ## 2026-06-14 study of Unreal Engine 5 Editor automation and MCP tool integration
 **What happened:** studied programmatic Unreal Engine 5 Editor control and Model Context Protocol (MCP) server integration to allow AI agents and CLI tools to query, build, and test a game project without navigating the graphical editor interface.
